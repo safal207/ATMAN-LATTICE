@@ -371,6 +371,8 @@ def verify_merge(
     resolutions: Iterable[ConflictResolution] = (),
 ) -> tuple[bool, tuple[str, ...]]:
     limitations: list[str] = []
+    conflict_items = tuple(conflicts)
+    resolution_items = tuple(resolutions)
     try:
         ancestor.validate()
         left = _validated_branch(left_chain)
@@ -379,7 +381,7 @@ def verify_merge(
         _verify_branch_origin(ancestor, right, right_restore)
         target.validate()
         merge.validate()
-        expected_resolution_digest = digest_resolution_set(conflicts, resolutions)
+        expected_resolution_digest = digest_resolution_set(conflict_items, resolution_items)
     except ValueError:
         return False, ("invalid_merge_artifact",)
 
@@ -402,7 +404,7 @@ def verify_merge(
         (merge.target_lineage_root_hash == target.lineage_root_hash, "target_root_mismatch"),
         (merge.target_genesis_receipt_hash == target.receipt_hash, "target_genesis_mismatch"),
         (merge.resolution_digest == expected_resolution_digest, "resolution_digest_mismatch"),
-        (merge.conflict_count == len(tuple(conflicts)), "conflict_count_mismatch"),
+        (merge.conflict_count == len(conflict_items), "conflict_count_mismatch"),
         (target.branch_ref not in {ancestor.branch_ref, left_head.branch_ref, right_head.branch_ref}, "target_branch_not_new"),
         (target.generation > max(left_head.generation, right_head.generation), "target_generation_not_advanced"),
         (target.lineage_root_hash not in {left_head.lineage_root_hash, right_head.lineage_root_hash}, "target_root_not_new"),
