@@ -9,6 +9,7 @@
     "subject_identity_ref",
     "branch_ref",
     "generation",
+    "lineage_root_hash",
     "verdict",
     "input_state_refs",
     "evidence_refs",
@@ -19,6 +20,7 @@
     "subject_identity_ref": {"type": "string", "minLength": 1},
     "branch_ref": {"type": "string", "minLength": 1},
     "generation": {"type": "integer", "minimum": 0},
+    "lineage_root_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "verdict": {"enum": ["PASS", "FAIL"]},
     "input_state_refs": {
       "type": "array",
