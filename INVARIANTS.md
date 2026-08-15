@@ -1,6 +1,6 @@
-# ATMAN-LATTICE Invariants v0.1
+# ATMAN-LATTICE Invariants v0.3
 
-This document defines the first invariant set for the ATMAN-LATTICE model.
+This document defines the invariant set for the ATMAN-LATTICE model.
 
 These are research contracts, not claims about metaphysical reality. Their purpose is to make continuity and coherence testable in computational or formal systems.
 
@@ -62,7 +62,7 @@ A timestamp or ordering relation by itself does not establish identity continuit
 
 ## I-6 — Cross-Axis Identity Binding
 
-> A spatial identity proof and a temporal identity proof must bind to the same entity, branch, and relevant generation.
+> A spatial identity proof and a temporal identity proof must bind to the same entity, branch, generation, and cryptographic lineage root.
 
 Even when
 
@@ -90,19 +90,19 @@ This prevents two independently valid histories from being accidentally fused in
 
 Observer outputs must expose enough provenance to be checked, replayed, compared, or challenged by another layer.
 
-An observer should therefore emit at least a conceptual tuple of the form:
+An observer receipt includes at least:
 
 ```text
 observer_id
 subject_identity_ref
+branch_ref
+generation
+lineage_root_hash
 input_state_refs
-context_or_generation_ref
 verdict
 limitations
 supporting_evidence_refs
 ```
-
-The exact schema will be formalized later.
 
 ## I-8 — Observer/Execution Separation
 
@@ -186,6 +186,48 @@ This is intended to prevent accidental second authorities and hidden split-brain
 
 An invariant that cannot be violated, tested, or contradicted is not yet an engineering invariant.
 
+## I-16 — Cryptographic Lineage Commitment
+
+> Every executable identity receipt must commit to its identity metadata, state, payload digest, lineage root, parent link, and provenance references.
+
+For receipt `R_n`:
+
+\[
+H_n = SHA256(Canonical(R_n \setminus \{receipt\_hash\})).
+\]
+
+Changing any committed field without recomputing a valid receipt invalidates the receipt.
+
+## I-17 — Parent-Link Integrity
+
+> Every non-genesis identity receipt must name the exact hash of its immediate predecessor.
+
+For adjacent receipts:
+
+\[
+R_n.parent\_receipt\_hash = H(R_{n-1}).
+\]
+
+The sequence must also advance exactly by one. A splice from another chain is invalid even when human-readable metadata looks compatible.
+
+## I-18 — Lineage Root Binding
+
+> Observer proofs may be globally composed only when they bind to the same cryptographic lineage root.
+
+Therefore matching `identity_ref`, `branch_ref`, and `generation` is necessary but not sufficient:
+
+\[
+root(A_1) \neq root(A_2) \Rightarrow A_3 = FAIL.
+\]
+
+This prevents independently originated histories with identical labels from being fused.
+
+## I-19 — Tamper Evidence
+
+> A mutation of committed receipt content must become detectable before the mutated receipt can participate in a valid lineage proof.
+
+Tamper evidence does not prove that a state is truthful; it proves that the checked receipt is cryptographically consistent with the content that was originally committed under its hash.
+
 ## Minimal acceptance rule
 
 A transition `T(x) -> y` is provisionally admissible when:
@@ -194,6 +236,9 @@ A transition `T(x) -> y` is provisionally admissible when:
 carrier_preserved      = true
 causal_validity        = true
 intent_preserved       = true
+receipt_integrity      = valid
+parent_link            = valid
+lineage_root           = consistent
 spatial_lineage        = valid
 temporal_lineage       = valid
 cross_axis_binding     = consistent
@@ -202,13 +247,23 @@ generation_relation    = valid
 global_coherence       = coherent
 ```
 
-The exact semantics of each field will evolve. The key rule is that local success cannot substitute for lineage and coherence.
+The key rule is that local success cannot substitute for lineage and coherence.
+
+## Current executable counterexamples
+
+The v0.3 test suite deliberately demonstrates that:
+
+1. mutating a receipt invalidates its hash;
+2. splicing a parent from another chain is rejected;
+3. branch or generation collisions fail cross-axis binding;
+4. two locally valid observer proofs with identical metadata but different cryptographic roots still produce `A3 = FAIL` and `A4 = FAIL`.
 
 ## Next formalization target
 
-The next version should define:
+The next version should explore:
 
-1. a machine-readable `IdentityReceipt`;
-2. an `ObserverReceipt` with explicit subject and generation binding;
-3. transition fixtures containing deliberate cross-branch and cross-generation collisions;
-4. executable negative tests proving that local PASS results can still produce global FAIL.
+1. signed receipts and explicit signer/verifier identity;
+2. use-time freshness and verification-to-execution binding;
+3. replay and restore receipts;
+4. explicit branch-fork/merge semantics;
+5. checkpoint and memory integration fixtures for real agent systems.
