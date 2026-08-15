@@ -1,4 +1,4 @@
-# ATMAN-LATTICE Invariants v0.3
+# ATMAN-LATTICE Invariants v0.4
 
 This document defines the invariant set for the ATMAN-LATTICE model.
 
@@ -228,6 +228,89 @@ This prevents independently originated histories with identical labels from bein
 
 Tamper evidence does not prove that a state is truthful; it proves that the checked receipt is cryptographically consistent with the content that was originally committed under its hash.
 
+## I-20 — Observer Attestation Authenticity
+
+> A use-relevant observer verdict must be bound to an authenticated attestation over the exact observer receipt, lineage metadata, execution-context digest, verification time, and signer key identifier.
+
+The v0.4 research harness uses HMAC-SHA256:
+
+\[
+MAC = HMAC_k(Canonical(attestation\_material)).
+\]
+
+This provides authenticated integrity under a shared secret. It is not claimed to provide public-key non-repudiation.
+
+## I-21 — Freshness Is a Use-Time Property
+
+> A verdict that was valid at verification time is not automatically valid at use time.
+
+Let `t_v` be the attestation verification time and `t_u` the use-time check. For a caller-defined maximum age `\Delta`:
+
+\[
+t_u - t_v \leq \Delta
+\]
+
+must hold, otherwise the attestation is stale even when its authentication remains valid.
+
+Thus:
+
+\[
+Historical\ PASS \neq Current\ Authorization.
+\]
+
+## I-22 — Execution Context Binding
+
+> Authorization must bind to the exact execution-relevant context under which the verdict was verified.
+
+Let
+
+\[
+C_v = H(Canonical(context_{verify}))
+\]
+
+and
+
+\[
+C_u = H(Canonical(context_{use})).
+\]
+
+Use is admissible only when:
+
+\[
+C_v = C_u.
+\]
+
+A changed policy generation, tool scope, limit, environment state, or other committed context field must invalidate the old authorization.
+
+## I-23 — Verification-to-Use Binding
+
+> The artifact consumed at execution must bind back to the exact authenticated observer result that authorized it.
+
+A `UseToken` therefore commits to:
+
+```text
+subject_identity_ref
+branch_ref
+generation
+lineage_root_hash
+observer_receipt_digest
+attestation_digest
+context_digest
+issued_at
+expires_at
+key_id
+```
+
+At use time, the token's authentication, expiry, observer binding, and current context must all remain valid.
+
+This closes the simplest form of a time-of-check/time-of-use gap:
+
+```text
+verify(C1) -> PASS -> context becomes C2 -> use(old PASS)
+                                      ^
+                                      reject
+```
+
 ## Minimal acceptance rule
 
 A transition `T(x) -> y` is provisionally admissible when:
@@ -245,25 +328,36 @@ cross_axis_binding     = consistent
 observer_evidence      = inspectable
 generation_relation    = valid
 global_coherence       = coherent
+attestation_auth       = valid
+attestation_freshness  = fresh
+execution_context      = unchanged
+use_token_binding      = valid
 ```
 
-The key rule is that local success cannot substitute for lineage and coherence.
+The key rule is that local success cannot substitute for lineage, coherence, freshness, or use-time context binding.
 
 ## Current executable counterexamples
 
-The v0.3 test suite deliberately demonstrates that:
+The v0.4 test suite deliberately demonstrates that:
 
-1. mutating a receipt invalidates its hash;
+1. mutating an identity receipt invalidates its hash;
 2. splicing a parent from another chain is rejected;
 3. branch or generation collisions fail cross-axis binding;
-4. two locally valid observer proofs with identical metadata but different cryptographic roots still produce `A3 = FAIL` and `A4 = FAIL`.
+4. two locally valid observer proofs with identical metadata but different cryptographic roots still produce `A3 = FAIL` and `A4 = FAIL`;
+5. mutating an observer receipt after attestation invalidates the attestation binding;
+6. a cryptographically authentic but stale attestation is rejected;
+7. changing the execution context after verification invalidates the old attestation;
+8. a `UseToken` is accepted only under the exact bound context and time window;
+9. expired tokens are rejected;
+10. mutation of authenticated token fields is detected.
 
 ## Next formalization target
 
 The next version should explore:
 
-1. signed receipts and explicit signer/verifier identity;
-2. use-time freshness and verification-to-execution binding;
-3. replay and restore receipts;
-4. explicit branch-fork/merge semantics;
-5. checkpoint and memory integration fixtures for real agent systems.
+1. asymmetric signer identities such as Ed25519;
+2. one-time token consumption and replay protection;
+3. explicit revocation semantics;
+4. replay and restore receipts;
+5. explicit branch-fork/merge semantics;
+6. checkpoint, memory, and tool-use integration fixtures for real agent systems.
