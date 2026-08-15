@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://atman-lattice.dev/schemas/identity-receipt.schema.json",
+  "title": "IdentityReceipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["identity_ref", "state_ref", "generation", "branch_ref", "provenance_refs"],
+  "properties": {
+    "identity_ref": {"type": "string", "minLength": 1},
+    "state_ref": {"type": "string", "minLength": 1},
+    "generation": {"type": "integer", "minimum": 0},
+    "branch_ref": {"type": "string", "minLength": 1},
+    "provenance_refs": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1},
+      "uniqueItems": true
+    }
+  }
+}
