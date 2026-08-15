@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://atman-lattice.dev/schemas/observer-attestation.schema.json",
+  "title": "ObserverAttestation",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "observer_id",
+    "observer_receipt_digest",
+    "subject_identity_ref",
+    "branch_ref",
+    "generation",
+    "lineage_root_hash",
+    "verdict",
+    "context_digest",
+    "verified_at",
+    "key_id",
+    "mac"
+  ],
+  "properties": {
+    "observer_id": {"type": "string", "minLength": 1},
+    "observer_receipt_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "subject_identity_ref": {"type": "string", "minLength": 1},
+    "branch_ref": {"type": "string", "minLength": 1},
+    "generation": {"type": "integer", "minimum": 0},
+    "lineage_root_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "verdict": {"enum": ["PASS", "FAIL"]},
+    "context_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "verified_at": {"type": "integer", "minimum": 0},
+    "key_id": {"type": "string", "minLength": 1},
+    "mac": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}
