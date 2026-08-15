@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://atman-lattice.dev/schemas/conflict-resolution.schema.json",
+  "title": "ConflictResolution",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "conflict_ref",
+    "left_digest",
+    "right_digest",
+    "strategy",
+    "result_digest",
+    "reason_ref"
+  ],
+  "properties": {
+    "conflict_ref": {"type": "string", "minLength": 1},
+    "left_digest": {"$ref": "#/$defs/sha256"},
+    "right_digest": {"$ref": "#/$defs/sha256"},
+    "strategy": {"enum": ["LEFT", "RIGHT", "SYNTHESIZED"]},
+    "result_digest": {"$ref": "#/$defs/sha256"},
+    "reason_ref": {"type": "string", "minLength": 1}
+  },
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  }
+}
