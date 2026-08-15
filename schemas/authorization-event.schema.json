@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/safal207/ATMAN-LATTICE/schemas/authorization-event.schema.json",
+  "title": "ATMAN-LATTICE AuthorizationEvent v0.7",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "ledger_generation",
+    "event_type",
+    "token_digest",
+    "subject_identity_ref",
+    "branch_ref",
+    "subject_generation",
+    "lineage_root_hash",
+    "context_digest",
+    "occurred_at",
+    "actor_ref",
+    "reason_ref",
+    "previous_event_hash",
+    "key_id",
+    "mac",
+    "event_hash"
+  ],
+  "properties": {
+    "ledger_generation": {"type": "integer", "minimum": 1},
+    "event_type": {"enum": ["CONSUMED", "REVOKED"]},
+    "token_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "subject_identity_ref": {"type": "string", "minLength": 1},
+    "branch_ref": {"type": "string", "minLength": 1},
+    "subject_generation": {"type": "integer", "minimum": 0},
+    "lineage_root_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "context_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "occurred_at": {"type": "integer", "minimum": 0},
+    "actor_ref": {"type": "string", "minLength": 1},
+    "reason_ref": {"type": "string", "minLength": 1},
+    "previous_event_hash": {
+      "oneOf": [
+        {"type": "null"},
+        {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      ]
+    },
+    "key_id": {"type": "string", "minLength": 1},
+    "mac": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "event_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}
