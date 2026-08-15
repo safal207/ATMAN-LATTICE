@@ -4,12 +4,33 @@
   "title": "IdentityReceipt",
   "type": "object",
   "additionalProperties": false,
-  "required": ["identity_ref", "state_ref", "generation", "branch_ref", "provenance_refs"],
+  "required": [
+    "identity_ref",
+    "state_ref",
+    "generation",
+    "branch_ref",
+    "sequence",
+    "payload_digest",
+    "parent_receipt_hash",
+    "lineage_root_hash",
+    "receipt_hash",
+    "provenance_refs"
+  ],
   "properties": {
     "identity_ref": {"type": "string", "minLength": 1},
     "state_ref": {"type": "string", "minLength": 1},
     "generation": {"type": "integer", "minimum": 0},
     "branch_ref": {"type": "string", "minLength": 1},
+    "sequence": {"type": "integer", "minimum": 0},
+    "payload_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "parent_receipt_hash": {
+      "oneOf": [
+        {"type": "null"},
+        {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      ]
+    },
+    "lineage_root_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "receipt_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "provenance_refs": {
       "type": "array",
       "items": {"type": "string", "minLength": 1},
