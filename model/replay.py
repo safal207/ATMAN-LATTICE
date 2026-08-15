@@ -111,8 +111,7 @@ def restore_checkpoint(
         ),
     )
 
-    material = {
-        "domain": "ATMAN-LATTICE/restore-receipt/v0.5",
+    fields = {
         "identity_ref": source.identity_ref,
         "source_branch_ref": source.branch_ref,
         "source_generation": source.generation,
@@ -126,7 +125,8 @@ def restore_checkpoint(
         "target_genesis_receipt_hash": target.receipt_hash,
         "replayed_at": replayed_at,
     }
-    restore = RestoreReceipt(**material | {"restore_hash": _digest(material)})
+    hash_material = {"domain": "ATMAN-LATTICE/restore-receipt/v0.5", **fields}
+    restore = RestoreReceipt(**fields, restore_hash=_digest(hash_material))
     restore.validate()
     return target, restore
 
