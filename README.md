@@ -2,211 +2,165 @@
 
 **A Projective Spacetime Architecture for Identity and Coherence**
 
-ATMAN-LATTICE is an exploratory research repository for modeling identity as a set of linked projections across state, space, and time.
-
-The project starts from a philosophical intuition — that a person or agent can be represented through multiple experiential or operational views — and turns that intuition into a formal systems question:
+ATMAN-LATTICE is an exploratory research repository for modeling identity as linked projections across state, space, time, lineage, and execution context.
 
 > What must remain invariant when representation changes, so that we can still prove that the resulting state belongs to the same identity?
 
-This repository does **not** claim to prove metaphysical statements about the soul, sleep, consciousness, or Atman. Those terms are used as names for nodes and observer roles inside a formal model. The engineering goal is to study continuity, provenance, observer independence, projection, freshness, and global coherence.
+The repository does **not** claim to prove metaphysical statements about the soul, sleep, consciousness, or Atman. Those terms are conceptual labels for nodes and observer roles inside a formal model. The engineering goal is testable continuity, provenance, observer independence, freshness, branching, and global coherence.
 
-## v0.1 model
-
-We begin with eight conceptual nodes:
-
-- `S1` — waking-space identity projection
-- `S2` — dream-space identity projection
-- `S3 / A1` — Atman-1, observer/bridge of spatial projections
-- `S4` — past identity projection
-- `S5` — future identity projection
-- `S6 / A2` — Atman-2, observer/bridge of temporal projections
-- `S7 / A3` — observer of spatial-temporal consistency
-- `S8 / A4` — coherence keeper for the observer system itself
-
-### Spatial axis
+## Core model
 
 ```text
-S1  <------>  S3 / A1  <------>  S2
-waking        bridge             dream
-```
+Spatial axis:   S1 <----> S3 / A1 <----> S2
+                waking     observer       dream
 
-### Temporal axis
+Temporal axis:  S4 <----> S6 / A2 <----> S5
+                past       observer       future
 
-```text
-S4  <------>  S6 / A2  <------>  S5
-past          bridge             future
-```
-
-### Observer hierarchy
-
-```text
-A1 = Observer(space)
-A2 = Observer(time)
 A3 = Observer(A1, A2)
 A4 = Coherence(A1, A2, A3)
 ```
 
-The central idea is that identity is not equated with one coordinate or representation. It is treated as something that must remain **traceably coherent across transformations**.
-
-## Core invariant
+Core invariant:
 
 > **Representation may change across state, space, and time; identity must remain coherently traceable across the transformation.**
 
-A transition is therefore not accepted merely because its local output is valid. It must also preserve enough provenance, continuity, and cross-view consistency to establish that the before-state and after-state belong to one coherent lineage.
-
-A compact engineering form is:
+And the executable warning:
 
 ```text
-A1 = PASS
-A2 = PASS
-          does not imply
-A3 = PASS
-A4 = PASS
+Local PASS != Global Coherence
+Historical PASS != Current Authorization
+Same identity != Same history
 ```
 
-Two locally valid observer results can still be globally incompatible when they bind to different identities, branches, generations, cryptographic lineage roots, or execution contexts.
+## v0.2 — executable observers
 
-## v0.2 executable core
+[`model/lattice.py`](model/lattice.py) implements `A1`, `A2`, `A3`, and `A4`. Local spatial and temporal PASS results are rejected when identity, branch, or generation bindings disagree.
 
-Version `0.2.0` turned the first invariants into executable contracts.
+## v0.3 — cryptographic lineage
 
-- [`schemas/identity-receipt.schema.json`](schemas/identity-receipt.schema.json) defines the identity receipt envelope.
-- [`schemas/observer-receipt.schema.json`](schemas/observer-receipt.schema.json) defines inspectable observer verdicts.
-- [`model/lattice.py`](model/lattice.py) implements `A1`, `A2`, `A3`, and `A4`.
-- [`tests/test_lattice.py`](tests/test_lattice.py) contains positive and deliberate collision cases.
-
-The first executable counterexample was:
-
-> `A1 = PASS` and `A2 = PASS`, while `A1.branch_ref != A2.branch_ref` or `A1.generation != A2.generation`; therefore `A3 = FAIL` and global coherence must not be accepted.
-
-## v0.3 cryptographic lineage
-
-Version `0.3.0` makes lineage tamper-evident.
-
-Each `IdentityReceipt` commits to:
+`IdentityReceipt` forms a SHA-256 parent-linked chain. Observer proofs bind to `lineage_root_hash`, so matching human-readable metadata is not enough to fuse independently originated histories.
 
 ```text
-identity_ref
-state_ref
-branch_ref
-generation
-sequence
-payload_digest
-parent_receipt_hash
-lineage_root_hash
-provenance_refs
-        ↓
-   receipt_hash
-```
-
-A genesis receipt creates a deterministic `lineage_root_hash`. Every successor receipt commits to the exact hash of its parent while preserving the same root commitment.
-
-`verify_lineage_chain()` rejects altered receipts, sequence gaps, parent splices, root changes, identity changes, branch changes, and generation changes.
-
-Observer receipts also bind to `lineage_root_hash`, producing a stronger counterexample:
-
-```text
-identity(A1)   == identity(A2)
-branch(A1)     == branch(A2)
+identity(A1) == identity(A2)
+branch(A1) == branch(A2)
 generation(A1) == generation(A2)
 A1 = PASS
 A2 = PASS
 
-but
+but root(A1) != root(A2)
 
-lineage_root(A1) != lineage_root(A2)
-
-therefore
-
-A3 = FAIL
-A4 = FAIL
+=> A3 = FAIL
+=> A4 = FAIL
 ```
 
-Matching metadata is therefore not sufficient evidence that two observer results belong to the same history.
+## v0.4 — signed freshness + use binding
 
-## v0.4 signed freshness and use binding
-
-Version `0.4.0` closes the next gap: a verdict can be historically correct and still be unsafe to use later.
-
-The model now separates three artifacts:
+[`model/freshness.py`](model/freshness.py) separates historical observer verdicts from current authorization:
 
 ```text
 ObserverReceipt
       ↓ exact digest
 ObserverAttestation(context_digest, verified_at, HMAC)
-      ↓ freshness + PASS required
+      ↓ freshness + PASS
 UseToken(context_digest, expiry, HMAC)
-      ↓ checked again at actual use
+      ↓ checked at actual use
 Execution
 ```
 
-[`model/freshness.py`](model/freshness.py) implements:
-
-- canonical execution-context digests;
-- exact `ObserverReceipt` digests;
-- authenticated `ObserverAttestation` envelopes;
-- freshness checking with `verified_at` and caller-defined maximum age;
-- short-lived `UseToken` issuance;
-- use-time context revalidation;
-- token expiry and tamper detection.
-
-Machine-readable contracts are defined in:
-
-- [`schemas/observer-attestation.schema.json`](schemas/observer-attestation.schema.json)
-- [`schemas/use-token.schema.json`](schemas/use-token.schema.json)
-
-The core TOCTOU counterexample is:
-
-```text
-verify under context C1 -> PASS
-context changes to C2
-old PASS is still authentic
-but use under C2 -> FAIL(context_mismatch)
-```
-
-The v0.4 executable rule is therefore:
+The central TOCTOU rule is:
 
 > **Historical PASS is not current authorization.**
 
-Authorization is valid only for the exact observer result, lineage, execution context, and bounded time window to which it was cryptographically bound.
+A context change, stale attestation, expired token, or authenticated-field mutation makes execution fail.
 
-The research harness currently uses HMAC-SHA256 from the Python standard library. This is an authenticated MAC, not an asymmetric public-key signature. See [`docs/v0.4-signed-freshness.md`](docs/v0.4-signed-freshness.md) for the protocol and explicit non-goals.
+## v0.5 — replay, restore, and branch identity
 
-Run locally with:
+Version `0.5.0` formalizes restoration from a historical checkpoint.
+
+The central rule is:
+
+> **Restore is not continuation.**
+
+Returning to an old checkpoint must create a new branch, a higher generation, and a new cryptographic lineage root while preserving an explicit proof edge to the source checkpoint.
+
+```text
+old branch
+
+R0 -> R1 -> R2 -> R3 -> R4
+            |
+            | RestoreReceipt
+            v
+            R0' -> new future
+            new branch
+            new generation
+            new lineage root
+```
+
+A valid restore therefore preserves:
+
+```text
+same identity ancestry
++ exact source checkpoint provenance
+```
+
+while requiring:
+
+```text
+new branch_ref
+new generation
+new lineage_root_hash
+```
+
+This yields another invariant:
+
+> **Same identity does not imply same history.**
+
+[`model/replay.py`](model/replay.py) implements `RestoreReceipt`, `restore_checkpoint()`, and `verify_restore()`.
+
+Executable negative cases prove that a restore cannot:
+
+- reuse the source branch;
+- reuse the old generation;
+- silently preserve the old lineage root;
+- substitute a different restored target;
+- mutate the committed source checkpoint without detection.
+
+Machine-readable contract: [`schemas/restore-receipt.schema.json`](schemas/restore-receipt.schema.json).
+
+Protocol note: [`docs/v0.5-replay-restore.md`](docs/v0.5-replay-restore.md).
+
+## Why this matters for AI systems
+
+The same identity problem appears when agents move through:
+
+- working and compressed memory;
+- simulations and replays;
+- checkpoints and restore operations;
+- forked planning branches;
+- tool and policy context changes;
+- long-horizon execution across multiple generations.
+
+A restored agent may be descended from the same prior identity while no longer belonging to the same execution history. ATMAN-LATTICE makes that distinction explicit and testable.
+
+## Documents
+
+- [THEORY.md](THEORY.md) — conceptual/formal model
+- [INVARIANTS.md](INVARIANTS.md) — invariant set
+- [v0.4 signed freshness](docs/v0.4-signed-freshness.md)
+- [v0.5 replay/restore](docs/v0.5-replay-restore.md)
+
+## Run
 
 ```bash
 python -m pip install pytest
 python -m pytest -q
 ```
 
-The invariant suite also runs in GitHub Actions on pushes to `main` and on pull requests.
-
-## Why this may matter for AI systems
-
-The same abstract problem appears in agent systems when one agent is represented as different runtime states:
-
-- prompt or policy state;
-- working memory;
-- compressed memory;
-- simulation;
-- replay;
-- execution trace;
-- restored checkpoint;
-- forked planning branch;
-- a previously verified action used after policy, tool, or environment state changed.
-
-If each representation looks locally valid but lineage or freshness is not preserved, a system can silently confuse different generations, branches, roots, identities, or authorization contexts.
-
-ATMAN-LATTICE explores formal contracts that make this detectable.
-
-## Documents
-
-- [THEORY.md](THEORY.md) — conceptual and formal model
-- [INVARIANTS.md](INVARIANTS.md) — invariant set
-- [v0.4 signed freshness](docs/v0.4-signed-freshness.md) — verification-to-use protocol
+The suite also runs in GitHub Actions on pushes to `main` and pull requests.
 
 ## Status
 
-`v0.4` — signed-freshness research core. Identity lineage is hash-linked, observer results can be authenticated under an explicit context and verification time, and short-lived use tokens require that the same context still holds at the actual use boundary. Deliberate stale-context, expiry, receipt-tamper, and token-tamper fixtures are executable and CI-backed. No empirical metaphysical claims are made.
+`v0.5` — replay/restore research core. ATMAN-LATTICE now models identity continuity separately from history continuity: restored checkpoints preserve explicit ancestry but must begin a distinct branch, generation, and cryptographic lineage root. Deliberate replay/restore collision fixtures are executable and CI-backed.
 
-Next targets: asymmetric signer identities, replay/one-time consumption protection, revocation, explicit branch-fork/merge semantics, and integration experiments with real agent checkpoint/memory/tool systems.
+Next targets: branch merge semantics, one-time token consumption, revocation, asymmetric signer identities, and integration with real agent checkpoint/memory systems.
