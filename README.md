@@ -8,7 +8,7 @@ The project starts from a philosophical intuition — that a person or agent can
 
 > What must remain invariant when representation changes, so that we can still prove that the resulting state belongs to the same identity?
 
-This repository does **not** claim to prove metaphysical statements about the soul, sleep, consciousness, or Atman. Those terms are used as names for nodes and observer roles inside a formal model. The engineering goal is to study continuity, provenance, observer independence, projection, and global coherence.
+This repository does **not** claim to prove metaphysical statements about the soul, sleep, consciousness, or Atman. Those terms are used as names for nodes and observer roles inside a formal model. The engineering goal is to study continuity, provenance, observer independence, projection, freshness, and global coherence.
 
 ## v0.1 model
 
@@ -64,7 +64,7 @@ A3 = PASS
 A4 = PASS
 ```
 
-Two locally valid observer results can still be globally incompatible when they bind to different identities, branches, generations, or cryptographic lineage roots.
+Two locally valid observer results can still be globally incompatible when they bind to different identities, branches, generations, cryptographic lineage roots, or execution contexts.
 
 ## v0.2 executable core
 
@@ -83,7 +83,7 @@ The first executable counterexample was:
 
 Version `0.3.0` makes lineage tamper-evident.
 
-Each `IdentityReceipt` now commits to:
+Each `IdentityReceipt` commits to:
 
 ```text
 identity_ref
@@ -101,23 +101,9 @@ provenance_refs
 
 A genesis receipt creates a deterministic `lineage_root_hash`. Every successor receipt commits to the exact hash of its parent while preserving the same root commitment.
 
-The chain therefore has the form:
-
-```text
-Genesis
-  receipt_hash = H(R0)
-        ↓
-R1.parent_receipt_hash = H(R0)
-R1.receipt_hash = H(R1)
-        ↓
-R2.parent_receipt_hash = H(R1)
-        ↓
-       ...
-```
-
 `verify_lineage_chain()` rejects altered receipts, sequence gaps, parent splices, root changes, identity changes, branch changes, and generation changes.
 
-Observer receipts now also bind to `lineage_root_hash`, which creates a stronger counterexample:
+Observer receipts also bind to `lineage_root_hash`, producing a stronger counterexample:
 
 ```text
 identity(A1)   == identity(A2)
@@ -136,7 +122,55 @@ A3 = FAIL
 A4 = FAIL
 ```
 
-This means matching metadata is no longer sufficient evidence that two observer results belong to the same history.
+Matching metadata is therefore not sufficient evidence that two observer results belong to the same history.
+
+## v0.4 signed freshness and use binding
+
+Version `0.4.0` closes the next gap: a verdict can be historically correct and still be unsafe to use later.
+
+The model now separates three artifacts:
+
+```text
+ObserverReceipt
+      ↓ exact digest
+ObserverAttestation(context_digest, verified_at, HMAC)
+      ↓ freshness + PASS required
+UseToken(context_digest, expiry, HMAC)
+      ↓ checked again at actual use
+Execution
+```
+
+[`model/freshness.py`](model/freshness.py) implements:
+
+- canonical execution-context digests;
+- exact `ObserverReceipt` digests;
+- authenticated `ObserverAttestation` envelopes;
+- freshness checking with `verified_at` and caller-defined maximum age;
+- short-lived `UseToken` issuance;
+- use-time context revalidation;
+- token expiry and tamper detection.
+
+Machine-readable contracts are defined in:
+
+- [`schemas/observer-attestation.schema.json`](schemas/observer-attestation.schema.json)
+- [`schemas/use-token.schema.json`](schemas/use-token.schema.json)
+
+The core TOCTOU counterexample is:
+
+```text
+verify under context C1 -> PASS
+context changes to C2
+old PASS is still authentic
+but use under C2 -> FAIL(context_mismatch)
+```
+
+The v0.4 executable rule is therefore:
+
+> **Historical PASS is not current authorization.**
+
+Authorization is valid only for the exact observer result, lineage, execution context, and bounded time window to which it was cryptographically bound.
+
+The research harness currently uses HMAC-SHA256 from the Python standard library. This is an authenticated MAC, not an asymmetric public-key signature. See [`docs/v0.4-signed-freshness.md`](docs/v0.4-signed-freshness.md) for the protocol and explicit non-goals.
 
 Run locally with:
 
@@ -158,9 +192,10 @@ The same abstract problem appears in agent systems when one agent is represented
 - replay;
 - execution trace;
 - restored checkpoint;
-- forked planning branch.
+- forked planning branch;
+- a previously verified action used after policy, tool, or environment state changed.
 
-If each representation looks locally valid but their lineage is not preserved, a system can silently confuse different generations, branches, roots, or identities.
+If each representation looks locally valid but lineage or freshness is not preserved, a system can silently confuse different generations, branches, roots, identities, or authorization contexts.
 
 ATMAN-LATTICE explores formal contracts that make this detectable.
 
@@ -168,9 +203,10 @@ ATMAN-LATTICE explores formal contracts that make this detectable.
 
 - [THEORY.md](THEORY.md) — conceptual and formal model
 - [INVARIANTS.md](INVARIANTS.md) — invariant set
+- [v0.4 signed freshness](docs/v0.4-signed-freshness.md) — verification-to-use protocol
 
 ## Status
 
-`v0.3` — cryptographic lineage research core. Identity receipts now form a SHA-256 hash chain, observer proofs bind to a common lineage root, deliberate tamper/splice/root-collision fixtures are executable, and the invariant suite is CI-backed. No empirical metaphysical claims are made.
+`v0.4` — signed-freshness research core. Identity lineage is hash-linked, observer results can be authenticated under an explicit context and verification time, and short-lived use tokens require that the same context still holds at the actual use boundary. Deliberate stale-context, expiry, receipt-tamper, and token-tamper fixtures are executable and CI-backed. No empirical metaphysical claims are made.
 
-Next targets: signed receipts, use-time observer freshness, replay/restore proofs, branch-fork semantics, and integration experiments with agent checkpoint/memory systems.
+Next targets: asymmetric signer identities, replay/one-time consumption protection, revocation, explicit branch-fork/merge semantics, and integration experiments with real agent checkpoint/memory/tool systems.
