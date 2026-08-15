@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://atman-lattice.dev/schemas/merge-receipt.schema.json",
+  "title": "MergeReceipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "identity_ref",
+    "ancestor_receipt_hash",
+    "ancestor_lineage_root_hash",
+    "left_branch_ref",
+    "left_generation",
+    "left_lineage_root_hash",
+    "left_head_receipt_hash",
+    "right_branch_ref",
+    "right_generation",
+    "right_lineage_root_hash",
+    "right_head_receipt_hash",
+    "target_branch_ref",
+    "target_generation",
+    "target_lineage_root_hash",
+    "target_genesis_receipt_hash",
+    "resolution_digest",
+    "merged_payload_digest",
+    "conflict_count",
+    "merged_at",
+    "merge_hash"
+  ],
+  "properties": {
+    "identity_ref": {"type": "string", "minLength": 1},
+    "ancestor_receipt_hash": {"$ref": "#/$defs/sha256"},
+    "ancestor_lineage_root_hash": {"$ref": "#/$defs/sha256"},
+    "left_branch_ref": {"type": "string", "minLength": 1},
+    "left_generation": {"type": "integer", "minimum": 0},
+    "left_lineage_root_hash": {"$ref": "#/$defs/sha256"},
+    "left_head_receipt_hash": {"$ref": "#/$defs/sha256"},
+    "right_branch_ref": {"type": "string", "minLength": 1},
+    "right_generation": {"type": "integer", "minimum": 0},
+    "right_lineage_root_hash": {"$ref": "#/$defs/sha256"},
+    "right_head_receipt_hash": {"$ref": "#/$defs/sha256"},
+    "target_branch_ref": {"type": "string", "minLength": 1},
+    "target_generation": {"type": "integer", "minimum": 1},
+    "target_lineage_root_hash": {"$ref": "#/$defs/sha256"},
+    "target_genesis_receipt_hash": {"$ref": "#/$defs/sha256"},
+    "resolution_digest": {"$ref": "#/$defs/sha256"},
+    "merged_payload_digest": {"$ref": "#/$defs/sha256"},
+    "conflict_count": {"type": "integer", "minimum": 0},
+    "merged_at": {"type": "integer", "minimum": 0},
+    "merge_hash": {"$ref": "#/$defs/sha256"}
+  },
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  }
+}
