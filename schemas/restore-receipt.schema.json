@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://atman-lattice.dev/schemas/restore-receipt.schema.json",
+  "title": "RestoreReceipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "identity_ref",
+    "source_branch_ref",
+    "source_generation",
+    "source_lineage_root_hash",
+    "source_receipt_hash",
+    "source_state_ref",
+    "source_sequence",
+    "target_branch_ref",
+    "target_generation",
+    "target_lineage_root_hash",
+    "target_genesis_receipt_hash",
+    "replayed_at",
+    "restore_hash"
+  ],
+  "properties": {
+    "identity_ref": {"type": "string", "minLength": 1},
+    "source_branch_ref": {"type": "string", "minLength": 1},
+    "source_generation": {"type": "integer", "minimum": 0},
+    "source_lineage_root_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "source_receipt_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "source_state_ref": {"type": "string", "minLength": 1},
+    "source_sequence": {"type": "integer", "minimum": 0},
+    "target_branch_ref": {"type": "string", "minLength": 1},
+    "target_generation": {"type": "integer", "minimum": 1},
+    "target_lineage_root_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "target_genesis_receipt_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "replayed_at": {"type": "integer", "minimum": 0},
+    "restore_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}
