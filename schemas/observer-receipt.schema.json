@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://atman-lattice.dev/schemas/observer-receipt.schema.json",
+  "title": "ObserverReceipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "observer_id",
+    "subject_identity_ref",
+    "branch_ref",
+    "generation",
+    "verdict",
+    "input_state_refs",
+    "evidence_refs",
+    "limitations"
+  ],
+  "properties": {
+    "observer_id": {"type": "string", "minLength": 1},
+    "subject_identity_ref": {"type": "string", "minLength": 1},
+    "branch_ref": {"type": "string", "minLength": 1},
+    "generation": {"type": "integer", "minimum": 0},
+    "verdict": {"enum": ["PASS", "FAIL"]},
+    "input_state_refs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1},
+      "uniqueItems": true
+    },
+    "limitations": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1},
+      "uniqueItems": true
+    }
+  }
+}
