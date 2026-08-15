@@ -255,3 +255,39 @@ def test_target_from_another_merge_cannot_be_substituted():
     assert target_a.receipt_hash != target_b.receipt_hash
     assert valid is False
     assert "target_branch_mismatch" in limitations or "target_genesis_mismatch" in limitations
+
+
+def test_verify_merge_accepts_one_shot_conflict_iterables():
+    _, ancestor, _ = source_chain()
+    left, left_restore, right, right_restore = fork_pair(ancestor)
+    conflict, resolution = conflict_bundle()
+    target, merge = merge_branches(
+        ancestor,
+        left,
+        left_restore,
+        right,
+        right_restore,
+        target_branch_ref="future/merged",
+        target_generation=9,
+        merged_payload="merged-state",
+        conflicts=(conflict,),
+        resolutions=(resolution,),
+        merged_at=1100,
+    )
+
+    conflict_generator = (item for item in (conflict,))
+    resolution_generator = (item for item in (resolution,))
+    valid, limitations = verify_merge(
+        ancestor,
+        left,
+        left_restore,
+        right,
+        right_restore,
+        target,
+        merge,
+        conflicts=conflict_generator,
+        resolutions=resolution_generator,
+    )
+
+    assert valid is True
+    assert limitations == ()
