@@ -16,6 +16,7 @@ from model.enforcement import (
     governed_observe_time,
     governed_revoke_use_token,
 )
+from model.runtime_governance import TRUST_OPERATIONS, TRUST_PROTOCOL
 from model.runtime_protocol import (
     PROTOCOL,
     SUPPORTED_OPERATIONS,
@@ -35,7 +36,18 @@ from model.runtime_protocol import (
     use_token_from_dict,
     use_token_to_dict,
 )
-from model.runtime_store import mutate_authorization_ledger
+from model.runtime_store import (
+    mutate_authorization_ledger,
+    mutate_trust_policy,
+    read_or_bootstrap_trust_policy,
+)
+from model.trust_root import (
+    apply_trust_transition,
+    create_bootstrap_policy,
+    trust_approval_from_dict,
+    trust_policy_to_dict,
+    trust_transition_receipt_to_dict,
+)
 
 
 def _hex_key_map_from_env(name: str) -> dict[str, bytes]:
@@ -51,10 +63,38 @@ def _hex_key_map_from_env(name: str) -> dict[str, bytes]:
     return keys
 
 
+def _bootstrap_trust_config() -> tuple[dict[str, bytes], int, int, int]:
+    roots = _hex_key_map_from_env("ATMAN_TRUSTED_ISSUER_KEYS")
+    generation = int(os.environ["ATMAN_POLICY_GENERATION"])
+    threshold = int(os.environ.get("ATMAN_TRUST_THRESHOLD", "1"))
+    activated_at = int(os.environ.get("ATMAN_TRUST_BOOTSTRAP_ACTIVATED_AT", "0"))
+    return roots, generation, threshold, activated_at
+
+
+def _current_trust_policy():
+    roots, generation, threshold, activated_at = _bootstrap_trust_config()
+    db_path = os.environ.get("ATMAN_RUNTIME_DB")
+    if db_path:
+        return read_or_bootstrap_trust_policy(
+            db_path,
+            bootstrap_roots=roots,
+            bootstrap_generation=generation,
+            bootstrap_threshold=threshold,
+            bootstrap_activated_at=activated_at,
+        )
+    return create_bootstrap_policy(
+        roots,
+        generation=generation,
+        threshold=threshold,
+        activated_at=activated_at,
+    )
+
+
 def _server_enforcement() -> EnforcementContext:
+    policy = _current_trust_policy()
     return EnforcementContext(
-        trusted_issuer_keys=_hex_key_map_from_env("ATMAN_TRUSTED_ISSUER_KEYS"),
-        policy_generation=int(os.environ["ATMAN_POLICY_GENERATION"]),
+        trusted_issuer_keys=policy.root_map(),
+        policy_generation=policy.generation,
         now=int(os.environ["ATMAN_RUNTIME_NOW"]),
     )
 
@@ -78,9 +118,90 @@ def _required_server_secret(keys: Mapping[str, bytes], key_id: str, family: str)
     return secret
 
 
+def _decode_next_roots(value: object) -> dict[str, bytes]:
+    mapping = _mapping(value, "next_roots")
+    roots: dict[str, bytes] = {}
+    for key_id, public_hex in mapping.items():
+        if not isinstance(key_id, str) or not isinstance(public_hex, str):
+            raise ValueError("next_roots entries must be string:string")
+        roots[key_id] = bytes.fromhex(public_hex)
+    if not roots:
+        raise ValueError("next_roots must not be empty")
+    return roots
+
+
+def _execute_trust_request(request: Mapping[str, object]) -> dict[str, object]:
+    request_id = str(request.get("request_id", ""))
+    if not request_id:
+        raise ValueError("request_id is required")
+    operation = str(request.get("operation", ""))
+    if operation not in TRUST_OPERATIONS:
+        raise ValueError("unsupported trust governance operation")
+    payload = _mapping(request.get("payload", {}), "payload")
+
+    db_path = os.environ.get("ATMAN_RUNTIME_DB")
+    if not db_path:
+        raise ValueError("trust governance requires ATMAN_RUNTIME_DB")
+    roots, generation, threshold, activated_at = _bootstrap_trust_config()
+
+    if operation == "get_trust_policy":
+        policy = read_or_bootstrap_trust_policy(
+            db_path,
+            bootstrap_roots=roots,
+            bootstrap_generation=generation,
+            bootstrap_threshold=threshold,
+            bootstrap_activated_at=activated_at,
+        )
+        return {
+            "protocol": TRUST_PROTOCOL,
+            "request_id": request_id,
+            "ok": True,
+            "policy": trust_policy_to_dict(policy),
+        }
+
+    next_roots = _decode_next_roots(payload.get("next_roots"))
+    next_threshold = int(payload["next_threshold"])
+    reason_ref = str(payload["reason_ref"])
+    approvals = tuple(
+        trust_approval_from_dict(_mapping(item, "trust approval"))
+        for item in _array(payload.get("approvals"), "approvals")
+    )
+    transitioned_at = int(os.environ["ATMAN_RUNTIME_NOW"])
+
+    def mutation(current):
+        return apply_trust_transition(
+            current,
+            next_roots=next_roots,
+            next_threshold=next_threshold,
+            reason_ref=reason_ref,
+            transitioned_at=transitioned_at,
+            approvals=approvals,
+        )
+
+    policy, receipt = mutate_trust_policy(
+        db_path,
+        bootstrap_roots=roots,
+        bootstrap_generation=generation,
+        bootstrap_threshold=threshold,
+        bootstrap_activated_at=activated_at,
+        mutation=mutation,
+    )
+    return {
+        "protocol": TRUST_PROTOCOL,
+        "request_id": request_id,
+        "ok": True,
+        "policy": trust_policy_to_dict(policy),
+        "transition": trust_transition_receipt_to_dict(receipt),
+    }
+
+
 def execute_request(request: Mapping[str, object]) -> dict[str, object]:
-    if request.get("protocol") != PROTOCOL:
+    request_protocol = request.get("protocol")
+    if request_protocol == TRUST_PROTOCOL:
+        return _execute_trust_request(request)
+    if request_protocol != PROTOCOL:
         raise ValueError("unsupported runtime protocol")
+
     request_id = str(request.get("request_id", ""))
     if not request_id:
         raise ValueError("request_id is required")
@@ -247,16 +368,18 @@ def execute_request(request: Mapping[str, object]) -> dict[str, object]:
 
 
 def main() -> int:
+    request_protocol = PROTOCOL
     try:
         request = json.loads(sys.stdin.read())
         if not isinstance(request, dict):
             raise ValueError("runtime request must be a JSON object")
+        request_protocol = str(request.get("protocol", PROTOCOL))
         response = execute_request(request)
         sys.stdout.write(json.dumps(response, sort_keys=True, separators=(",", ":")))
         return 0
     except Exception as exc:
         response = {
-            "protocol": PROTOCOL,
+            "protocol": request_protocol,
             "ok": False,
             "error_type": type(exc).__name__,
             "error": str(exc),
