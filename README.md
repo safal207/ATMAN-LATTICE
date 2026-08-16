@@ -29,6 +29,7 @@ Historical PASS != Current Authorization
 Same identity != Same history
 Valid parents != Automatically coherent merge
 Valid token != Reusable capability
+Valid token != Authorized consumption
 Revocation != History erasure
 Valid signature != Valid authority
 Historical authority != Current authority
@@ -36,16 +37,85 @@ Granted role != Required operation role
 Verified proof != Executed permission unless checked before use
 Caller claim != Runtime authority
 Caller mutation != Runtime mutation
+Client ledger != Runtime authorization state
 ```
+
+## v1.1 — Full Runtime Plane
+
+v1.1 closes the privileged lifecycle inside one reference runtime plane.
+
+```text
+client
+  |
+  | ATMAN-RUNTIME/1.1
+  v
+ATMAN Runtime
+  |
+  +-- server-owned trusted roots
+  +-- server-owned policy generation
+  +-- server-owned verification clock
+  +-- server-owned capability/event secrets
+  +-- server-owned SQLite authorization state
+  |
+  +-> A1 / A2 / A3 / A4
+  +-> issue_use_token
+  +-> consume_use_token
+  +-> revoke_use_token
+  +-> merge_branches
+```
+
+The governed role map is now:
+
+```text
+observe_space       -> A1_OBSERVER
+observe_time        -> A2_OBSERVER
+cross_axis_bind     -> A3_BINDER
+global_coherence    -> A4_KEEPER
+issue_use_token     -> USE_TOKEN_ISSUER
+consume_use_token   -> USE_TOKEN_CONSUMER
+revoke_use_token    -> USE_TOKEN_REVOKER
+merge_branches      -> BRANCH_MERGER
+```
+
+A caller can reference a configured `key_id`, but token and authorization-event MAC secrets are loaded by the runtime deployment and are not taken from request fields.
+
+### Atomic terminal authorization
+
+`CONSUMED` / `REVOKED` state is no longer accepted from a client-provided ledger snapshot. The runtime loads the current ledger from SQLite and mutates it inside a `BEGIN IMMEDIATE` transaction.
+
+```text
+process A                 process B
+   |                         |
+BEGIN IMMEDIATE              |
+load generation N            |
+validate + append             |
+COMMIT -> N+1                 |
+                             BEGIN IMMEDIATE
+                             load generation N+1
+                             stale N proof/request -> REJECT
+```
+
+This gives the reference implementation an actual cross-process serialization point:
+
+> **At most one terminal authorization event may commit for an exact token digest.**
+
+Possessing a cryptographically valid token is still not sufficient to consume it. Consumption additionally requires a current exact `USE_TOKEN_CONSUMER` authority proof over the runtime-reconstructed action.
+
+### Runtime-mediated reconciliation
+
+Branch merge is also executed inside the worker. The runtime verifies exact ancestry, both branch lineages, restore proofs, resolution completeness, target branch/generation, merged payload digest, and `BRANCH_MERGER` authority before producing the merge lineage and receipt.
+
+Protocol: [`docs/v1.1-full-runtime-plane.md`](docs/v1.1-full-runtime-plane.md)
+
+Invariants: [`docs/v1.1-invariants.md`](docs/v1.1-invariants.md)
 
 ## v1.0 — ATMAN Runtime
 
-v1.0 introduces a process-separated reference runtime for the privileged observer plane.
+v1.0 introduced the first process-separated privileged observer plane.
 
 ```text
 client process
     |
-    | ATMAN-RUNTIME/1.0 JSON
     | grant + proof + exact inputs
     v
 runtime worker process
@@ -59,29 +129,13 @@ v0.9 authority enforcement
     |
     v
 A1 / A2 / A3 / A4
-    |
-    v
-ObserverReceipt
 ```
 
-The worker currently exposes:
-
-```text
-observe_space       -> A1_OBSERVER
-observe_time        -> A2_OBSERVER
-cross_axis_bind     -> A3_BINDER
-global_coherence    -> A4_KEEPER
-```
-
-The runtime request cannot replace the worker's trusted root set, current policy generation, or verification clock. Canonical actions are reconstructed from decoded runtime inputs before authority verification.
-
-The central v1.0 rule is:
+The central v1.0 rule remains:
 
 > **Client permission claims do not become privileged execution until the runtime process independently verifies the exact authority.**
 
-The test suite also verifies process isolation at the reference boundary: monkeypatching the caller's in-memory enforcement function does not modify a fresh `python -m model.runtime_worker` process.
-
-This is a **reference process boundary**, not a hostile-host sandbox. The non-bypassability claim applies only when callers do not control the worker process, worker package, or server trust configuration. Production deployment still needs suitable OS/container isolation, authenticated transport, protected configuration, and durable audit storage.
+The process-boundary regression verifies that monkeypatching the caller's in-memory enforcement function does not modify a fresh `python -m model.runtime_worker` process.
 
 Protocol: [`docs/v1.0-atman-runtime.md`](docs/v1.0-atman-runtime.md)
 
@@ -105,11 +159,7 @@ Protocol: [`docs/v0.4-signed-freshness.md`](docs/v0.4-signed-freshness.md)
 
 ### v0.5 — replay / restore
 
-[`model/replay.py`](model/replay.py) formalizes:
-
-> **Restore is not continuation.**
-
-Restoring an old checkpoint creates a new branch, generation, and lineage root while preserving exact ancestry evidence.
+[`model/replay.py`](model/replay.py) formalizes **Restore is not continuation.** Restoring an old checkpoint creates a new branch, generation, and lineage root while preserving exact ancestry evidence.
 
 Protocol: [`docs/v0.5-replay-restore.md`](docs/v0.5-replay-restore.md)
 
@@ -147,7 +197,7 @@ Invariants: [`docs/v0.8-invariants.md`](docs/v0.8-invariants.md)
 
 ### v0.9 — pre-execution enforcement
 
-[`model/enforcement.py`](model/enforcement.py) reconstructs the exact action from runtime inputs and gates A1/A2/A3/A4, token issuance/revocation, and branch merge before the privileged primitive is called.
+[`model/enforcement.py`](model/enforcement.py) reconstructs the exact action from runtime inputs and gates observer, token lifecycle, and branch-merge operations before the privileged primitive is called.
 
 > **Gate before execution.**
 
@@ -173,6 +223,7 @@ ATMAN-LATTICE keeps these questions separate:
 - Did this signer actually have authority?
 - Was authority checked against the exact action?
 - Did privileged execution occur inside the intended trust boundary?
+- Did terminal authorization state come from the current runtime store rather than a stale client projection?
 
 ## Run
 
@@ -181,18 +232,32 @@ python -m pip install -e . pytest
 python -m pytest -q
 ```
 
-The reference runtime worker is invoked as:
+The reference worker is invoked as:
 
 ```bash
 python -m model.runtime_worker
 ```
 
-It consumes one `ATMAN-RUNTIME/1.0` JSON request from stdin and writes one JSON response to stdout. See the v1.0 protocol document for the trust-boundary assumptions.
+It consumes one `ATMAN-RUNTIME/1.1` JSON request from stdin and writes one JSON response to stdout.
+
+Reference deployment configuration includes:
+
+```text
+ATMAN_TRUSTED_ISSUER_KEYS
+ATMAN_POLICY_GENERATION
+ATMAN_RUNTIME_NOW
+ATMAN_ATTESTATION_KEYS
+ATMAN_TOKEN_KEYS
+ATMAN_EVENT_KEYS
+ATMAN_RUNTIME_DB
+```
+
+This remains a **reference process boundary**, not a hostile-host sandbox. Production use additionally requires protected secrets/configuration, OS/container isolation, authenticated transport, database/file permissions, rollback protection, and operational auditing.
 
 ## Status
 
-**v1.0.0 — ATMAN Runtime research core.**
+**v1.1.0 — Full Runtime Plane research core.**
 
-The project now spans identity continuity, cryptographic lineage, freshness, restore/fork semantics, branch reconciliation, one-time authorization, asymmetric signer authority, pre-execution enforcement, and a process-separated privileged observer runtime.
+The project now spans identity continuity, cryptographic lineage, freshness, restore/fork semantics, branch reconciliation, one-time authorization, asymmetric signer authority, pre-execution enforcement, process-separated privileged execution, server-owned capability keys, and atomically serialized terminal authorization state.
 
-Next targets: move token/merge operations behind the runtime boundary, authenticated transport, root-key rotation and quorum governance, durable atomic authorization storage, compensation receipts, generalized ancestry proofs, and integration with real agent memory/checkpoint/tool systems.
+Next targets: authenticated runtime transport, root-key rotation and quorum governance, rollback-resistant durable storage, compensation receipts, generalized ancestry proofs, multi-process concurrency stress tests, and integration with real agent memory/checkpoint/tool systems.
