@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/safal207/ATMAN-LATTICE/schemas/trust-approval.schema.json",
+  "title": "ATMAN-LATTICE TrustApproval v1.2",
+  "type": "object",
+  "required": ["signer_key_id", "current_policy_hash", "transition_digest", "signed_at", "signature", "approval_hash"],
+  "properties": {
+    "signer_key_id": {"type": "string", "minLength": 1},
+    "current_policy_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "transition_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "signed_at": {"type": "integer", "minimum": 0},
+    "signature": {"type": "string", "pattern": "^[0-9a-f]{128}$"},
+    "approval_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  },
+  "additionalProperties": false
+}
