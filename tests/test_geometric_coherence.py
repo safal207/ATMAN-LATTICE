@@ -68,7 +68,7 @@ def operators():
 
 
 def torsion_evidence(path_ab, path_ba):
-    origin = endpoint("origin", "origin", generation=0)
+    origin = endpoint("origin", "origin", identity_ref=path_ab.identity_ref, generation=0)
     a, b = operators()
     receipt = measure_transition_torsion(origin, a, b, path_ab, path_ba, measured_at=100)
     return TorsionEvidence(receipt, origin, a, b, path_ab, path_ba)
@@ -130,6 +130,15 @@ def test_a3_rejects_self_consistent_torsion_receipt_for_another_path():
     gate = a3_geometric_gate(a3, torsion=forged_binding)
     assert gate.decision == "FAIL"
     assert "torsion_evidence:path_ab_binding_mismatch" in gate.reasons
+
+
+def test_a3_rejects_geometry_from_another_identity():
+    a3, _ = base_observers()
+    other = endpoint("other", "same", identity_ref="agent:other")
+    evidence = torsion_evidence(other, other)
+    gate = a3_geometric_gate(a3, torsion=evidence)
+    assert gate.decision == "FAIL"
+    assert "torsion_identity_mismatch" in gate.reasons
 
 
 def test_a3_accepts_semantic_loop_closure_with_preserved_holonomy():
