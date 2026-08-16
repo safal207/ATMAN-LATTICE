@@ -2,11 +2,11 @@
 
 **A Projective Spacetime Architecture for Identity and Coherence**
 
-ATMAN-LATTICE is an exploratory research repository for modeling identity as linked projections across state, space, time, lineage, execution context, branching, reconciliation, and authorization history.
+ATMAN-LATTICE is an exploratory research repository for modeling identity as linked projections across state, space, time, lineage, execution context, branching, reconciliation, authorization history, and signer authority.
 
 > What must remain invariant when representation changes, so that we can still prove that the resulting state belongs to the same identity?
 
-The repository does **not** claim to prove metaphysical statements about the soul, sleep, consciousness, or Atman. Those terms are conceptual labels for nodes and observer roles inside a formal model. The engineering goal is testable continuity, provenance, observer independence, freshness, branching, reconciliation, one-time authorization, and global coherence.
+The repository does **not** claim to prove metaphysical statements about the soul, sleep, consciousness, or Atman. Those terms are conceptual labels for nodes and observer roles inside a formal model. The engineering goal is testable continuity, provenance, observer independence, freshness, branching, reconciliation, one-time authorization, signer authority, and global coherence.
 
 ## Core model
 
@@ -34,6 +34,8 @@ Same identity != Same history
 Valid parents != Automatically coherent merge
 Valid token != Reusable capability
 Revocation != History erasure
+Valid signature != Valid authority
+Historical authority != Current authority
 ```
 
 ## v0.2 — executable observers
@@ -178,11 +180,7 @@ expected_ledger_generation == current_ledger_generation
 
 This is an optimistic-concurrency contract. A production distributed store must enforce that comparison atomically via transaction, compare-and-swap, conditional write, or an equivalent serialization primitive.
 
-The resulting distinction is:
-
 > **Authorization validity is not authorization availability.**
-
-A token can remain authentic and unexpired while no longer being available because it was already consumed or explicitly revoked.
 
 Machine-readable contracts:
 
@@ -192,6 +190,59 @@ Machine-readable contracts:
 Protocol: [`docs/v0.7-consumption-revocation.md`](docs/v0.7-consumption-revocation.md).
 
 Additional invariants: [`docs/v0.7-invariants.md`](docs/v0.7-invariants.md).
+
+## v0.8 — authority / signer identity
+
+[`model/authority.py`](model/authority.py) introduces asymmetric signer identity and separates cryptographic authenticity from authorization.
+
+```text
+Trusted root public key
+        |
+        | Ed25519
+        v
+AuthorityGrant
+  exact subject key
+  roles[]
+  scopes[]
+  policy_generation
+  validity window
+        |
+        | grant_hash
+        v
+AuthorityProof
+  role
+  scope
+  action_digest
+  signed_at
+  Ed25519 signature
+        |
+        v
+use-time authority verification
+```
+
+The central rule is:
+
+> **A valid signature does not imply valid authority.**
+
+A proof is rejected when the signature is correct but the requested role or scope is not present in the grant. It is also rejected when the governing policy generation changed, the grant expired, the action was substituted after signing, the grant issuer is not trusted, or the proof was signed by a different key than the one bound by the grant.
+
+This gives the observer hierarchy a new interpretation:
+
+```text
+A1/A2/A3/A4 are not trusted because of their names or positions.
+They must be backed by explicit role + scope + signer authority.
+```
+
+The trusted root set remains an explicit caller-supplied trust boundary in v0.8. Root rotation, quorum governance, delegated authority chains, and transparency-log semantics remain future work.
+
+Machine-readable contracts:
+
+- [`schemas/authority-grant.schema.json`](schemas/authority-grant.schema.json)
+- [`schemas/authority-proof.schema.json`](schemas/authority-proof.schema.json)
+
+Protocol: [`docs/v0.8-authority-signers.md`](docs/v0.8-authority-signers.md).
+
+Additional invariants: [`docs/v0.8-invariants.md`](docs/v0.8-invariants.md).
 
 ## Why this matters for AI systems
 
@@ -205,9 +256,11 @@ The same identity problem appears when agents move through:
 - tool and policy context changes;
 - one-time permissions and delegated capabilities;
 - explicit revocation before tool execution;
+- independently signed observer or tool decisions;
+- role- and scope-bounded authority across multiple agents;
 - long-horizon execution across multiple generations.
 
-An agent may preserve identity ancestry while producing multiple valid but incompatible futures, or hold an authorization artifact that is cryptographically valid but no longer consumable. ATMAN-LATTICE distinguishes ancestry, history, current authorization, authorization availability, and reconciliation instead of collapsing them into one notion of "same agent".
+An agent may preserve identity ancestry while producing multiple valid but incompatible futures, hold an authorization artifact that is cryptographically valid but no longer consumable, or produce a perfectly valid signature without having authority for the requested action. ATMAN-LATTICE keeps those relations separate and testable.
 
 ## Documents
 
@@ -220,11 +273,13 @@ An agent may preserve identity ancestry while producing multiple valid but incom
 - [v0.6 additional invariants](docs/v0.6-invariants.md)
 - [v0.7 consumption/revocation](docs/v0.7-consumption-revocation.md)
 - [v0.7 additional invariants](docs/v0.7-invariants.md)
+- [v0.8 authority/signers](docs/v0.8-authority-signers.md)
+- [v0.8 additional invariants](docs/v0.8-invariants.md)
 
 ## Run
 
 ```bash
-python -m pip install pytest
+python -m pip install -e . pytest
 python -m pytest -q
 ```
 
@@ -232,6 +287,6 @@ The suite also runs in GitHub Actions on pushes to `main` and pull requests.
 
 ## Status
 
-`v0.7` — one-time authorization research core. ATMAN-LATTICE now models identity continuity, history continuity, use-time freshness, branch restoration, branch reconciliation, and terminal authorization state. Exact use tokens can be consumed once or revoked before use, with append-only authenticated ledger evidence and generation-bound append semantics.
+`v0.8` — asymmetric authority research core. ATMAN-LATTICE now models identity continuity, history continuity, use-time freshness, branch restoration, branch reconciliation, one-time authorization state, and explicit signer authority. Ed25519 grants bind exact public keys to roles, scopes, policy generations, and validity windows; action proofs bind those grants to exact action digests and are independently verifiable.
 
-Next targets: asymmetric signer identities, durable database-backed atomic ledger integration, identity/policy-wide revocation, compensating-action receipts for already executed operations, generalized ancestry proofs beyond restore-created branches, and integration with real agent checkpoint/memory/tool systems.
+Next targets: authority enforcement adapters around A1/A2/A3/A4 and token issuance/revocation, root-key rotation and quorum governance, durable database-backed atomic authorization ledgers, identity/policy-wide revocation, compensating-action receipts, generalized ancestry proofs, and integration with real agent checkpoint/memory/tool systems.
