@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "atman-lattice"
-version = "1.0.0"
-description = "Executable invariants and runtime boundaries for projective spacetime identity, authority, and coherence"
+version = "1.1.0"
+description = "Executable invariants and full runtime-plane boundaries for projective spacetime identity, authority, and coherence"
 requires-python = ">=3.10"
 dependencies = [
     "cryptography>=42",
