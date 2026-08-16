@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/atman-lattice/branch-commit-receipt.schema.json",
+  "title": "BranchCommitReceipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["potential_hash", "identity_ref", "source_receipt_hash", "source_lineage_root_hash", "target_branch_ref", "target_generation", "target_lineage_root_hash", "target_genesis_receipt_hash", "payload_digest", "committed_at", "commit_hash"],
+  "properties": {
+    "potential_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "identity_ref": {"type": "string", "minLength": 1},
+    "source_receipt_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "source_lineage_root_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "target_branch_ref": {"type": "string", "minLength": 1},
+    "target_generation": {"type": "integer", "minimum": 0},
+    "target_lineage_root_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "target_genesis_receipt_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "payload_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "committed_at": {"type": "integer", "minimum": 0},
+    "commit_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}
