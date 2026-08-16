@@ -2,11 +2,11 @@
 
 **A Projective Spacetime Architecture for Identity, Authority, Governance, and Coherence**
 
-ATMAN-LATTICE is an exploratory research repository for modeling identity across state, space, time, lineage, branching, possibility, reconciliation, authorization, signer authority, privileged execution, and trust-root evolution.
+ATMAN-LATTICE is an exploratory research repository for modeling identity across state, space, time, lineage, branching, possibility, reconciliation, authorization, signer authority, privileged execution, trust-root evolution, and transition geometry.
 
-> What must remain invariant when representation changes, futures branch, worlds reconcile, or authority itself changes — so that identity, ancestry, and permission remain provable rather than merely asserted?
+> What must remain invariant when representation changes, futures branch, worlds reconcile, transition order changes outcomes, or authority itself changes — so that identity, ancestry, path dependence, and permission remain provable rather than merely asserted?
 
-The repository does **not** claim to prove metaphysical statements about the soul, sleep, consciousness, Atman, quantum worlds, or a physical multiverse. Those terms are conceptual labels and thought experiments inside a formal model. The engineering target is testable continuity, provenance, freshness, authority, governance, compatibility, and globally coherent execution.
+The repository does **not** claim to prove metaphysical statements about the soul, sleep, consciousness, Atman, quantum worlds, physical multiverses, or physical torsion fields. Those terms are conceptual labels and thought experiments inside a formal model. The engineering target is testable continuity, provenance, freshness, authority, governance, compatibility, path dependence, and globally coherent execution.
 
 ## Core geometry
 
@@ -44,7 +44,119 @@ Potentiality != History
 Valid(A) + Valid(B) != Coexist(A,B)
 Composite state != Permission to erase parent histories
 Keeper != Sovereign
+Valid(A) + Valid(B) != Commute(A,B)
+Same result != Same journey
+Torsion != Invalidity
+Semantic return != History erasure
 ```
+
+## v1.4 — Transition Geometry
+
+v1.4 introduces a discrete, executable geometry of transition order and closed-loop drift.
+
+This is an engineering analogue, not a claim about physical torsion or curvature.
+
+### Torsion: does order matter?
+
+For two valid transitions `A` and `B`:
+
+```text
+        A
+   X -------> XA
+   |           |
+ B |           | B
+   v           v
+  XB -------> ?
+        A
+```
+
+The model measures:
+
+\[
+\tau_X(A,B)=\Delta(B\circ A(X),A\circ B(X)).
+\]
+
+A `TransitionEndpoint` separates a semantic vector from a history vector:
+
+```text
+semantic:
+  identity_ref
+  payload_digest
+  context_digest
+  authority_digest
+  effect_digest
+
+history:
+  lineage_root_hash
+  branch_ref
+  generation
+  receipt_hash
+```
+
+This produces three torsion classifications:
+
+```text
+CLOSED
+SEMANTICALLY_CLOSED_HISTORY_DIVERGENT
+TORSION_DETECTED
+```
+
+So the system can represent an important case explicitly:
+
+```text
+same operational result
+!=
+same causal path
+```
+
+### Curvature: did a loop really return?
+
+For a loop `L` intended to return to the same semantic point:
+
+\[
+\kappa_X(L)=\Delta(X,L(X)).
+\]
+
+The classifications are:
+
+```text
+FLAT_LOOP
+SEMANTICALLY_CLOSED_WITH_HOLONOMY
+CURVATURE_DETECTED
+```
+
+A loop may return to the same semantic state while preserving evidence that history advanced. The journey is not erased merely because the current operational state matches the origin.
+
+### Torsion is evidence, not automatic failure
+
+```text
+TORSION_DETECTED
+      |
+      v
+compatibility / policy evaluation
+      |
+      +-- compatible -> preserve path dependence
+      +-- incompatible -> incursion / reconciliation
+```
+
+Therefore:
+
+```text
+Torsion != Invalidity
+```
+
+`TransitionTorsionReceipt` and `TransitionCurvatureReceipt` bind exact endpoints, exact transition operators, ordering, semantic deltas, historical deltas/holonomy, and measurement time. Verification recomputes the geometry from actual evidence rather than trusting a self-consistent envelope from another path.
+
+Protocol: [`docs/v1.4-transition-geometry.md`](docs/v1.4-transition-geometry.md)
+
+Invariants: [`docs/v1.4-invariants.md`](docs/v1.4-invariants.md)
+
+Machine-readable contracts:
+
+- [`schemas/transition-operator.schema.json`](schemas/transition-operator.schema.json)
+- [`schemas/transition-endpoint.schema.json`](schemas/transition-endpoint.schema.json)
+- [`schemas/transition-torsion-receipt.schema.json`](schemas/transition-torsion-receipt.schema.json)
+- [`schemas/transition-curvature-receipt.schema.json`](schemas/transition-curvature-receipt.schema.json)
 
 ## v1.3 — Multiverse Semantics
 
@@ -62,15 +174,7 @@ Committed State
       +-- Potential C
 ```
 
-A `PotentialBranch` is not a historical branch. Only an explicit `BranchCommitReceipt` may create committed lineage:
-
-```text
-Potential B
-     |
- explicit commit
-     v
-Committed Branch B
-```
+A `PotentialBranch` is not a historical branch. Only an explicit `BranchCommitReceipt` may create committed lineage.
 
 The committed payload must match the payload digest that was proposed. A system cannot obtain approval for one future and silently commit another.
 
@@ -100,27 +204,13 @@ Silent overwrite is not a resolution strategy.
 
 A merged or composite reality must preserve both parent histories.
 
-`CompositeRealityReceipt` binds:
-
-```text
-left head + left root
-right head + right root
-incursion receipt
-merge receipt
-new target genesis + target root
-```
-
-The verifier compares the composite receipt with the actual parent receipts and `MergeReceipt`. Rehashing a rewritten narrative envelope cannot make erased ancestry valid.
-
-The rule is:
+`CompositeRealityReceipt` binds both parent heads/roots, the incursion receipt, the merge receipt, and the new target lineage. Rehashing a rewritten narrative envelope cannot make erased ancestry valid.
 
 ```text
 Composite(C) => Parents(C) preserved
 ```
 
 ### Keeper, not sovereign
-
-Global coherence does not grant narrative ownership:
 
 ```text
 Preserve(Worlds) != AuthorityToRewrite(Worlds)
@@ -132,13 +222,6 @@ Protocol: [`docs/v1.3-multiverse-semantics.md`](docs/v1.3-multiverse-semantics.m
 
 Invariants: [`docs/v1.3-invariants.md`](docs/v1.3-invariants.md)
 
-Machine-readable contracts:
-
-- [`schemas/potential-branch.schema.json`](schemas/potential-branch.schema.json)
-- [`schemas/branch-commit-receipt.schema.json`](schemas/branch-commit-receipt.schema.json)
-- [`schemas/incursion-receipt.schema.json`](schemas/incursion-receipt.schema.json)
-- [`schemas/composite-reality-receipt.schema.json`](schemas/composite-reality-receipt.schema.json)
-
 ## v1.2 — Trust-Root Evolution
 
 v1.2 adds a separate governance plane for changing the source of authority itself.
@@ -148,17 +231,7 @@ execution plane:   ATMAN-RUNTIME/1.1
 governance plane:  ATMAN-TRUST/1.2
 ```
 
-A normal `AuthorityGrant` is already derived from the current trust policy, so it is not sufficient by itself to replace that policy. Trust-root mutation requires a quorum of distinct **currently trusted roots** over the exact transition.
-
-```text
-Current Policy N
-  roots = A, B, C
-  threshold = 2
-
-A signs exact transition ----\
-                              +--> Policy N+1
-B signs exact transition ----/
-```
+A normal `AuthorityGrant` is already derived from the current trust policy, so it is not sufficient by itself to replace that policy. Trust-root mutation requires a quorum of distinct currently trusted roots over the exact transition.
 
 Trust policy is persisted in SQLite. Bootstrap environment roots initialize an empty database once; after initialization, persisted trust state is authoritative. Restarting a worker with stale bootstrap roots cannot silently roll a rotated policy backward.
 
@@ -233,7 +306,7 @@ See [`docs/`](docs/) for the detailed progression.
 
 ## Why this matters for AI systems
 
-The same integrity problem appears when agents move through working memory, simulations, alternative plans, checkpoints, restored branches, reconciled memories, changing tool contexts, delegated capabilities, revocation, long-horizon execution, and governance changes.
+The same integrity problem appears when agents move through working memory, simulations, alternative plans, checkpoints, restored branches, reconciled memories, changing tool contexts, delegated capabilities, revocation, long-horizon execution, governance changes, and order-sensitive tool workflows.
 
 ATMAN-LATTICE keeps these questions separate:
 
@@ -241,7 +314,9 @@ ATMAN-LATTICE keeps these questions separate:
 - Is this the same history?
 - Is this merely a possible future, or was it actually committed?
 - Can two individually valid branches coexist in one execution context?
-- If they cannot coexist, was the resolution explicit?
+- Did two individually valid transitions commute, or did order change the result?
+- Did a closed loop return semantically while still advancing history?
+- If branches cannot coexist, was the resolution explicit?
 - Did a composite result preserve every parent history?
 - Is this representation fresh?
 - Is this authorization still available?
@@ -270,14 +345,14 @@ ATMAN-RUNTIME/1.1  — privileged execution plane
 ATMAN-TRUST/1.2    — trust governance plane
 ```
 
-The v1.3 multiverse semantics currently live as explicit executable model primitives rather than a new wire protocol.
+The v1.3 multiverse semantics and v1.4 transition geometry currently live as explicit executable model primitives rather than new wire protocols.
 
-This remains a **reference process/database and formal-model boundary**, not a hostile-host sandbox or a claim about physical multiverses. Production use additionally requires protected keys, protected durable storage, authenticated transport, rollback-resistant backups, database/file permissions, and operational governance.
+This remains a **reference process/database and formal-model boundary**, not a hostile-host sandbox or a claim about physical multiverses/torsion. Production use additionally requires protected keys, protected durable storage, authenticated transport, rollback-resistant backups, database/file permissions, and operational governance.
 
 ## Status
 
-**v1.3.0 — Multiverse Semantics research core.**
+**v1.4.0 — Transition Geometry research core.**
 
-The project now spans identity continuity, cryptographic lineage, potential-vs-committed futures, restore/fork semantics, cross-branch compatibility, narrative-preserving composition, one-time authorization, asymmetric signer authority, runtime enforcement, atomically serialized authorization state, and quorum-governed trust-root evolution.
+The project now spans identity continuity, cryptographic lineage, potential-vs-committed futures, restore/fork semantics, cross-branch compatibility, narrative-preserving composition, order-sensitive transition geometry, closed-loop drift/holonomy evidence, one-time authorization, asymmetric signer authority, runtime enforcement, atomically serialized authorization state, and quorum-governed trust-root evolution.
 
-Next targets: branch-capacity / verification-pressure semantics, rollback-resistant trust recovery, emergency governance, compensation receipts, generalized ancestry proofs, concurrency stress tests, and integration with real agent planning/memory/tool systems.
+Next targets: runtime integration of torsion/curvature evidence into A3/A4, branch-capacity / verification-pressure semantics, rollback-resistant trust recovery, emergency governance, compensation receipts, generalized ancestry proofs, concurrency stress tests, and integration with real agent planning/memory/tool systems.
