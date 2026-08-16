@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/atman-lattice/transition-curvature-receipt.schema.json",
+  "title": "TransitionCurvatureReceipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "origin_endpoint_hash", "returned_endpoint_hash", "loop_operator_hashes",
+    "semantic_drift_dimensions", "history_holonomy_dimensions",
+    "status", "measured_at", "curvature_hash"
+  ],
+  "properties": {
+    "origin_endpoint_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "returned_endpoint_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "loop_operator_hashes": {
+      "type": "array",
+      "minItems": 2,
+      "items": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+    },
+    "semantic_drift_dimensions": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"enum": ["identity_ref", "payload_digest", "context_digest", "authority_digest", "effect_digest"]}
+    },
+    "history_holonomy_dimensions": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"enum": ["lineage_root_hash", "branch_ref", "generation", "receipt_hash"]}
+    },
+    "status": {"enum": ["FLAT_LOOP", "SEMANTICALLY_CLOSED_WITH_HOLONOMY", "CURVATURE_DETECTED"]},
+    "measured_at": {"type": "integer", "minimum": 0},
+    "curvature_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}
