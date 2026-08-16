@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/atman-lattice/incursion-receipt.schema.json",
+  "title": "IncursionReceipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["identity_ref", "left_branch_ref", "left_generation", "left_lineage_root_hash", "left_head_receipt_hash", "right_branch_ref", "right_generation", "right_lineage_root_hash", "right_head_receipt_hash", "verdict", "resolution_mode", "reason_ref", "evidence_ref", "assessed_at", "incursion_hash"],
+  "properties": {
+    "identity_ref": {"type": "string", "minLength": 1},
+    "left_branch_ref": {"type": "string", "minLength": 1},
+    "left_generation": {"type": "integer", "minimum": 0},
+    "left_lineage_root_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "left_head_receipt_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "right_branch_ref": {"type": "string", "minLength": 1},
+    "right_generation": {"type": "integer", "minimum": 0},
+    "right_lineage_root_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "right_head_receipt_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "verdict": {"enum": ["COEXIST", "INCOMPATIBLE"]},
+    "resolution_mode": {"enum": ["NONE", "ISOLATE", "FORK", "RECONCILE", "MERGE", "REJECT", "COMPENSATE"]},
+    "reason_ref": {"type": "string", "minLength": 1},
+    "evidence_ref": {"type": "string", "minLength": 1},
+    "assessed_at": {"type": "integer", "minimum": 0},
+    "incursion_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  },
+  "allOf": [
+    {"if": {"properties": {"verdict": {"const": "COEXIST"}}}, "then": {"properties": {"resolution_mode": {"const": "NONE"}}}},
+    {"if": {"properties": {"verdict": {"const": "INCOMPATIBLE"}}}, "then": {"not": {"properties": {"resolution_mode": {"const": "NONE"}}, "required": ["resolution_mode"]}}}
+  ]
+}
