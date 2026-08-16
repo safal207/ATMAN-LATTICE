@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/safal207/ATMAN-LATTICE/schemas/trust-transition-receipt.schema.json",
+  "title": "ATMAN-LATTICE TrustTransitionReceipt v1.2",
+  "type": "object",
+  "required": ["from_policy_hash", "from_generation", "to_policy_hash", "to_generation", "required_threshold", "approval_key_ids", "approval_hashes", "reason_ref", "transitioned_at", "transition_hash"],
+  "properties": {
+    "from_policy_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "from_generation": {"type": "integer", "minimum": 0},
+    "to_policy_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "to_generation": {"type": "integer", "minimum": 1},
+    "required_threshold": {"type": "integer", "minimum": 1},
+    "approval_key_ids": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "approval_hashes": {"type": "array", "minItems": 1, "items": {"type": "string", "pattern": "^[0-9a-f]{64}$"}},
+    "reason_ref": {"type": "string", "minLength": 1},
+    "transitioned_at": {"type": "integer", "minimum": 0},
+    "transition_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  },
+  "additionalProperties": false
+}
