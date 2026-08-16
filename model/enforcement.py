@@ -7,6 +7,7 @@ from model.authority import AuthorityGrant, AuthorityProof, verify_authority_pro
 from model.consumption import (
     AuthorizationEvent,
     AuthorizationLedger,
+    consume_use_token,
     digest_use_token,
     revoke_use_token,
 )
@@ -41,6 +42,7 @@ ROLE_A2 = "A2_OBSERVER"
 ROLE_A3 = "A3_BINDER"
 ROLE_A4 = "A4_KEEPER"
 ROLE_USE_TOKEN_ISSUER = "USE_TOKEN_ISSUER"
+ROLE_USE_TOKEN_CONSUMER = "USE_TOKEN_CONSUMER"
 ROLE_USE_TOKEN_REVOKER = "USE_TOKEN_REVOKER"
 ROLE_BRANCH_MERGER = "BRANCH_MERGER"
 
@@ -165,6 +167,31 @@ def action_issue_use_token(
         "issued_at": now,
         "ttl_seconds": ttl_seconds,
         "token_key_id": token_key_id,
+    }
+
+
+def action_consume_use_token(
+    ledger: AuthorizationLedger,
+    token: UseToken,
+    *,
+    current_context: object,
+    now: int,
+    actor_ref: str,
+    reason_ref: str,
+    expected_ledger_generation: int,
+) -> dict[str, object]:
+    ledger.validate()
+    token.validate()
+    return {
+        "operation": "consume_use_token",
+        "token_digest": digest_use_token(token),
+        "subject_identity_ref": token.subject_identity_ref,
+        "context_digest": digest_context(current_context),
+        "ledger_generation": ledger.generation,
+        "expected_ledger_generation": expected_ledger_generation,
+        "occurred_at": now,
+        "actor_ref": actor_ref,
+        "reason_ref": reason_ref,
     }
 
 
@@ -354,6 +381,55 @@ def governed_issue_use_token(
         token_key_id=token_key_id,
         token_secret=token_secret,
         ttl_seconds=ttl_seconds,
+    )
+
+
+def governed_consume_use_token(
+    ledger: AuthorizationLedger,
+    token: UseToken,
+    *,
+    current_context: object,
+    now: int,
+    token_keys: Mapping[str, bytes],
+    event_keys: Mapping[str, bytes],
+    expected_ledger_generation: int,
+    actor_ref: str,
+    reason_ref: str,
+    event_key_id: str,
+    event_secret: bytes,
+    grant: AuthorityGrant,
+    proof: AuthorityProof,
+    enforcement: EnforcementContext,
+) -> tuple[AuthorizationLedger, AuthorizationEvent]:
+    action = action_consume_use_token(
+        ledger,
+        token,
+        current_context=current_context,
+        now=now,
+        actor_ref=actor_ref,
+        reason_ref=reason_ref,
+        expected_ledger_generation=expected_ledger_generation,
+    )
+    _require_authority(
+        grant,
+        proof,
+        action=action,
+        required_role=ROLE_USE_TOKEN_CONSUMER,
+        required_scope=authorization_scope(token.subject_identity_ref),
+        enforcement=enforcement,
+    )
+    return consume_use_token(
+        ledger,
+        token,
+        current_context=current_context,
+        now=now,
+        token_keys=token_keys,
+        event_keys=event_keys,
+        expected_ledger_generation=expected_ledger_generation,
+        actor_ref=actor_ref,
+        reason_ref=reason_ref,
+        event_key_id=event_key_id,
+        event_secret=event_secret,
     )
 
 
