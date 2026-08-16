@@ -2,11 +2,11 @@
 
 **A Projective Spacetime Architecture for Identity and Coherence**
 
-ATMAN-LATTICE is an exploratory research repository for modeling identity as linked projections across state, space, time, lineage, execution context, branching, reconciliation, authorization history, and signer authority.
+ATMAN-LATTICE is an exploratory research repository for modeling identity as linked projections across state, space, time, lineage, execution context, branching, reconciliation, authorization history, signer authority, and governed execution.
 
 > What must remain invariant when representation changes, so that we can still prove that the resulting state belongs to the same identity?
 
-The repository does **not** claim to prove metaphysical statements about the soul, sleep, consciousness, or Atman. Those terms are conceptual labels for nodes and observer roles inside a formal model. The engineering goal is testable continuity, provenance, observer independence, freshness, branching, reconciliation, one-time authorization, signer authority, and global coherence.
+The repository does **not** claim to prove metaphysical statements about the soul, sleep, consciousness, or Atman. Those terms are conceptual labels for nodes and observer roles inside a formal model. The engineering goal is testable continuity, provenance, observer independence, freshness, branching, reconciliation, one-time authorization, signer authority, authority enforcement, and global coherence.
 
 ## Core model
 
@@ -36,6 +36,8 @@ Valid token != Reusable capability
 Revocation != History erasure
 Valid signature != Valid authority
 Historical authority != Current authority
+Granted role != Required operation role
+Verified proof != Executed permission unless checked before use
 ```
 
 ## v0.2 — executable observers
@@ -226,15 +228,6 @@ The central rule is:
 
 A proof is rejected when the signature is correct but the requested role or scope is not present in the grant. It is also rejected when the governing policy generation changed, the grant expired, the action was substituted after signing, the grant issuer is not trusted, or the proof was signed by a different key than the one bound by the grant.
 
-This gives the observer hierarchy a new interpretation:
-
-```text
-A1/A2/A3/A4 are not trusted because of their names or positions.
-They must be backed by explicit role + scope + signer authority.
-```
-
-The trusted root set remains an explicit caller-supplied trust boundary in v0.8. Root rotation, quorum governance, delegated authority chains, and transparency-log semantics remain future work.
-
 Machine-readable contracts:
 
 - [`schemas/authority-grant.schema.json`](schemas/authority-grant.schema.json)
@@ -243,6 +236,70 @@ Machine-readable contracts:
 Protocol: [`docs/v0.8-authority-signers.md`](docs/v0.8-authority-signers.md).
 
 Additional invariants: [`docs/v0.8-invariants.md`](docs/v0.8-invariants.md).
+
+## v0.9 — authority enforcement
+
+[`model/enforcement.py`](model/enforcement.py) moves authority verification into the governed execution path.
+
+The new execution rule is:
+
+> **A privileged primitive may execute only after the exact runtime action passes the exact operation role, exact runtime scope, current policy, grant, and signer checks.**
+
+The governed role map is:
+
+```text
+observe_space       -> A1_OBSERVER
+observe_time        -> A2_OBSERVER
+cross_axis_bind     -> A3_BINDER
+global_coherence    -> A4_KEEPER
+issue_use_token     -> USE_TOKEN_ISSUER
+revoke_use_token    -> USE_TOKEN_REVOKER
+merge_branches      -> BRANCH_MERGER
+```
+
+Scopes are reconstructed from the actual runtime subject:
+
+```text
+observer / merge       -> identity:<identity_ref>
+authorization lifecycle -> authorization:<identity_ref>
+```
+
+The gate reconstructs the canonical action from the actual runtime inputs before validating the proof. The proof therefore cannot authorize merely a caller-provided description of what it intends to execute.
+
+```text
+runtime inputs
+      |
+      v
+canonical action reconstruction
+      |
+      v
+root -> grant -> proof verification
+      |
+      +-- exact required role
+      +-- exact required scope
+      +-- current policy generation
+      +-- exact action digest
+      +-- current validity window
+      |
+   FAIL -> no primitive call
+      |
+      v
+privileged primitive
+```
+
+The test suite contains a gate-before-execution regression: `observe_space()` is replaced with a function that would fail if called; a cryptographically valid proof using a wrong but granted role is rejected before that primitive is reached.
+
+The separation remains explicit:
+
+```text
+mechanism != permission
+```
+
+Low-level primitives remain pure and importable for formal testing. `model.enforcement` is the governed boundary. This research package therefore proves enforcement semantics at that boundary, not hostile-code process isolation. Production non-bypassability requires a real service/process/capability/storage boundary around the privileged primitive.
+
+Protocol: [`docs/v0.9-authority-enforcement.md`](docs/v0.9-authority-enforcement.md).
+
+Additional invariants: [`docs/v0.9-invariants.md`](docs/v0.9-invariants.md).
 
 ## Why this matters for AI systems
 
@@ -258,9 +315,10 @@ The same identity problem appears when agents move through:
 - explicit revocation before tool execution;
 - independently signed observer or tool decisions;
 - role- and scope-bounded authority across multiple agents;
+- governed invocation of verification, merge, authorization, and execution primitives;
 - long-horizon execution across multiple generations.
 
-An agent may preserve identity ancestry while producing multiple valid but incompatible futures, hold an authorization artifact that is cryptographically valid but no longer consumable, or produce a perfectly valid signature without having authority for the requested action. ATMAN-LATTICE keeps those relations separate and testable.
+An agent may preserve identity ancestry while producing multiple valid but incompatible futures, hold an authorization artifact that is cryptographically valid but no longer consumable, or produce a perfectly valid signature without having authority for the requested action. ATMAN-LATTICE keeps those relations separate and testable, and v0.9 ensures the governed runtime checks them before privileged execution.
 
 ## Documents
 
@@ -275,6 +333,8 @@ An agent may preserve identity ancestry while producing multiple valid but incom
 - [v0.7 additional invariants](docs/v0.7-invariants.md)
 - [v0.8 authority/signers](docs/v0.8-authority-signers.md)
 - [v0.8 additional invariants](docs/v0.8-invariants.md)
+- [v0.9 authority enforcement](docs/v0.9-authority-enforcement.md)
+- [v0.9 additional invariants](docs/v0.9-invariants.md)
 
 ## Run
 
@@ -287,6 +347,6 @@ The suite also runs in GitHub Actions on pushes to `main` and pull requests.
 
 ## Status
 
-`v0.8` — asymmetric authority research core. ATMAN-LATTICE now models identity continuity, history continuity, use-time freshness, branch restoration, branch reconciliation, one-time authorization state, and explicit signer authority. Ed25519 grants bind exact public keys to roles, scopes, policy generations, and validity windows; action proofs bind those grants to exact action digests and are independently verifiable.
+`v0.9` — governed authority-enforcement research core. ATMAN-LATTICE now models identity continuity, history continuity, use-time freshness, branch restoration, branch reconciliation, one-time authorization state, signer authority, and pre-execution authority gates. A1/A2/A3/A4, use-token issuance/revocation, and branch merge now have explicit role/scope/action bindings in the governed API.
 
-Next targets: authority enforcement adapters around A1/A2/A3/A4 and token issuance/revocation, root-key rotation and quorum governance, durable database-backed atomic authorization ledgers, identity/policy-wide revocation, compensating-action receipts, generalized ancestry proofs, and integration with real agent checkpoint/memory/tool systems.
+Next targets: non-bypassable service/runtime isolation, root-key rotation and quorum governance, durable database-backed atomic authorization ledgers, identity/policy-wide revocation, compensating-action receipts, generalized ancestry proofs, and integration with real agent checkpoint/memory/tool systems.
