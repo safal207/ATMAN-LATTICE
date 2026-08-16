@@ -4,13 +4,23 @@ from dataclasses import asdict
 from typing import Mapping
 
 from model.authority import AuthorityGrant, AuthorityProof
+from model.consumption import AuthorizationEvent, AuthorizationLedger
+from model.freshness import ObserverAttestation, UseToken
 from model.lattice import IdentityReceipt, ObserverReceipt
+from model.merge import ConflictResolution, MergeConflict, MergeReceipt
+from model.replay import RestoreReceipt
+
+PROTOCOL = "ATMAN-RUNTIME/1.1"
 
 SUPPORTED_OPERATIONS = {
     "observe_space",
     "observe_time",
     "cross_axis_bind",
     "global_coherence",
+    "issue_use_token",
+    "consume_use_token",
+    "revoke_use_token",
+    "merge_branches",
 }
 
 
@@ -63,6 +73,164 @@ def observer_receipt_from_dict(data: Mapping[str, object]) -> ObserverReceipt:
     return receipt
 
 
+def observer_attestation_to_dict(attestation: ObserverAttestation) -> dict[str, object]:
+    attestation.validate()
+    return asdict(attestation)
+
+
+def observer_attestation_from_dict(data: Mapping[str, object]) -> ObserverAttestation:
+    attestation = ObserverAttestation(
+        observer_id=str(data["observer_id"]),
+        observer_receipt_digest=str(data["observer_receipt_digest"]),
+        subject_identity_ref=str(data["subject_identity_ref"]),
+        branch_ref=str(data["branch_ref"]),
+        generation=int(data["generation"]),
+        lineage_root_hash=str(data["lineage_root_hash"]),
+        verdict=str(data["verdict"]),
+        context_digest=str(data["context_digest"]),
+        verified_at=int(data["verified_at"]),
+        key_id=str(data["key_id"]),
+        mac=str(data["mac"]),
+    )
+    attestation.validate()
+    return attestation
+
+
+def use_token_to_dict(token: UseToken) -> dict[str, object]:
+    token.validate()
+    return asdict(token)
+
+
+def use_token_from_dict(data: Mapping[str, object]) -> UseToken:
+    token = UseToken(
+        subject_identity_ref=str(data["subject_identity_ref"]),
+        branch_ref=str(data["branch_ref"]),
+        generation=int(data["generation"]),
+        lineage_root_hash=str(data["lineage_root_hash"]),
+        observer_receipt_digest=str(data["observer_receipt_digest"]),
+        attestation_digest=str(data["attestation_digest"]),
+        context_digest=str(data["context_digest"]),
+        issued_at=int(data["issued_at"]),
+        expires_at=int(data["expires_at"]),
+        key_id=str(data["key_id"]),
+        mac=str(data["mac"]),
+    )
+    token.validate()
+    return token
+
+
+def authorization_event_to_dict(event: AuthorizationEvent) -> dict[str, object]:
+    event.validate()
+    return asdict(event)
+
+
+def authorization_event_from_dict(data: Mapping[str, object]) -> AuthorizationEvent:
+    event = AuthorizationEvent(
+        ledger_generation=int(data["ledger_generation"]),
+        event_type=str(data["event_type"]),
+        token_digest=str(data["token_digest"]),
+        subject_identity_ref=str(data["subject_identity_ref"]),
+        branch_ref=str(data["branch_ref"]),
+        subject_generation=int(data["subject_generation"]),
+        lineage_root_hash=str(data["lineage_root_hash"]),
+        context_digest=str(data["context_digest"]),
+        occurred_at=int(data["occurred_at"]),
+        actor_ref=str(data["actor_ref"]),
+        reason_ref=str(data["reason_ref"]),
+        previous_event_hash=None if data.get("previous_event_hash") is None else str(data["previous_event_hash"]),
+        key_id=str(data["key_id"]),
+        mac=str(data["mac"]),
+        event_hash=str(data["event_hash"]),
+    )
+    event.validate()
+    return event
+
+
+def authorization_ledger_to_dict(ledger: AuthorizationLedger) -> dict[str, object]:
+    ledger.validate()
+    return {
+        "generation": ledger.generation,
+        "head_event_hash": ledger.head_event_hash,
+        "events": [authorization_event_to_dict(event) for event in ledger.events],
+    }
+
+
+def authorization_ledger_from_dict(data: Mapping[str, object]) -> AuthorizationLedger:
+    raw_events = data.get("events", ())
+    if not isinstance(raw_events, (list, tuple)):
+        raise ValueError("authorization ledger events must be an array")
+    ledger = AuthorizationLedger(
+        generation=int(data["generation"]),
+        head_event_hash=None if data.get("head_event_hash") is None else str(data["head_event_hash"]),
+        events=tuple(authorization_event_from_dict(_mapping(item, "authorization event")) for item in raw_events),
+    )
+    ledger.validate()
+    return ledger
+
+
+def restore_receipt_to_dict(receipt: RestoreReceipt) -> dict[str, object]:
+    receipt.validate()
+    return asdict(receipt)
+
+
+def restore_receipt_from_dict(data: Mapping[str, object]) -> RestoreReceipt:
+    receipt = RestoreReceipt(
+        identity_ref=str(data["identity_ref"]),
+        source_branch_ref=str(data["source_branch_ref"]),
+        source_generation=int(data["source_generation"]),
+        source_lineage_root_hash=str(data["source_lineage_root_hash"]),
+        source_receipt_hash=str(data["source_receipt_hash"]),
+        source_state_ref=str(data["source_state_ref"]),
+        source_sequence=int(data["source_sequence"]),
+        target_branch_ref=str(data["target_branch_ref"]),
+        target_generation=int(data["target_generation"]),
+        target_lineage_root_hash=str(data["target_lineage_root_hash"]),
+        target_genesis_receipt_hash=str(data["target_genesis_receipt_hash"]),
+        replayed_at=int(data["replayed_at"]),
+        restore_hash=str(data["restore_hash"]),
+    )
+    receipt.validate()
+    return receipt
+
+
+def merge_conflict_to_dict(conflict: MergeConflict) -> dict[str, object]:
+    conflict.validate()
+    return asdict(conflict)
+
+
+def merge_conflict_from_dict(data: Mapping[str, object]) -> MergeConflict:
+    conflict = MergeConflict(
+        conflict_ref=str(data["conflict_ref"]),
+        left_digest=str(data["left_digest"]),
+        right_digest=str(data["right_digest"]),
+    )
+    conflict.validate()
+    return conflict
+
+
+def conflict_resolution_to_dict(resolution: ConflictResolution) -> dict[str, object]:
+    resolution.validate()
+    return asdict(resolution)
+
+
+def conflict_resolution_from_dict(data: Mapping[str, object]) -> ConflictResolution:
+    resolution = ConflictResolution(
+        conflict_ref=str(data["conflict_ref"]),
+        left_digest=str(data["left_digest"]),
+        right_digest=str(data["right_digest"]),
+        strategy=str(data["strategy"]),
+        result_digest=str(data["result_digest"]),
+        reason_ref=str(data["reason_ref"]),
+    )
+    resolution.validate()
+    return resolution
+
+
+def merge_receipt_to_dict(receipt: MergeReceipt) -> dict[str, object]:
+    receipt.validate()
+    return asdict(receipt)
+
+
 def authority_grant_to_dict(grant: AuthorityGrant) -> dict[str, object]:
     grant.validate()
     data = asdict(grant)
@@ -113,6 +281,12 @@ def authority_proof_from_dict(data: Mapping[str, object]) -> AuthorityProof:
     return proof
 
 
+def _mapping(value: object, name: str) -> Mapping[str, object]:
+    if not isinstance(value, dict):
+        raise ValueError(f"{name} must be an object")
+    return value
+
+
 def make_runtime_request(
     *,
     request_id: str,
@@ -126,7 +300,7 @@ def make_runtime_request(
     if operation not in SUPPORTED_OPERATIONS:
         raise ValueError("unsupported runtime operation")
     return {
-        "protocol": "ATMAN-RUNTIME/1.0",
+        "protocol": PROTOCOL,
         "request_id": request_id,
         "operation": operation,
         "payload": dict(payload),
