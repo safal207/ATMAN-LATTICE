@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/atman-lattice/transition-endpoint.schema.json",
+  "title": "TransitionEndpoint",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "identity_ref", "receipt_hash", "lineage_root_hash", "branch_ref", "generation",
+    "payload_digest", "context_digest", "authority_digest", "effect_digest", "endpoint_hash"
+  ],
+  "properties": {
+    "identity_ref": {"type": "string", "minLength": 1},
+    "receipt_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "lineage_root_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "branch_ref": {"type": "string", "minLength": 1},
+    "generation": {"type": "integer", "minimum": 0},
+    "payload_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "context_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "authority_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "effect_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "endpoint_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}
