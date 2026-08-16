@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/atman-lattice/authority-grant.schema.json",
+  "title": "ATMAN-LATTICE AuthorityGrant v0.8",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "grant_id",
+    "subject_ref",
+    "key_id",
+    "public_key",
+    "roles",
+    "scopes",
+    "policy_generation",
+    "valid_from",
+    "valid_until",
+    "issuer_ref",
+    "issuer_key_id",
+    "issuer_signature",
+    "grant_hash"
+  ],
+  "properties": {
+    "grant_id": {"type": "string", "minLength": 1},
+    "subject_ref": {"type": "string", "minLength": 1},
+    "key_id": {"type": "string", "minLength": 1},
+    "public_key": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "roles": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "scopes": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "policy_generation": {"type": "integer", "minimum": 0},
+    "valid_from": {"type": "integer", "minimum": 0},
+    "valid_until": {"type": "integer", "minimum": 1},
+    "issuer_ref": {"type": "string", "minLength": 1},
+    "issuer_key_id": {"type": "string", "minLength": 1},
+    "issuer_signature": {"type": "string", "pattern": "^[0-9a-f]{128}$"},
+    "grant_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}
