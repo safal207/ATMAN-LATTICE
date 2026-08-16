@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/atman-lattice/potential-branch.schema.json",
+  "title": "PotentialBranch",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["potential_id", "identity_ref", "source_receipt_hash", "source_lineage_root_hash", "source_branch_ref", "source_generation", "proposed_branch_ref", "proposed_generation", "payload_digest", "created_at", "rationale_ref", "potential_hash"],
+  "properties": {
+    "potential_id": {"type": "string", "minLength": 1},
+    "identity_ref": {"type": "string", "minLength": 1},
+    "source_receipt_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "source_lineage_root_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "source_branch_ref": {"type": "string", "minLength": 1},
+    "source_generation": {"type": "integer", "minimum": 0},
+    "proposed_branch_ref": {"type": "string", "minLength": 1},
+    "proposed_generation": {"type": "integer", "minimum": 1},
+    "payload_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "created_at": {"type": "integer", "minimum": 0},
+    "rationale_ref": {"type": "string", "minLength": 1},
+    "potential_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}
