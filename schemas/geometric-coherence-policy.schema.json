@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://safal207.github.io/ATMAN-LATTICE/schemas/geometric-coherence-policy.schema.json",
+  "title": "GeometricCoherencePolicy",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "policy_ref",
+    "history_torsion_decision",
+    "semantic_torsion_decision",
+    "holonomy_decision",
+    "semantic_curvature_decision",
+    "policy_hash"
+  ],
+  "properties": {
+    "policy_ref": {"type": "string", "minLength": 1},
+    "history_torsion_decision": {"enum": ["PASS", "HOLD", "FAIL"]},
+    "semantic_torsion_decision": {"enum": ["PASS", "HOLD", "FAIL"]},
+    "holonomy_decision": {"enum": ["PASS", "HOLD", "FAIL"]},
+    "semantic_curvature_decision": {"enum": ["PASS", "HOLD", "FAIL"]},
+    "policy_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}
