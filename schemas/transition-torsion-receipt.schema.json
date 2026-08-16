@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/atman-lattice/transition-torsion-receipt.schema.json",
+  "title": "TransitionTorsionReceipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "origin_endpoint_hash", "operator_a_hash", "operator_b_hash",
+    "path_ab_endpoint_hash", "path_ba_endpoint_hash",
+    "semantic_delta_dimensions", "history_delta_dimensions",
+    "status", "measured_at", "torsion_hash"
+  ],
+  "properties": {
+    "origin_endpoint_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "operator_a_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "operator_b_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "path_ab_endpoint_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "path_ba_endpoint_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "semantic_delta_dimensions": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"enum": ["identity_ref", "payload_digest", "context_digest", "authority_digest", "effect_digest"]}
+    },
+    "history_delta_dimensions": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"enum": ["lineage_root_hash", "branch_ref", "generation", "receipt_hash"]}
+    },
+    "status": {"enum": ["CLOSED", "SEMANTICALLY_CLOSED_HISTORY_DIVERGENT", "TORSION_DETECTED"]},
+    "measured_at": {"type": "integer", "minimum": 0},
+    "torsion_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}
