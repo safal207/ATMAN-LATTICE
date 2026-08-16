@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/atman-lattice/authority-proof.schema.json",
+  "title": "ATMAN-LATTICE AuthorityProof v0.8",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "subject_ref",
+    "key_id",
+    "grant_hash",
+    "role",
+    "scope",
+    "action_digest",
+    "policy_generation",
+    "signed_at",
+    "signature",
+    "proof_hash"
+  ],
+  "properties": {
+    "subject_ref": {"type": "string", "minLength": 1},
+    "key_id": {"type": "string", "minLength": 1},
+    "grant_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "role": {"type": "string", "minLength": 1},
+    "scope": {"type": "string", "minLength": 1},
+    "action_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "policy_generation": {"type": "integer", "minimum": 0},
+    "signed_at": {"type": "integer", "minimum": 0},
+    "signature": {"type": "string", "pattern": "^[0-9a-f]{128}$"},
+    "proof_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}
