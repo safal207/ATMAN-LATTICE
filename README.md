@@ -2,7 +2,7 @@
 
 **A Projective Spacetime Architecture for Identity, Authority, Governance, and Coherence**
 
-ATMAN-LATTICE is an exploratory research repository for modeling identity across state, space, time, lineage, branching, possibility, reconciliation, authorization, signer authority, privileged execution, trust-root evolution, and transition geometry.
+ATMAN-LATTICE is an exploratory research repository for modeling identity across state, space, time, lineage, branching, possibility, reconciliation, authorization, signer authority, privileged execution, trust-root evolution, transition geometry, and geometric coherence.
 
 > What must remain invariant when representation changes, futures branch, worlds reconcile, transition order changes outcomes, or authority itself changes — so that identity, ancestry, path dependence, and permission remain provable rather than merely asserted?
 
@@ -48,7 +48,79 @@ Valid(A) + Valid(B) != Commute(A,B)
 Same result != Same journey
 Torsion != Invalidity
 Semantic return != History erasure
+HOLD != FAIL
+A3 local consistency != A4 global commit permission
 ```
+
+## v1.5 — Geometric Coherence Gate
+
+v1.5 connects the v1.4 transition-geometry evidence directly to the A3/A4 coherence hierarchy.
+
+```text
+A1 + A2
+   |
+   v
+  A3  ---- exact lineage consistency
+   |
+   +---- torsion evidence
+   +---- curvature evidence
+   +---- geometric policy
+   |
+   v
+A3-GEOMETRY
+PASS / HOLD / FAIL
+   |
+   v
+A4-GEOMETRY
+```
+
+The new decision space intentionally contains `HOLD`:
+
+```text
+PASS  -> geometry is acceptable under current policy
+HOLD  -> local steps may be valid, but global commit requires reconciliation/review
+FAIL  -> evidence/binding is invalid or policy rejects the geometry
+```
+
+The default reference policy is:
+
+```text
+CLOSED                                  -> PASS
+SEMANTICALLY_CLOSED_HISTORY_DIVERGENT   -> PASS + preserved evidence
+TORSION_DETECTED                        -> HOLD
+FLAT_LOOP                               -> PASS
+SEMANTICALLY_CLOSED_WITH_HOLONOMY       -> PASS + preserved evidence
+CURVATURE_DETECTED                      -> HOLD
+```
+
+A deployment may explicitly make the policy stricter or more permissive. The exact policy is hash-bound into every geometric observer receipt.
+
+A3 re-verifies the exact v1.4 path evidence and additionally binds the geometry to the same `subject_identity_ref`. A self-consistent torsion receipt from another path or another identity is not accepted as evidence for this A3 decision.
+
+A4 aggregates geometric decisions monotonically:
+
+```text
+PASS < HOLD < FAIL
+```
+
+Therefore a `HOLD` cannot silently become `PASS`, and a `FAIL` cannot be downgraded by another successful path. A4 also rejects A3 geometry evaluated for another identity or under another policy hash.
+
+The central rule is:
+
+```text
+Torsion is evidence about path dependence.
+Incursion is evidence about coexistence.
+Neither artifact is execution authority.
+```
+
+Protocol: [`docs/v1.5-geometric-coherence-gate.md`](docs/v1.5-geometric-coherence-gate.md)
+
+Invariants: [`docs/v1.5-invariants.md`](docs/v1.5-invariants.md)
+
+Machine-readable contracts:
+
+- [`schemas/geometric-coherence-policy.schema.json`](schemas/geometric-coherence-policy.schema.json)
+- [`schemas/geometric-observer-receipt.schema.json`](schemas/geometric-observer-receipt.schema.json)
 
 ## v1.4 — Transition Geometry
 
@@ -162,61 +234,29 @@ Machine-readable contracts:
 
 v1.3 turns science-fiction-inspired branching ideas into explicit engineering contracts for planning and agent state.
 
-### Potentiality before history
-
-A planner may represent several futures without mutating committed lineage:
-
-```text
-Committed State
-      |
-      +-- Potential A
-      +-- Potential B
-      +-- Potential C
-```
-
-A `PotentialBranch` is not a historical branch. Only an explicit `BranchCommitReceipt` may create committed lineage.
-
-The committed payload must match the payload digest that was proposed. A system cannot obtain approval for one future and silently commit another.
-
-### Incursion / coexistence semantics
+A planner may represent several futures without mutating committed lineage. A `PotentialBranch` is not history; only an explicit `BranchCommitReceipt` creates committed lineage, and the committed payload must match the proposed payload digest.
 
 Two branches may both be individually valid while still being incompatible in one execution context:
 
 ```text
 Valid(A) = true
 Valid(B) = true
-
-but
-
 Coexist(A, B) = false
 ```
 
-`IncursionReceipt` records compatibility over exact branch heads and exact lineage roots:
+`IncursionReceipt` records compatibility over exact branch heads and lineage roots. Incompatible worlds require an explicit `ISOLATE / FORK / RECONCILE / MERGE / REJECT / COMPENSATE` strategy; silent overwrite is not a strategy.
 
-```text
-COEXIST      -> resolution_mode = NONE
-INCOMPATIBLE -> explicit ISOLATE / FORK / RECONCILE / MERGE / REJECT / COMPENSATE
-```
-
-Silent overwrite is not a resolution strategy.
-
-### Anti-Doom narrative preservation
-
-A merged or composite reality must preserve both parent histories.
-
-`CompositeRealityReceipt` binds both parent heads/roots, the incursion receipt, the merge receipt, and the new target lineage. Rehashing a rewritten narrative envelope cannot make erased ancestry valid.
+A merged `CompositeRealityReceipt` preserves both parent histories:
 
 ```text
 Composite(C) => Parents(C) preserved
 ```
 
-### Keeper, not sovereign
+And the keeper rule remains:
 
 ```text
 Preserve(Worlds) != AuthorityToRewrite(Worlds)
 ```
-
-A4 may classify or preserve valid histories under explicit policy; it does not gain the right to rewrite their ancestry simply because it is the highest coherence layer.
 
 Protocol: [`docs/v1.3-multiverse-semantics.md`](docs/v1.3-multiverse-semantics.md)
 
@@ -235,47 +275,15 @@ A normal `AuthorityGrant` is already derived from the current trust policy, so i
 
 Trust policy is persisted in SQLite. Bootstrap environment roots initialize an empty database once; after initialization, persisted trust state is authoritative. Restarting a worker with stale bootstrap roots cannot silently roll a rotated policy backward.
 
-Rotation is committed under `BEGIN IMMEDIATE`, so the current-policy quorum check and successor write occur against one serialized state.
-
-Most importantly, after rotation:
-
-```text
-old root + new-generation grant -> REJECT
-new root + new-generation grant -> eligible for verification
-```
-
 Protocol: [`docs/v1.2-trust-root-evolution.md`](docs/v1.2-trust-root-evolution.md)
 
 Invariants: [`docs/v1.2-invariants.md`](docs/v1.2-invariants.md)
 
 ## v1.1 — Full Runtime Plane
 
-v1.1 closes the privileged lifecycle inside one reference runtime plane.
-
-```text
-client
-  |
-  | ATMAN-RUNTIME/1.1
-  v
-ATMAN Runtime
-  |
-  +-- server-owned trust policy
-  +-- server-owned verification clock
-  +-- server-owned capability/event secrets
-  +-- server-owned SQLite authorization state
-  |
-  +-> A1 / A2 / A3 / A4
-  +-> issue_use_token
-  +-> consume_use_token
-  +-> revoke_use_token
-  +-> merge_branches
-```
-
-`CONSUMED` / `REVOKED` state is loaded from SQLite and mutated inside a `BEGIN IMMEDIATE` transaction.
+v1.1 closes the privileged lifecycle inside one reference runtime plane, including observer execution, token issue/consume/revoke, merge, server-owned capability secrets, and atomically serialized authorization state.
 
 > **At most one terminal authorization event may commit for an exact token digest.**
-
-Possessing a valid token is not sufficient to consume it: consumption also requires current exact `USE_TOKEN_CONSUMER` authority over the runtime-reconstructed action.
 
 Protocol: [`docs/v1.1-full-runtime-plane.md`](docs/v1.1-full-runtime-plane.md)
 
@@ -316,12 +324,10 @@ ATMAN-LATTICE keeps these questions separate:
 - Can two individually valid branches coexist in one execution context?
 - Did two individually valid transitions commute, or did order change the result?
 - Did a closed loop return semantically while still advancing history?
-- If branches cannot coexist, was the resolution explicit?
+- Does path dependence require HOLD/reconciliation under current policy?
 - Did a composite result preserve every parent history?
-- Is this representation fresh?
 - Is this authorization still available?
 - Did this signer actually have authority?
-- Was authority checked against the exact action?
 - Did privileged execution occur inside the intended trust boundary?
 - Who had authority to change the set that defines authority?
 
@@ -345,14 +351,14 @@ ATMAN-RUNTIME/1.1  — privileged execution plane
 ATMAN-TRUST/1.2    — trust governance plane
 ```
 
-The v1.3 multiverse semantics and v1.4 transition geometry currently live as explicit executable model primitives rather than new wire protocols.
+The v1.3 multiverse semantics, v1.4 transition geometry, and v1.5 geometric coherence gate currently live as explicit executable model primitives rather than new wire protocols.
 
 This remains a **reference process/database and formal-model boundary**, not a hostile-host sandbox or a claim about physical multiverses/torsion. Production use additionally requires protected keys, protected durable storage, authenticated transport, rollback-resistant backups, database/file permissions, and operational governance.
 
 ## Status
 
-**v1.4.0 — Transition Geometry research core.**
+**v1.5.0 — Geometric Coherence Gate research core.**
 
-The project now spans identity continuity, cryptographic lineage, potential-vs-committed futures, restore/fork semantics, cross-branch compatibility, narrative-preserving composition, order-sensitive transition geometry, closed-loop drift/holonomy evidence, one-time authorization, asymmetric signer authority, runtime enforcement, atomically serialized authorization state, and quorum-governed trust-root evolution.
+The project now spans identity continuity, cryptographic lineage, potential-vs-committed futures, restore/fork semantics, cross-branch compatibility, narrative-preserving composition, order-sensitive transition geometry, closed-loop drift/holonomy evidence, policy-bound A3/A4 geometric coherence with PASS/HOLD/FAIL semantics, one-time authorization, asymmetric signer authority, runtime enforcement, atomically serialized authorization state, and quorum-governed trust-root evolution.
 
-Next targets: runtime integration of torsion/curvature evidence into A3/A4, branch-capacity / verification-pressure semantics, rollback-resistant trust recovery, emergency governance, compensation receipts, generalized ancestry proofs, concurrency stress tests, and integration with real agent planning/memory/tool systems.
+Next targets: branch-capacity / verification-pressure semantics, runtime wire integration for geometric gates, rollback-resistant trust recovery, emergency governance, compensation receipts, generalized ancestry proofs, concurrency stress tests, and integration with real agent planning/memory/tool systems.
