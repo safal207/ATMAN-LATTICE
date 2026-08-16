@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/atman-lattice/transition-operator.schema.json",
+  "title": "TransitionOperator",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["operator_ref", "action_digest", "operator_hash"],
+  "properties": {
+    "operator_ref": {"type": "string", "minLength": 1},
+    "action_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "operator_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}
