@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://safal207.github.io/ATMAN-LATTICE/schemas/geometric-observer-receipt.schema.json",
+  "title": "GeometricObserverReceipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "observer_id",
+    "subject_identity_ref",
+    "decision",
+    "base_observer_id",
+    "base_observer_verdict",
+    "policy_hash",
+    "torsion_hash",
+    "torsion_status",
+    "curvature_hash",
+    "curvature_status",
+    "evidence_refs",
+    "reasons",
+    "gate_hash"
+  ],
+  "properties": {
+    "observer_id": {"enum": ["A3-GEOMETRY", "A4-GEOMETRY"]},
+    "subject_identity_ref": {"type": "string", "minLength": 1},
+    "decision": {"enum": ["PASS", "HOLD", "FAIL"]},
+    "base_observer_id": {"type": "string", "minLength": 1},
+    "base_observer_verdict": {"enum": ["PASS", "FAIL"]},
+    "policy_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "torsion_hash": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
+    "torsion_status": {"type": ["string", "null"]},
+    "curvature_hash": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
+    "curvature_status": {"type": ["string", "null"]},
+    "evidence_refs": {"type": "array", "items": {"type": "string"}},
+    "reasons": {"type": "array", "items": {"type": "string"}},
+    "gate_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}
