@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/atman-lattice/composite-reality-receipt.schema.json",
+  "title": "CompositeRealityReceipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["identity_ref", "left_head_receipt_hash", "left_lineage_root_hash", "right_head_receipt_hash", "right_lineage_root_hash", "incursion_hash", "merge_hash", "target_genesis_receipt_hash", "target_lineage_root_hash", "created_at", "narrative_hash"],
+  "properties": {
+    "identity_ref": {"type": "string", "minLength": 1},
+    "left_head_receipt_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "left_lineage_root_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "right_head_receipt_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "right_lineage_root_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "incursion_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "merge_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "target_genesis_receipt_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "target_lineage_root_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "created_at": {"type": "integer", "minimum": 0},
+    "narrative_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}
