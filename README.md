@@ -2,11 +2,11 @@
 
 **A Projective Spacetime Architecture for Identity, Authority, Governance, and Coherence**
 
-ATMAN-LATTICE is an exploratory research repository for modeling identity across state, space, time, lineage, branching, reconciliation, authorization, signer authority, privileged execution, and trust-root evolution.
+ATMAN-LATTICE is an exploratory research repository for modeling identity across state, space, time, lineage, branching, possibility, reconciliation, authorization, signer authority, privileged execution, and trust-root evolution.
 
-> What must remain invariant when representation changes, so that we can still prove that the resulting state belongs to the same identity — and that the actor changing it, or changing who is trusted to act, had authority to do so?
+> What must remain invariant when representation changes, futures branch, worlds reconcile, or authority itself changes — so that identity, ancestry, and permission remain provable rather than merely asserted?
 
-The repository does **not** claim to prove metaphysical statements about the soul, sleep, consciousness, or Atman. Those terms are conceptual labels for nodes and observer roles inside a formal model. The engineering target is testable continuity, provenance, freshness, authority, governance, and globally coherent execution.
+The repository does **not** claim to prove metaphysical statements about the soul, sleep, consciousness, Atman, quantum worlds, or a physical multiverse. Those terms are conceptual labels and thought experiments inside a formal model. The engineering target is testable continuity, provenance, freshness, authority, governance, compatibility, and globally coherent execution.
 
 ## Core geometry
 
@@ -40,7 +40,104 @@ Caller mutation != Runtime mutation
 Client ledger != Runtime authorization state
 Execution authority != Trust-governance authority
 Bootstrap trust != Ongoing trust authority
+Potentiality != History
+Valid(A) + Valid(B) != Coexist(A,B)
+Composite state != Permission to erase parent histories
+Keeper != Sovereign
 ```
+
+## v1.3 — Multiverse Semantics
+
+v1.3 turns science-fiction-inspired branching ideas into explicit engineering contracts for planning and agent state.
+
+### Potentiality before history
+
+A planner may represent several futures without mutating committed lineage:
+
+```text
+Committed State
+      |
+      +-- Potential A
+      +-- Potential B
+      +-- Potential C
+```
+
+A `PotentialBranch` is not a historical branch. Only an explicit `BranchCommitReceipt` may create committed lineage:
+
+```text
+Potential B
+     |
+ explicit commit
+     v
+Committed Branch B
+```
+
+The committed payload must match the payload digest that was proposed. A system cannot obtain approval for one future and silently commit another.
+
+### Incursion / coexistence semantics
+
+Two branches may both be individually valid while still being incompatible in one execution context:
+
+```text
+Valid(A) = true
+Valid(B) = true
+
+but
+
+Coexist(A, B) = false
+```
+
+`IncursionReceipt` records compatibility over exact branch heads and exact lineage roots:
+
+```text
+COEXIST      -> resolution_mode = NONE
+INCOMPATIBLE -> explicit ISOLATE / FORK / RECONCILE / MERGE / REJECT / COMPENSATE
+```
+
+Silent overwrite is not a resolution strategy.
+
+### Anti-Doom narrative preservation
+
+A merged or composite reality must preserve both parent histories.
+
+`CompositeRealityReceipt` binds:
+
+```text
+left head + left root
+right head + right root
+incursion receipt
+merge receipt
+new target genesis + target root
+```
+
+The verifier compares the composite receipt with the actual parent receipts and `MergeReceipt`. Rehashing a rewritten narrative envelope cannot make erased ancestry valid.
+
+The rule is:
+
+```text
+Composite(C) => Parents(C) preserved
+```
+
+### Keeper, not sovereign
+
+Global coherence does not grant narrative ownership:
+
+```text
+Preserve(Worlds) != AuthorityToRewrite(Worlds)
+```
+
+A4 may classify or preserve valid histories under explicit policy; it does not gain the right to rewrite their ancestry simply because it is the highest coherence layer.
+
+Protocol: [`docs/v1.3-multiverse-semantics.md`](docs/v1.3-multiverse-semantics.md)
+
+Invariants: [`docs/v1.3-invariants.md`](docs/v1.3-invariants.md)
+
+Machine-readable contracts:
+
+- [`schemas/potential-branch.schema.json`](schemas/potential-branch.schema.json)
+- [`schemas/branch-commit-receipt.schema.json`](schemas/branch-commit-receipt.schema.json)
+- [`schemas/incursion-receipt.schema.json`](schemas/incursion-receipt.schema.json)
+- [`schemas/composite-reality-receipt.schema.json`](schemas/composite-reality-receipt.schema.json)
 
 ## v1.2 — Trust-Root Evolution
 
@@ -61,35 +158,11 @@ Current Policy N
 A signs exact transition ----\
                               +--> Policy N+1
 B signs exact transition ----/
-
-C optional
-```
-
-Each approval binds:
-
-```text
-current_policy_hash
-next root set
-next threshold
-reason
-transition time
-```
-
-The next policy is hash-linked to the previous one:
-
-```text
-Policy N
-   |
-   | previous_policy_hash
-   v
-Policy N+1
 ```
 
 Trust policy is persisted in SQLite. Bootstrap environment roots initialize an empty database once; after initialization, persisted trust state is authoritative. Restarting a worker with stale bootstrap roots cannot silently roll a rotated policy backward.
 
 Rotation is committed under `BEGIN IMMEDIATE`, so the current-policy quorum check and successor write occur against one serialized state.
-
-A successful transition emits a `TrustTransitionReceipt` binding predecessor, successor, required quorum, exact approvals, reason, and time.
 
 Most importantly, after rotation:
 
@@ -101,12 +174,6 @@ new root + new-generation grant -> eligible for verification
 Protocol: [`docs/v1.2-trust-root-evolution.md`](docs/v1.2-trust-root-evolution.md)
 
 Invariants: [`docs/v1.2-invariants.md`](docs/v1.2-invariants.md)
-
-Machine-readable contracts:
-
-- [`schemas/trust-policy.schema.json`](schemas/trust-policy.schema.json)
-- [`schemas/trust-approval.schema.json`](schemas/trust-approval.schema.json)
-- [`schemas/trust-transition-receipt.schema.json`](schemas/trust-transition-receipt.schema.json)
 
 ## v1.1 — Full Runtime Plane
 
@@ -131,20 +198,7 @@ ATMAN Runtime
   +-> merge_branches
 ```
 
-The governed role map is:
-
-```text
-observe_space       -> A1_OBSERVER
-observe_time        -> A2_OBSERVER
-cross_axis_bind     -> A3_BINDER
-global_coherence    -> A4_KEEPER
-issue_use_token     -> USE_TOKEN_ISSUER
-consume_use_token   -> USE_TOKEN_CONSUMER
-revoke_use_token    -> USE_TOKEN_REVOKER
-merge_branches      -> BRANCH_MERGER
-```
-
-`CONSUMED` / `REVOKED` state is loaded from SQLite and mutated inside a `BEGIN IMMEDIATE` transaction. A stale client snapshot cannot become current authorization state.
+`CONSUMED` / `REVOKED` state is loaded from SQLite and mutated inside a `BEGIN IMMEDIATE` transaction.
 
 > **At most one terminal authorization event may commit for an exact token digest.**
 
@@ -175,25 +229,26 @@ Invariants: [`docs/v1.0-invariants.md`](docs/v1.0-invariants.md)
 - **v0.8** — Ed25519 signer identity, roles, scopes, and policy generations.
 - **v0.9** — exact pre-execution authority enforcement.
 
-See [`docs/`](docs/) and [`INVARIANTS.md`](INVARIANTS.md) for the detailed progression.
+See [`docs/`](docs/) for the detailed progression.
 
 ## Why this matters for AI systems
 
-The same integrity problem appears when agents move through working memory, compressed memory, simulations, checkpoints, restored branches, reconciled plans, changing tool contexts, delegated capabilities, revocation, long-horizon execution, and governance changes.
+The same integrity problem appears when agents move through working memory, simulations, alternative plans, checkpoints, restored branches, reconciled memories, changing tool contexts, delegated capabilities, revocation, long-horizon execution, and governance changes.
 
 ATMAN-LATTICE keeps these questions separate:
 
 - Is this still the same identity?
 - Is this the same history?
+- Is this merely a possible future, or was it actually committed?
+- Can two individually valid branches coexist in one execution context?
+- If they cannot coexist, was the resolution explicit?
+- Did a composite result preserve every parent history?
 - Is this representation fresh?
-- Is this branch compatible with that branch?
 - Is this authorization still available?
 - Did this signer actually have authority?
 - Was authority checked against the exact action?
 - Did privileged execution occur inside the intended trust boundary?
-- Did terminal authorization state come from the current runtime store?
 - Who had authority to change the set that defines authority?
-- Can that governance transition itself be replayed, rolled back, or silently replaced?
 
 ## Run
 
@@ -208,33 +263,21 @@ Reference runtime worker:
 python -m model.runtime_worker
 ```
 
-It accepts both:
+It accepts:
 
 ```text
 ATMAN-RUNTIME/1.1  — privileged execution plane
 ATMAN-TRUST/1.2    — trust governance plane
 ```
 
-Reference deployment configuration includes:
+The v1.3 multiverse semantics currently live as explicit executable model primitives rather than a new wire protocol.
 
-```text
-ATMAN_TRUSTED_ISSUER_KEYS
-ATMAN_POLICY_GENERATION
-ATMAN_TRUST_THRESHOLD
-ATMAN_TRUST_BOOTSTRAP_ACTIVATED_AT
-ATMAN_RUNTIME_NOW
-ATMAN_ATTESTATION_KEYS
-ATMAN_TOKEN_KEYS
-ATMAN_EVENT_KEYS
-ATMAN_RUNTIME_DB
-```
-
-This remains a **reference process/database boundary**, not a hostile-host sandbox. Production use additionally requires protected private keys, protected durable storage, authenticated transport, OS/container isolation, rollback-resistant backups, database/file permissions, and operational governance.
+This remains a **reference process/database and formal-model boundary**, not a hostile-host sandbox or a claim about physical multiverses. Production use additionally requires protected keys, protected durable storage, authenticated transport, rollback-resistant backups, database/file permissions, and operational governance.
 
 ## Status
 
-**v1.2.0 — Trust-Root Evolution research core.**
+**v1.3.0 — Multiverse Semantics research core.**
 
-The project now spans identity continuity, cryptographic lineage, freshness, restore/fork semantics, branch reconciliation, one-time authorization, asymmetric signer authority, pre-execution enforcement, process-separated privileged execution, atomically serialized authorization state, and quorum-governed trust-root evolution with persisted policy generations.
+The project now spans identity continuity, cryptographic lineage, potential-vs-committed futures, restore/fork semantics, cross-branch compatibility, narrative-preserving composition, one-time authorization, asymmetric signer authority, runtime enforcement, atomically serialized authorization state, and quorum-governed trust-root evolution.
 
-Next targets: authenticated runtime transport, rollback-resistant trust-state checkpoints, emergency recovery governance, compensation receipts, generalized ancestry proofs, concurrency stress tests, and integration with real agent memory/checkpoint/tool systems.
+Next targets: branch-capacity / verification-pressure semantics, rollback-resistant trust recovery, emergency governance, compensation receipts, generalized ancestry proofs, concurrency stress tests, and integration with real agent planning/memory/tool systems.
