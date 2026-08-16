@@ -223,6 +223,14 @@ def a3_geometric_gate(
         torsion_hash = torsion.receipt.torsion_hash
         torsion_status = torsion.receipt.status
         evidence_refs.append(f"torsion:{torsion_hash}")
+        identities = {
+            torsion.origin.identity_ref,
+            torsion.path_ab.identity_ref,
+            torsion.path_ba.identity_ref,
+        }
+        if identities != {base_a3.subject_identity_ref}:
+            decision = "FAIL"
+            reasons.append("torsion_identity_mismatch")
         if not valid:
             decision = "FAIL"
             reasons.extend(f"torsion_evidence:{item}" for item in limitations)
@@ -242,6 +250,10 @@ def a3_geometric_gate(
         curvature_hash = curvature.receipt.curvature_hash
         curvature_status = curvature.receipt.status
         evidence_refs.append(f"curvature:{curvature_hash}")
+        identities = {curvature.origin.identity_ref, curvature.returned.identity_ref}
+        if identities != {base_a3.subject_identity_ref}:
+            decision = "FAIL"
+            reasons.append("curvature_identity_mismatch")
         if not valid:
             decision = "FAIL"
             reasons.extend(f"curvature_evidence:{item}" for item in limitations)
