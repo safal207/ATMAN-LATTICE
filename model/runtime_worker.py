@@ -22,7 +22,6 @@ from model.runtime_protocol import (
     authority_grant_from_dict,
     authority_proof_from_dict,
     authorization_event_to_dict,
-    authorization_ledger_from_dict,
     authorization_ledger_to_dict,
     conflict_resolution_from_dict,
     identity_receipt_from_dict,
@@ -36,6 +35,7 @@ from model.runtime_protocol import (
     use_token_from_dict,
     use_token_to_dict,
 )
+from model.runtime_store import mutate_authorization_ledger
 
 
 def _hex_key_map_from_env(name: str) -> dict[str, bytes]:
@@ -160,30 +160,41 @@ def execute_request(request: Mapping[str, object]) -> dict[str, object]:
         token_keys = _hex_key_map_from_env("ATMAN_TOKEN_KEYS")
         event_keys = _hex_key_map_from_env("ATMAN_EVENT_KEYS")
         event_key_id = str(payload.get("event_key_id", ""))
-        ledger = authorization_ledger_from_dict(_mapping(payload.get("ledger"), "ledger"))
         token = use_token_from_dict(_mapping(payload.get("token"), "token"))
-        common = dict(
-            now=enforcement.now,
-            token_keys=token_keys,
-            event_keys=event_keys,
-            expected_ledger_generation=int(payload["expected_ledger_generation"]),
-            actor_ref=str(payload["actor_ref"]),
-            reason_ref=str(payload["reason_ref"]),
-            event_key_id=event_key_id,
-            event_secret=_required_server_secret(event_keys, event_key_id, "event"),
-            grant=grant,
-            proof=proof,
-            enforcement=enforcement,
-        )
-        if operation == "consume_use_token":
-            updated, event = governed_consume_use_token(
-                ledger,
-                token,
-                current_context=payload.get("current_context"),
-                **common,
+        db_path = os.environ["ATMAN_RUNTIME_DB"]
+        expected_generation = int(payload["expected_ledger_generation"])
+        actor_ref = str(payload["actor_ref"])
+        reason_ref = str(payload["reason_ref"])
+        event_secret = _required_server_secret(event_keys, event_key_id, "event")
+
+        def mutation(current):
+            common = dict(
+                now=enforcement.now,
+                token_keys=token_keys,
+                event_keys=event_keys,
+                expected_ledger_generation=expected_generation,
+                actor_ref=actor_ref,
+                reason_ref=reason_ref,
+                event_key_id=event_key_id,
+                event_secret=event_secret,
+                grant=grant,
+                proof=proof,
+                enforcement=enforcement,
             )
-        else:
-            updated, event = governed_revoke_use_token(ledger, token, **common)
+            if operation == "consume_use_token":
+                return governed_consume_use_token(
+                    current,
+                    token,
+                    current_context=payload.get("current_context"),
+                    **common,
+                )
+            return governed_revoke_use_token(current, token, **common)
+
+        updated, event = mutate_authorization_ledger(
+            db_path,
+            token.subject_identity_ref,
+            mutation,
+        )
         result = {
             "ledger": authorization_ledger_to_dict(updated),
             "event": authorization_event_to_dict(event),
