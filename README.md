@@ -1,10 +1,10 @@
 # ATMAN-LATTICE
 
-**A Projective Spacetime Architecture for Identity, Authority, Verification, Active Learning, Calibration, Governed Revision, Structural Evidence Graphs, and Coherence**
+**A Projective Spacetime Architecture for Identity, Authority, Verification, Active Learning, Calibration, Governed Revision, Structural Evidence Graphs, Held-Out Validation, and Coherence**
 
-ATMAN-LATTICE is an exploratory research repository for modeling identity across state, space, time, lineage, branching, reconciliation, authorization, transition geometry, finite verification capacity, evidence-bound learning, competing hypotheses, correlated-evidence provenance, observer calibration, governed parameter correction, and governed revision of the observer's own statistical dependency graph.
+ATMAN-LATTICE is an exploratory research repository for modeling identity across state, space, time, lineage, branching, reconciliation, authorization, transition geometry, finite verification capacity, evidence-bound learning, competing hypotheses, correlated-evidence provenance, observer calibration, governed parameter correction, structural dependency-graph revision, and held-out validation of structural learning.
 
-> What must remain invariant when representation changes, futures branch, paths become order-sensitive, evidence changes beliefs, later outcomes reveal observer error, and the observer then proposes to change both its parameters and its map of statistical dependencies?
+> What must remain invariant when representation changes, futures branch, evidence changes beliefs, the observer discovers that its model was wrong, proposes a new map of statistical dependencies, and then must prove that the new map generalizes beyond the data that suggested it?
 
 The repository does **not** claim to prove metaphysical statements about the soul, consciousness, Atman, quantum worlds, physical multiverses, physical torsion fields, or real-world causal structure. Those terms are conceptual labels and thought experiments inside a formal engineering model.
 
@@ -26,7 +26,6 @@ Historical PASS != Current Authorization
 Same identity != Same history
 Potentiality != History
 Keeper != Sovereign
-Valid(A) + Valid(B) != Commute(A,B)
 Same result != Same journey
 Torsion != Invalidity
 HOLD != FAIL
@@ -54,47 +53,57 @@ CalibrationSignal != RewriteAuthority
 Proposal != Mutation
 ReplayImprovement != Approval
 Review != Apply
-OldReplay != CurrentRevisionAuthority
 LearningFromError != ErasingError
 HistoricalFit != FutureTruth
 CorrelationChallenge != CausalityProof
 GraphEdge != PhysicalCause
-StructuralProposal != StructuralMutation
-OldStructuralReplay != CurrentStructuralRevisionAuthority
 LearningStructure != ErasingPriorStructure
+SelectionData != EvaluationData
+BetterReplay != BetterGeneralization
+MoreEdges != MoreKnowledge
+HeldOutImprovement != CausalityProof
+RegularizedSelection != Truth
+Selected != Applied
 ```
 
-# v1.14 — Structural Dependency-Graph Revision
+# v1.15 — Held-Out Structural Validation / Complexity-Regularized Graph Selection
 
-v1.14 moves from changing likelihood numbers to changing the **structure of the observer's statistical dependency model** while keeping causality claims outside what the protocol can prove.
+v1.14 gave the observer a governed way to propose and replay changes to its statistical dependency graph. v1.15 adds a stricter question:
+
+> Did the structural hypothesis improve only the history used to discover it, or does it also improve a separate held-out partition after paying an explicit complexity cost?
 
 ```text
-historical dependency calibration
+full dependency history
+          |
+ deterministic split
+      /         \
+selection      evaluation
+   |               |
+proposal            |
+selection replay    |
+   |                |
+STRUCTURE_IMPROVED  |
+      \             /
+       held-out validation
               |
-     INDEPENDENCE_CHALLENGED
+      raw Brier improvement
+              +
+      explicit edge penalty
               |
-              v
- competing structural proposals
-        /             \
-      L -> R         R -> L
-        \             /
-         \           /
-      leave-one-out replay
+    HELDOUT_IMPROVED
               |
-      independent review
+complete competing-candidate selection
               |
-       APPROVE/HOLD/REJECT
+independent review
               |
-        use-time replay
-        + graph freshness
+use-time history/base/candidate-set freshness
               |
-              v
         Graph N -> N+1
 
-Graph N remains preserved
+Graph N, rejected candidates, and evaluation receipts remain preserved.
 ```
 
-The ten process-level planes are now:
+## Eleven process-level planes
 
 ```text
 ATMAN-RUNTIME/1.1       privileged execution
@@ -107,176 +116,164 @@ ATMAN-MULTI/1.11        competing hypotheses / correlated-evidence provenance
 ATMAN-CALIBRATION/1.12  historical observer audit
 ATMAN-REVISION/1.13     governed likelihood-parameter revision
 ATMAN-GRAPH/1.14        governed structural dependency-graph revision
+ATMAN-STRUCTURE/1.15    held-out structural validation / regularized selection
 ```
 
-## Statistical conditioning is not causality
+## Selection data and evaluation data are different objects
 
-A v1.14 dependency edge has exactly one relation:
+A `StructuralValidationPolicy` fixes the held-out split policy and the structural complexity penalty.
+
+For every persisted dependency-pair sample, v1.15 derives a deterministic bucket from the immutable `sample_hash`. Evaluation uses bucket `0`; all other buckets are selection.
+
+```text
+History = Selection union Evaluation
+Selection intersection Evaluation = empty
+```
+
+The split has no client-supplied per-run random salt.
+
+A `StructuralValidationCandidate` is built using **selection data only**. Its embedded v1.14 replay must bind exactly the selection sample hashes.
+
+```text
+SelectionData != EvaluationData
+```
+
+## Better replay is not better generalization
+
+A candidate can pass selection replay and still fail held-out evaluation.
+
+Statuses:
+
+```text
+INSUFFICIENT_HELDOUT
+HELDOUT_IMPROVED
+OVERFIT_SIGNAL
+COMPLEXITY_REJECTED
+```
+
+`OVERFIT_SIGNAL` means:
+
+```text
+selection replay improved
+held-out raw prediction did not improve
+```
+
+Therefore:
+
+```text
+BetterReplay != BetterGeneralization
+```
+
+The failed candidate remains preserved as evidence of a hypothesis that looked good in selection but did not generalize under the bound evaluation procedure.
+
+## Complexity is charged explicitly
+
+v1.15 scores both predictive fit and graph size:
+
+```text
+base_regularized_brier = base_mean_brier + edge_penalty_ppm * base_edge_count
+proposed_regularized_brier = proposed_mean_brier + edge_penalty_ppm * proposed_edge_count
+regularized_improvement = base_regularized_brier - proposed_regularized_brier
+```
+
+A new edge that improves raw held-out Brier but not enough to pay its configured complexity penalty becomes:
+
+```text
+COMPLEXITY_REJECTED
+```
+
+```text
+MoreEdges != MoreKnowledge
+```
+
+The penalty is governance policy, not truth. It changes selection preference, not historical observations.
+
+## Selection cannot hide competing validated candidates
+
+`finalize_structural_selection` does not accept a client-curated candidate list.
+
+The runtime automatically loads every held-out-validated candidate sharing the exact:
+
+```text
+subject identity
+pair key
+base graph hash
+validation policy hash
+dependency-history hash
+```
+
+Only `HELDOUT_IMPROVED` candidates are eligible. The winner is the largest positive regularized improvement with deterministic hash tie breaking.
+
+If none passes:
+
+```text
+NO_ELIGIBLE_CANDIDATE
+```
+
+This is a statement about the current candidate set and evaluation policy, not about reality:
+
+```text
+NO_ELIGIBLE_CANDIDATE != NoRealDependency
+```
+
+## Selection has use-time freshness
+
+A selection binds the complete candidate and validation set.
+
+If a new held-out-validated competitor appears after selection:
+
+```text
+OldCandidateSet != CurrentSelectionAuthority
+```
+
+If new dependency-pair evidence appears:
+
+```text
+OldHistory != CurrentSelectionAuthority
+```
+
+If the base graph changed:
+
+```text
+OldBaseGraph != CurrentSelectionAuthority
+```
+
+The runtime recomputes the current deterministic selection before apply. A stale receipt cannot mutate the current graph.
+
+## Independent authority
+
+v1.15 adds:
+
+```text
+STRUCTURAL_VALIDATION_POLICY_KEEPER
+STRUCTURAL_CANDIDATE_PROPOSER
+HELDOUT_STRUCTURAL_VALIDATOR
+STRUCTURAL_MODEL_SELECTOR
+STRUCTURAL_SELECTION_REVIEWER
+VALIDATED_STRUCTURAL_SELECTION_APPLIER
+```
+
+The held-out validator cannot be the candidate proposer. The reviewer cannot be the selector or the selected candidate proposer.
+
+```text
+Propose != Validate != Select != Review != Apply
+```
+
+## Held-out fit is still not causality
+
+The underlying v1.14 graph relation remains exactly:
 
 ```text
 STATISTICAL_CONDITIONING
 ```
 
-There is deliberately no `CAUSES` relation in the reference protocol.
+A held-out improvement means the proposed statistical structure performed better under the bound evaluation and regularization policy.
+
+It does not establish a physical mechanism or causal direction.
 
 ```text
-GraphEdge != PhysicalCause
-ValidGraphReceipt != ProvenPhysicalCausality
-```
-
-A graph receipt proves what statistical structure the system committed and how that structure changed. It does not prove a physical mechanism.
-
-## Direction is not inferred from correlation
-
-When v1.12 reports:
-
-```text
-INDEPENDENCE_CHALLENGED
-```
-
-v1.14 does not silently choose a direction.
-
-The same historical challenge may generate competing proposals:
-
-```text
-L -> R
-R -> L
-```
-
-Both bind the same exact base graph generation and calibration challenge.
-
-```text
-CorrelationChallenge != DirectionProof
-CorrelationChallenge != CausalityProof
-```
-
-## Graph state is versioned and acyclic
-
-`DependencyGraphState` binds:
-
-```text
-graph_ref
-subject_identity_ref
-generation
-canonical edge set
-evidence_state_hash
-graph_hash
-```
-
-The reference graph is a DAG. A proposal that would create a cycle is rejected before issuance.
-
-```text
-A -> B -> C
-C -> A   # rejected in v1.14
-```
-
-This is a constraint of this reference model, not a claim that feedback systems cannot exist. Cyclic/dynamic graphical models require a later explicit model.
-
-## Structural replay uses leave-one-out history
-
-A structural proposal is not approved because a correlation statistic looks large.
-
-It must replay on the persisted `DependencyPairSample` history.
-
-For every historical case `i`:
-
-```text
-remove i from the training counts
-score base structure on i
-score proposed structure on i
-```
-
-An independent structure predicts from the remaining marginal child-positive rate.
-
-A conditional structure predicts from the remaining child-positive rate among observations with the same parent outcome.
-
-Both are scored with deterministic Brier score.
-
-Replay outcomes:
-
-```text
-INSUFFICIENT_REPLAY
-STRUCTURE_IMPROVED
-NO_STRUCTURE_IMPROVEMENT
-```
-
-Only `STRUCTURE_IMPROVED` can be approved.
-
-```text
-ReplayImprovement != CausalityProof
-HistoricalStructuralFit != FutureTruth
-```
-
-## Review and apply remain separate
-
-The structural revision chain is:
-
-```text
-DependencyCalibrationSnapshot
- -> StructuralGraphRevisionProposal
- -> StructuralGraphReplayReceipt
- -> StructuralGraphReviewReceipt
- -> DependencyGraphRevisionReceipt
-```
-
-The reviewer must be distinct from the proposer.
-
-```text
-Proposal != Replay != Review != Apply
-APPROVE != Mutation
-```
-
-## Apply revalidates current evidence
-
-At apply time, the runtime recomputes structural replay from current dependency-pair history.
-
-If a new resolved sample appeared after review, the old replay is rejected:
-
-```text
-OldStructuralReplay != CurrentStructuralRevisionAuthority
-```
-
-The current graph hash and generation must also still match the proposal base.
-
-This gives competing proposals useful semantics: several alternatives may coexist against Graph N, but after one becomes Graph N+1 the others remain preserved and become stale rather than silently applying to a different world.
-
-## Learning structure does not erase the old map
-
-Successful apply stores complete old and new graph JSON in append-only history:
-
-```text
-Graph N
-  |
-proposal -> replay -> review
-  |
-Graph N+1
-```
-
-Both generations remain inspectable.
-
-```text
-LearningStructure != ErasingPriorStructure
-```
-
-Historical v1.11 evidence dependency receipts are not rewritten. Event-level source hashes, derivations, dependency declarations, and parent evidence hashes remain historical facts.
-
-## Authority separation
-
-v1.14 adds:
-
-```text
-DEPENDENCY_GRAPH_BOOTSTRAP_KEEPER
-STRUCTURAL_GRAPH_REVISION_PROPOSER
-STRUCTURAL_GRAPH_REPLAY_KEEPER
-STRUCTURAL_GRAPH_REVISION_REVIEWER
-STRUCTURAL_GRAPH_REVISION_APPLIER
-```
-
-The bootstrap permission initializes generation 0 only and cannot overwrite an existing graph.
-
-```text
-Bootstrap != OngoingRewriteAuthority
-Propose != Replay != Review != Apply
+HeldOutImprovement != CausalityProof
+RegularizedSelection != Truth
 ```
 
 ## Runtime
@@ -284,37 +281,51 @@ Propose != Replay != Review != Apply
 Worker:
 
 ```bash
-python -m model.graph_worker
+python -m model.structure_worker
 ```
 
 Protocol operations:
 
 ```text
-register_dependency_graph
-register_graph_revision_proposal
-record_graph_revision_replay
-record_graph_revision_review
-apply_graph_revision
-get_graph_revision_state
+register_structural_validation_policy
+register_structural_candidate
+record_heldout_validation
+finalize_structural_selection
+record_structural_selection_review
+apply_validated_structural_selection
+get_structural_validation_state
 ```
 
-Protocol: [`docs/v1.14-structural-dependency-graph-revision.md`](docs/v1.14-structural-dependency-graph-revision.md)
+Protocol: [`docs/v1.15-heldout-structural-validation.md`](docs/v1.15-heldout-structural-validation.md)
 
-Invariants: [`docs/v1.14-invariants.md`](docs/v1.14-invariants.md)
+Invariants: [`docs/v1.15-invariants.md`](docs/v1.15-invariants.md)
 
 Machine-readable contracts:
 
-- [`schemas/dependency-graph-state.schema.json`](schemas/dependency-graph-state.schema.json)
-- [`schemas/structural-graph-revision-proposal.schema.json`](schemas/structural-graph-revision-proposal.schema.json)
-- [`schemas/structural-graph-replay.schema.json`](schemas/structural-graph-replay.schema.json)
-- [`schemas/structural-graph-review.schema.json`](schemas/structural-graph-review.schema.json)
-- [`schemas/dependency-graph-revision.schema.json`](schemas/dependency-graph-revision.schema.json)
+- [`schemas/structural-validation-policy.schema.json`](schemas/structural-validation-policy.schema.json)
+- [`schemas/structural-validation-candidate.schema.json`](schemas/structural-validation-candidate.schema.json)
+- [`schemas/heldout-structural-validation.schema.json`](schemas/heldout-structural-validation.schema.json)
+- [`schemas/structural-selection.schema.json`](schemas/structural-selection.schema.json)
+- [`schemas/structural-selection-review.schema.json`](schemas/structural-selection-review.schema.json)
+- [`schemas/validated-dependency-graph-revision.schema.json`](schemas/validated-dependency-graph-revision.schema.json)
 
 # Prior executable layers
 
-## v1.13 — Calibration-Governed Model Revision
+## v1.14 — Structural Dependency-Graph Revision
 
-Historical model error can produce a parameter revision proposal, but mutation requires counterfactual replay, independent review, and use-time replay freshness.
+Correlation challenges can produce competing directed `STATISTICAL_CONDITIONING` proposals. Structural mutation requires versioned DAG state, leave-one-out replay, independent review, use-time replay freshness, and append-only old/new graph history.
+
+```text
+CorrelationChallenge != CausalityProof
+GraphEdge != PhysicalCause
+StructuralProposal != StructuralMutation
+OldStructuralReplay != CurrentStructuralRevisionAuthority
+LearningStructure != ErasingPriorStructure
+```
+
+Protocol: [`docs/v1.14-structural-dependency-graph-revision.md`](docs/v1.14-structural-dependency-graph-revision.md) · Invariants: [`docs/v1.14-invariants.md`](docs/v1.14-invariants.md)
+
+## v1.13 — Calibration-Governed Model Revision
 
 ```text
 CalibrationSignal != RewriteAuthority
@@ -326,8 +337,6 @@ LearningFromError != ErasingError
 HistoricalFit != FutureTruth
 ```
 
-Protocol: [`docs/v1.13-calibration-governed-model-revision.md`](docs/v1.13-calibration-governed-model-revision.md) · Invariants: [`docs/v1.13-invariants.md`](docs/v1.13-invariants.md)
-
 ## v1.12 — Calibration / Dependency Learning
 
 ```text
@@ -335,7 +344,6 @@ PosthocModel != HistoricalForecast
 Confidence != Calibration
 NoDependencySignal != ProvenIndependence
 DependencySignal != ProvenCausality
-CalibrationSignal != RewriteAuthority
 ```
 
 ## v1.11 — Multi-Hypothesis / Correlated Evidence Geometry
@@ -394,14 +402,6 @@ Torsion and curvature evidence enter A3/A4 under explicit `PASS < HOLD < FAIL` p
 
 ## v1.4 — Transition Geometry
 
-\[
-\tau_X(A,B)=\Delta(B\circ A(X),A\circ B(X))
-\]
-
-\[
-\kappa_X(L)=\Delta(X,L(X))
-\]
-
 ```text
 Same result != Same journey
 Torsion != Invalidity
@@ -413,7 +413,6 @@ Semantic closure != History erasure
 ```text
 Potentiality != History
 Valid(A) + Valid(B) != Coexist(A,B)
-Composite(C) => Parents(C) preserved
 Preserve(Worlds) != AuthorityToRewrite(Worlds)
 ```
 
@@ -454,6 +453,7 @@ python -m model.multi_worker
 python -m model.calibration_worker
 python -m model.revision_worker
 python -m model.graph_worker
+python -m model.structure_worker
 ```
 
 Reference protocols:
@@ -469,14 +469,15 @@ ATMAN-MULTI/1.11
 ATMAN-CALIBRATION/1.12
 ATMAN-REVISION/1.13
 ATMAN-GRAPH/1.14
+ATMAN-STRUCTURE/1.15
 ```
 
-This remains a **reference process/database and formal-model boundary**, not a hostile-host sandbox and not a claim about physical multiverses, physical torsion, or real-world causality. Structural replay is historical predictive evaluation, not causal identification and not proof of out-of-distribution performance. Production use additionally requires protected keys, authenticated transport, rollback-resistant storage, protected resolution provenance, held-out evaluation, drift monitoring, causal-identification methodology where causal claims matter, database/file permissions, and operational governance.
+This remains a **reference process/database and formal-model boundary**, not a hostile-host sandbox and not a claim about physical multiverses, physical torsion, or real-world causality. Held-out validation reduces one form of structural overfitting but does not guarantee out-of-distribution performance. Production use additionally requires protected evaluation data, leakage controls, multiple-comparison correction when many structures are searched, temporal/external validation where appropriate, protected keys, authenticated transport, rollback-resistant storage, causal-identification methodology where causal claims matter, and operational governance.
 
 ## Status
 
-**v1.14.0 — Structural Dependency-Graph Revision research core.**
+**v1.15.0 — Held-Out Structural Validation / Complexity-Regularized Graph Selection research core.**
 
-The project now spans identity continuity, cryptographic lineage, branching/reconciliation, transition torsion and curvature, geometric A3/A4 coherence, finite verification capacity, durable verification debt, adaptive cost allocation, active information gain, evidence-bound Bayesian learning, multi-hypothesis distributions, correlated-evidence provenance, observer calibration, governed parameter revision, versioned statistical dependency DAGs, competing orientation proposals, leave-one-out structural replay, independent review, use-time structural freshness, append-only old/new graph history, process-separated execution, and quorum-governed trust evolution.
+The project now spans identity continuity, cryptographic lineage, branching/reconciliation, transition geometry, geometric A3/A4 coherence, finite verification capacity, durable verification debt, adaptive cost allocation, active information gain, evidence-bound Bayesian learning, competing hypotheses, correlated-evidence provenance, observer calibration, governed parameter revision, versioned statistical dependency DAGs, competing structural proposals, selection-only replay, deterministic held-out evaluation, explicit graph-complexity penalties, complete-candidate-set selection, independent review, use-time evidence/candidate/base freshness, append-only old/new graph history, process-separated execution, and quorum-governed trust evolution.
 
-Next targets: held-out structural evaluation partitions, graph-complexity penalties, resolver correction receipts, rollback-resistant learning history, dynamic/cyclic dependency models, causal-identification interfaces that remain explicitly separate from correlation-based structure learning, and concurrency stress across calibration/revision/graph races.
+Next targets: multiple-comparison / search-budget correction across large graph proposal spaces, nested or temporal structural validation, resolver correction receipts, rollback-resistant learning history, dynamic/cyclic dependency models, and causal-identification interfaces that remain explicitly separate from correlation-based structure learning.
