@@ -1,10 +1,10 @@
 # ATMAN-LATTICE
 
-**A Projective Spacetime Architecture for Identity, Authority, Verification, Active Learning, Evidence Geometry, Calibration, and Coherence**
+**A Projective Spacetime Architecture for Identity, Authority, Verification, Active Learning, Calibration, Governed Revision, and Coherence**
 
-ATMAN-LATTICE is an exploratory research repository for modeling identity across state, space, time, lineage, branching, reconciliation, authorization, transition geometry, finite verification capacity, evidence-bound learning, competing hypotheses, correlated-evidence provenance, and historical observer calibration.
+ATMAN-LATTICE is an exploratory research repository for modeling identity across state, space, time, lineage, branching, reconciliation, authorization, transition geometry, finite verification capacity, evidence-bound learning, competing hypotheses, correlated-evidence provenance, observer calibration, and governed correction of the observer's own models.
 
-> What must remain invariant when representation changes, futures branch, paths become order-sensitive, verification capacity saturates, evidence changes beliefs, and later outcomes reveal that the observer itself may have been systematically wrong?
+> What must remain invariant when representation changes, futures branch, paths become order-sensitive, evidence changes beliefs, later outcomes reveal that the observer was wrong, and the observer then proposes to change itself?
 
 The repository does **not** claim to prove metaphysical statements about the soul, consciousness, Atman, quantum worlds, physical multiverses, or physical torsion fields. Those terms are conceptual labels and thought experiments inside a formal engineering model.
 
@@ -25,14 +25,12 @@ Local PASS != Global Coherence
 Historical PASS != Current Authorization
 Same identity != Same history
 Potentiality != History
-Valid(A) + Valid(B) != Coexist(A,B)
 Keeper != Sovereign
 Valid(A) + Valid(B) != Commute(A,B)
 Same result != Same journey
 Torsion != Invalidity
 HOLD != FAIL
 Unverified != Invalid
-ADMITTED != VERIFIED
 Deferred != Pruned
 COMPLETED != PASS
 Preview != Finalization
@@ -44,27 +42,54 @@ SELECTED != VERIFIED
 Completion != EvidenceInterpretation
 Interpretation != Posterior
 Posterior != Truth
-OneCompletion != InfiniteEvidence
-LikelihoodRebase != LikelihoodReEstimation
-PosteriorDistribution != Truth
 SameSourceEvent != IndependentEvidenceTwice
 DifferentDerivation != IndependentSource
 DuplicateEvidence != NewKnowledge
 ConditionalEvidence != IndependentEvidence
-ValidDependencyReceipt != ProvenRealWorldIndependence
-CalibrationTarget != PosthocModel
 Resolution != OntologicalTruth
 Confidence != Calibration
 NoDependencySignal != ProvenIndependence
 DependencySignal != ProvenCausality
 CalibrationSignal != RewriteAuthority
+Proposal != Mutation
+ReplayImprovement != Approval
+Review != Apply
+OldReplay != CurrentRevisionAuthority
+LearningFromError != ErasingError
+HistoricalFit != FutureTruth
 ```
 
-# v1.12 — Calibration / Dependency Learning
+# v1.13 — Calibration-Governed Model Revision
 
-v1.12 audits the observer itself.
+v1.13 creates a governed correction path from historical model error to a new model generation without allowing the observer to hide or silently overwrite its earlier mistake.
 
-The eight process-level planes are now:
+```text
+historical calibration
+        |
+MISCALIBRATION_SIGNAL
+        |
+        v
+ModelRevisionProposal
+        |
+        v
+CounterfactualReplay
+        |
+        v
+Independent Review
+        |
+        v
+APPROVE / HOLD / REJECT
+        |
+        v
+use-time revalidation
+        |
+        v
+Model N -> Model N+1
+
+old Model N remains preserved
+```
+
+The nine process-level planes are now:
 
 ```text
 ATMAN-RUNTIME/1.1       privileged execution
@@ -72,253 +97,222 @@ ATMAN-TRUST/1.2         trust-root governance
 ATMAN-VERIFY/1.7        durable verification / completion / finalization
 ATMAN-ECONOMY/1.8       measured verification cost / finite budget
 ATMAN-ACTIVE/1.9        expected information gain / next-check selection
-ATMAN-BAYES/1.10        binary evidence interpretation / posterior update
+ATMAN-BAYES/1.10        evidence interpretation / posterior update
 ATMAN-MULTI/1.11        competing hypotheses / correlated-evidence provenance
-ATMAN-CALIBRATION/1.12  historical forecast, likelihood, and dependency audit
+ATMAN-CALIBRATION/1.12  historical observer audit
+ATMAN-REVISION/1.13     governed model revision
 ```
 
-## Freeze assumptions before the outcome
+## Calibration can trigger a proposal, not a mutation
 
-Calibration is meaningless if the model can be changed after the answer is known.
+The revision runtime reconstructs the current v1.12 calibration-family snapshot from persisted observations.
 
-Before verification completion, `CalibrationTargetReceipt` freezes the exact:
+A proposal is accepted only when the snapshot says:
 
 ```text
-distribution hash + probability vector
-likelihood model hash + likelihood vector
-dependency hash + mode + parent evidence
-source / derivation provenance
-candidate / identity
-calibration family
-commit time
+MISCALIBRATION_SIGNAL
+```
+
+It binds the exact:
+
+```text
+current distribution hash
+current likelihood model hash
+calibration snapshot hash
+current model generation
+proposed next-generation likelihood vector
+conditioning evidence context
+proposer
+reason
 ```
 
 So:
 
 ```text
-PosthocModel != HistoricalForecast
-Calibration requires frozen pre-outcome assumptions.
+CalibrationSignal != RewriteAuthority
+Proposal != Mutation
 ```
 
-The runtime rejects target registration after the verification result or after a case has already been resolved.
+## Counterfactual replay
 
-## Resolution is separate from truth
+A proposal is replayed on the same persisted, resolved historical observations.
 
-`ResolvedOutcomeReceipt` binds a distribution/case to a resolved hypothesis and to a provenance digest for the resolution source.
+Every replay case records:
 
 ```text
-Resolution != OntologicalTruth
+historical calibration hash
+resolved hypothesis
+observed POSITIVE / NEGATIVE
+old predicted probability
+proposed predicted probability
+old Brier score
+proposed Brier score
 ```
 
-The resolution is the current authoritative calibration label. The reference model does not claim the resolver is infallible or that the hypothesis set contains every possible real-world explanation.
-
-A resolution is immutable once registered in v1.12; correction requires a later explicit protocol rather than silent history replacement.
-
-## Forecast calibration with Brier score
-
-For categorical probabilities:
-
-\[
-Brier=\sum_i(p_i-y_i)^2
-\]
-
-where `y_i=1` for the resolved hypothesis and `0` otherwise.
-
-The implementation stores deterministic integer parts-per-million scores.
-
-A binary intuition:
+The replay receipt binds the exact case set and reports:
 
 ```text
-A=100%, A resolves -> 0 ppm
-A=50%,  A resolves -> 500000 ppm
-A=0%,   A resolves -> 2000000 ppm
+INSUFFICIENT_SCORABLE_CASES
+IMPROVED
+NO_IMPROVEMENT
+```
+
+`IMPROVED` requires strictly lower mean Brier score on the bound history.
+
+```text
+ReplayImprovement != Approval
+HistoricalFit != FutureTruth
+```
+
+Historical improvement is evidence for review, not proof of future correctness.
+
+## Independent review
+
+A proposal cannot approve itself:
+
+```text
+proposer_ref != reviewer_ref
+```
+
+Review outcomes:
+
+```text
+APPROVE
+HOLD
+REJECT
+```
+
+`APPROVE` is structurally forbidden unless the replay is `IMPROVED`.
+
+```text
+Replay != Review
+Review != Apply
+```
+
+## Apply is revalidated at use time
+
+Before mutation the runtime checks again that:
+
+- current model hash still equals the proposal base model;
+- current distribution still equals the proposal base distribution;
+- proposal, replay, and review hashes match exactly;
+- replay is `IMPROVED`;
+- review is `APPROVE`;
+- all currently persisted relevant calibration observations still produce the same replay state.
+
+If new calibration evidence appeared after review:
+
+```text
+old replay
+   |
+new resolved case
+   |
+apply old replay
+   X
+
+stale counterfactual replay
 ```
 
 Therefore:
 
 ```text
-Confidence != Calibration
+OldReplay != CurrentRevisionAuthority
 ```
 
-A confident miss is worse than an uncertain miss.
+A new proposal/replay/review cycle is required.
 
-## Likelihood calibration
+## Learning does not erase the mistake
 
-A v1.11 likelihood model claims:
+Successful apply creates:
 
 ```text
-P(positive evidence | H_i)
+MultiLikelihoodModel generation N+1
 ```
 
-After the case resolves to `H_k`, v1.12 compares the frozen `P(+|H_k)` with the evidence outcome actually observed.
+and moves the current model pointer to it.
 
-Conclusive positive/negative evidence receives a binary Brier score.
-
-`INCONCLUSIVE` is preserved but not forced into a binary calibration label:
+But `model_revision_history` preserves both:
 
 ```text
-INCONCLUSIVE != POSITIVE
-INCONCLUSIVE != NEGATIVE
+base model JSON
+new model JSON
+proposal
+replay
+review
+revision receipt
 ```
 
-## Family-level observer audit
-
-Stable `calibration_family_ref` values allow repeated historical observations to be aggregated into:
+All earlier calibration targets, resolutions, and scores remain untouched.
 
 ```text
-forecast count
-mean categorical Brier
-likelihood scored count
-mean likelihood Brier
-mean predicted positive rate
-observed positive rate
-marginal calibration gap
+NewModel != RewrittenOldModel
+LearningFromError != ErasingError
 ```
 
-The reference diagnostic status is:
+## Authority separation
+
+v1.13 adds:
 
 ```text
-INSUFFICIENT_SAMPLES
-NO_MARGINAL_MISCALIBRATION_SIGNAL
-MISCALIBRATION_SIGNAL
+MODEL_REVISION_PROPOSER
+MODEL_REVISION_REPLAY_KEEPER
+MODEL_REVISION_REVIEWER
+MODEL_REVISION_APPLIER
 ```
 
-Minimum samples and alert thresholds are explicit policy inputs.
+These are independent permissions.
 
 ```text
-DiagnosticPolicy != EvidenceHistory
+Diagnose != Propose != Replay != Review != Apply
 ```
 
-Changing a threshold may change the label, but it does not change the underlying historical receipts.
+## Scope boundary: numeric revision, not causal rewrite
 
-## Dependency learning
+v1.13 revises likelihood **values** while preserving the current hypothesis set and the model's exact conditioning-evidence context.
 
-v1.11 records dependency assumptions before evidence is known:
+It does not automatically convert:
 
 ```text
-INDEPENDENT
-CONDITIONAL
-DUPLICATE
+INDEPENDENCE_CHALLENGED
 ```
 
-v1.12 can accumulate repeated resolved pair samples for the same signal families.
+into a new conditional dependency graph.
 
-For binary signals `L` and `R`, the reference statistic compares:
+That would change the semantic structure of the evidence model, not merely its calibration parameters.
 
 ```text
-observed P(L+ and R+)
+DependencyChallenge != DependencyRewriteAuthority
 ```
 
-with the empirical joint rate expected under independence:
+Protocol: [`docs/v1.13-calibration-governed-model-revision.md`](docs/v1.13-calibration-governed-model-revision.md)
 
-```text
-P(L+) * P(R+)
-```
-
-The signed difference is stored as `independence_gap_bps`.
-
-For a declared independent pair:
-
-```text
-large historical gap -> INDEPENDENCE_CHALLENGED
-small historical gap -> NO_DEPENDENCY_SIGNAL
-```
-
-For a declared conditional pair:
-
-```text
-large historical gap -> CONDITIONAL_DEPENDENCY_SUPPORTED
-small historical gap -> CONDITIONAL_DEPENDENCY_NOT_OBSERVED
-```
-
-The names are deliberately cautious:
-
-```text
-NoDependencySignal != ProvenIndependence
-DependencySignal != ProvenCausality
-```
-
-## Why duplicate evidence is different
-
-`DUPLICATE` is already structurally proven at the provenance level in v1.11 by preserving the same source-event lineage and granting zero new posterior updates.
-
-It is therefore not promoted into an ordinary statistical dependency sample in v1.12.
-
-```text
-DuplicateEvidence != NewKnowledge
-```
-
-## Calibration authority is separated
-
-v1.12 adds:
-
-```text
-CALIBRATION_TARGET_KEEPER
-CALIBRATION_RESOLVER
-CALIBRATION_RECORDER
-```
-
-and preserves:
-
-```text
-FreezeModel != ResolveOutcome
-ResolveOutcome != ScoreModel
-ScoreModel != RewriteModel
-```
-
-The calibration plane is diagnostic and append-only. It cannot directly mutate priors, likelihoods, dependency declarations, A4 decisions, execution permissions, or trust roots.
-
-```text
-CalibrationSignal != RewriteAuthority
-```
-
-## Durable calibration history
-
-The reference SQLite plane stores:
-
-```text
-calibration targets
-resolved outcomes
-forecast calibration receipts
-likelihood calibration receipts
-dependency pair samples
-```
-
-Targets are immutable after precommit. Resolutions are immutable in v1.12. Calibration observations are unique by frozen target/evidence binding, and dependency pair samples are unique by `(pair_key, resolution_hash)`.
-
-Protocol: [`docs/v1.12-calibration-dependency-learning.md`](docs/v1.12-calibration-dependency-learning.md)
-
-Invariants: [`docs/v1.12-invariants.md`](docs/v1.12-invariants.md)
+Invariants: [`docs/v1.13-invariants.md`](docs/v1.13-invariants.md)
 
 Machine-readable contracts:
 
-- [`schemas/calibration-target.schema.json`](schemas/calibration-target.schema.json)
-- [`schemas/resolved-outcome.schema.json`](schemas/resolved-outcome.schema.json)
-- [`schemas/forecast-calibration.schema.json`](schemas/forecast-calibration.schema.json)
-- [`schemas/likelihood-calibration.schema.json`](schemas/likelihood-calibration.schema.json)
-- [`schemas/dependency-pair-sample.schema.json`](schemas/dependency-pair-sample.schema.json)
-- [`schemas/dependency-calibration-snapshot.schema.json`](schemas/dependency-calibration-snapshot.schema.json)
-- [`schemas/calibration-family-snapshot.schema.json`](schemas/calibration-family-snapshot.schema.json)
+- [`schemas/model-revision-proposal.schema.json`](schemas/model-revision-proposal.schema.json)
+- [`schemas/model-revision-replay-case.schema.json`](schemas/model-revision-replay-case.schema.json)
+- [`schemas/model-revision-counterfactual-replay.schema.json`](schemas/model-revision-counterfactual-replay.schema.json)
+- [`schemas/model-revision-review.schema.json`](schemas/model-revision-review.schema.json)
+- [`schemas/model-revision-receipt.schema.json`](schemas/model-revision-receipt.schema.json)
 
-# Prior layers
+# Prior executable layers
 
-## v1.11 — Multi-Hypothesis / Correlated Evidence Geometry
+## v1.12 — Calibration / Dependency Learning
 
-v1.11 extends the binary Bayesian loop to competing explanations and makes evidence dependence first-class.
+Freeze pre-outcome assumptions, register later resolution, score forecasts/likelihoods with deterministic Brier metrics, and challenge historical independence assumptions without automatically rewriting the model.
 
 ```text
-             H:A      H:B      H:C
-               \       |       /
-             HypothesisDistribution
-                       |
-              Evidence Dependency Gate
-               /          |           \
-       INDEPENDENT   CONDITIONAL    DUPLICATE
-             |            |             |
-       posterior      posterior      NO UPDATE
+PosthocModel != HistoricalForecast
+Confidence != Calibration
+NoDependencySignal != ProvenIndependence
+DependencySignal != ProvenCausality
+CalibrationSignal != RewriteAuthority
 ```
 
-Key laws:
+Protocol: [`docs/v1.12-calibration-dependency-learning.md`](docs/v1.12-calibration-dependency-learning.md) · Invariants: [`docs/v1.12-invariants.md`](docs/v1.12-invariants.md)
+
+## v1.11 — Multi-Hypothesis / Correlated Evidence Geometry
 
 ```text
 PosteriorDistribution != Truth
@@ -328,18 +322,7 @@ ConditionalEvidence != IndependentEvidence
 DuplicateEvidence != NewKnowledge
 ```
 
-Protocol: [`docs/v1.11-multi-hypothesis-correlated-evidence.md`](docs/v1.11-multi-hypothesis-correlated-evidence.md) · Invariants: [`docs/v1.11-invariants.md`](docs/v1.11-invariants.md)
-
 ## v1.10 — Bayesian Evidence Loop
-
-```text
-completion
- -> precommitted interpretation
- -> Bayesian posterior
- -> cohort propagation
- -> likelihood freshness rebind
- -> next active question
-```
 
 ```text
 Completion != EvidenceInterpretation
@@ -349,8 +332,6 @@ OneCompletion != InfiniteEvidence
 ```
 
 ## v1.9 — Information Gain / Active Verification
-
-Explicit uncertainty/likelihood models rank the next useful verification question under finite cost.
 
 ```text
 ExpectedInformationGain != Truth
@@ -383,7 +364,7 @@ DEFERRED != PRUNED
 
 ## v1.5 — Geometric Coherence Gate
 
-Torsion/curvature evidence enters A3/A4 under explicit `PASS < HOLD < FAIL` policy semantics.
+Torsion and curvature evidence enter A3/A4 under explicit `PASS < HOLD < FAIL` policy semantics.
 
 ## v1.4 — Transition Geometry
 
@@ -428,23 +409,6 @@ Trust mutation requires quorum approval from the current persisted root policy.
 - **v0.2** — executable A1/A2/A3/A4 observers.
 - **v0.1** — conceptual identity/coherence foundation.
 
-## Why this matters for AI systems
-
-Long-running agents do not only need to reason under uncertainty. They also need to discover when their own uncertainty model is bad.
-
-ATMAN-LATTICE now keeps these questions separate:
-
-- What competing explanations are alive?
-- What source produced each observation?
-- Was evidence independent, conditional, or duplicate under the declared model?
-- Which exact prior and likelihood existed before the result was known?
-- What later outcome was used as the calibration reference?
-- Was the model historically overconfident or underconfident?
-- Do allegedly independent signal families repeatedly co-move more than the independence model predicts?
-- Is there enough data to say anything at all?
-- Does a diagnostic signal justify review without granting automatic rewrite authority?
-- Who had authority to freeze, resolve, score, verify, execute, or govern?
-
 ## Run
 
 ```bash
@@ -462,6 +426,7 @@ python -m model.active_worker
 python -m model.bayes_worker
 python -m model.multi_worker
 python -m model.calibration_worker
+python -m model.revision_worker
 ```
 
 Reference protocols:
@@ -475,14 +440,15 @@ ATMAN-ACTIVE/1.9
 ATMAN-BAYES/1.10
 ATMAN-MULTI/1.11
 ATMAN-CALIBRATION/1.12
+ATMAN-REVISION/1.13
 ```
 
-This remains a **reference process/database and formal-model boundary**, not a hostile-host sandbox and not a claim about physical multiverses/torsion. Production use additionally requires protected keys, authenticated transport, rollback-resistant storage/backups, protected provenance and resolution sources, empirically justified hypothesis sets, calibration monitoring, database/file permissions, and operational governance.
+This remains a **reference process/database and formal-model boundary**, not a hostile-host sandbox and not a claim about physical multiverses/torsion. Counterfactual replay is historical evaluation, not proof of out-of-distribution performance. Production use additionally requires protected keys, authenticated transport, rollback-resistant storage, protected resolution provenance, held-out evaluation, drift monitoring, database/file permissions, and operational governance.
 
 ## Status
 
-**v1.12.0 — Calibration / Dependency Learning research core.**
+**v1.13.0 — Calibration-Governed Model Revision research core.**
 
-The project now spans identity continuity, cryptographic lineage, branching/restore/reconciliation, transition torsion and curvature, geometric A3/A4 coherence, finite verification capacity, durable verification debt, adaptive cost allocation, information-gain selection, evidence-bound Bayesian learning, competing hypothesis distributions, correlated-evidence provenance, duplicate suppression, conditional evidence contexts, frozen pre-outcome calibration targets, immutable resolution receipts, deterministic Brier scoring, historical likelihood audit, empirical dependency challenge signals, process-separated execution, and quorum-governed trust evolution.
+The project now spans identity continuity, cryptographic lineage, branching/reconciliation, transition torsion and curvature, geometric A3/A4 coherence, finite verification capacity, durable verification debt, adaptive cost allocation, active information gain, evidence-bound Bayesian learning, multi-hypothesis distributions, correlated-evidence provenance, observer calibration, frozen historical model audit, governed counterfactual revision, independent review, use-time replay freshness, append-only old/new model history, process-separated execution, and quorum-governed trust evolution.
 
-Next targets: calibration-driven model revision proposals with explicit human/governance approval, reliability diagrams / subgroup calibration, protected resolver provenance, rollback-resistant calibration history, learned dependency-graph proposals, and concurrency stress tests across all learning planes.
+Next targets: **structural dependency-graph revision**, held-out/cross-validation replay partitions, resolver correction receipts, rollback-resistant learning history, and concurrency stress across calibration/revision races.
