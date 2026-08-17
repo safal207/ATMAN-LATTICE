@@ -1,0 +1,22 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"https://github.com/safal207/ATMAN-LATTICE/schemas/model-revision-receipt.schema.json",
+  "title":"ATMAN-LATTICE ModelRevisionReceipt v1.13",
+  "type":"object",
+  "additionalProperties":false,
+  "required":["proposal_hash","replay_hash","review_hash","calibration_snapshot_hash","base_model_hash","new_model_hash","model_ref","old_model_generation","new_model_generation","applied_at","applier_ref","revision_hash"],
+  "properties":{
+    "proposal_hash":{"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "replay_hash":{"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "review_hash":{"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "calibration_snapshot_hash":{"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "base_model_hash":{"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "new_model_hash":{"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "model_ref":{"type":"string","minLength":1},
+    "old_model_generation":{"type":"integer","minimum":0},
+    "new_model_generation":{"type":"integer","minimum":1},
+    "applied_at":{"type":"integer","minimum":0},
+    "applier_ref":{"type":"string","minLength":1},
+    "revision_hash":{"type":"string","pattern":"^[0-9a-f]{64}$"}
+  }
+}
