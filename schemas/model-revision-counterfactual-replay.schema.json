@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/safal207/ATMAN-LATTICE/schemas/model-revision-counterfactual-replay.schema.json",
+  "title": "ATMAN-LATTICE CounterfactualReplayReceipt v1.13",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["proposal_hash","case_hashes","scored_case_count","min_cases","old_mean_brier_ppm","proposed_mean_brier_ppm","improvement_ppm","status","replayed_at","replay_hash"],
+  "properties": {
+    "proposal_hash": {"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "case_hashes": {"type":"array","uniqueItems":true,"items":{"type":"string","pattern":"^[0-9a-f]{64}$"}},
+    "scored_case_count": {"type":"integer","minimum":0},
+    "min_cases": {"type":"integer","minimum":1},
+    "old_mean_brier_ppm": {"type":["integer","null"],"minimum":0,"maximum":1000000},
+    "proposed_mean_brier_ppm": {"type":["integer","null"],"minimum":0,"maximum":1000000},
+    "improvement_ppm": {"type":["integer","null"],"minimum":-1000000,"maximum":1000000},
+    "status": {"enum":["INSUFFICIENT_SCORABLE_CASES","IMPROVED","NO_IMPROVEMENT"]},
+    "replayed_at": {"type":"integer","minimum":0},
+    "replay_hash": {"type":"string","pattern":"^[0-9a-f]{64}$"}
+  }
+}
