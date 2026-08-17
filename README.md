@@ -1,10 +1,10 @@
 # ATMAN-LATTICE
 
-**A Projective Spacetime Architecture for Identity, Authority, Verification, Active Learning, Calibration, Governed Revision, Structural Evidence Graphs, Held-Out Validation, and Coherence**
+**A Projective Spacetime Architecture for Identity, Authority, Verification, Active Learning, Calibration, Governed Revision, Structural Evidence Graphs, Held-Out Validation, Finite Search Governance, and Coherence**
 
-ATMAN-LATTICE is an exploratory research repository for modeling identity across state, space, time, lineage, branching, reconciliation, authorization, transition geometry, finite verification capacity, evidence-bound learning, competing hypotheses, correlated-evidence provenance, observer calibration, governed parameter correction, structural dependency-graph revision, and held-out validation of structural learning.
+ATMAN-LATTICE is an exploratory research repository for modeling identity across state, space, time, lineage, branching, reconciliation, authorization, transition geometry, finite verification capacity, evidence-bound learning, competing hypotheses, correlated-evidence provenance, observer calibration, governed parameter correction, structural dependency-graph revision, held-out structural validation, and finite governance of repeated model search against held-out evidence.
 
-> What must remain invariant when representation changes, futures branch, evidence changes beliefs, the observer discovers that its model was wrong, proposes a new map of statistical dependencies, and then must prove that the new map generalizes beyond the data that suggested it?
+> What must remain invariant when representation changes, futures branch, evidence changes beliefs, the observer changes its model, validates that change on held-out history, and then must avoid learning the held-out set itself by looking at it too many times?
 
 The repository does **not** claim to prove metaphysical statements about the soul, consciousness, Atman, quantum worlds, physical multiverses, physical torsion fields, or real-world causal structure. Those terms are conceptual labels and thought experiments inside a formal engineering model.
 
@@ -64,46 +64,52 @@ MoreEdges != MoreKnowledge
 HeldOutImprovement != CausalityProof
 RegularizedSelection != Truth
 Selected != Applied
+OneHeldOutSet != InfiniteSelectionBudget
+RepeatedEvaluation != FreshEvidence
+SearchMultiplicity != Knowledge
+HeldOutImproved != SearchCorrectedImproved
+BudgetExhausted != CandidateInvalid
+AlreadyObserved != FreshHeldOutEvidence
+OldExposureSet != CurrentSelectionAuthority
 ```
 
-# v1.15 — Held-Out Structural Validation / Complexity-Regularized Graph Selection
+# v1.16 — Multiple-Comparison / Search-Budget Governance
 
-v1.14 gave the observer a governed way to propose and replay changes to its statistical dependency graph. v1.15 adds a stricter question:
+v1.15 separates structure discovery from held-out evaluation. v1.16 adds the next boundary:
 
-> Did the structural hypothesis improve only the history used to discover it, or does it also improve a separate held-out partition after paying an explicit complexity cost?
+> A held-out set is a finite information resource. Repeatedly searching against it gradually turns evaluation into training unless exposure itself is governed.
 
 ```text
-full dependency history
-          |
- deterministic split
-      /         \
-selection      evaluation
-   |               |
-proposal            |
-selection replay    |
-   |                |
-STRUCTURE_IMPROVED  |
-      \             /
-       held-out validation
-              |
-      raw Brier improvement
-              +
-      explicit edge penalty
-              |
-    HELDOUT_IMPROVED
-              |
-complete competing-candidate selection
-              |
+structural candidate
+        |
+        v
+search reservation   <--- consumes unique look
+        |
+        v
+v1.15 held-out validation
+        |
+        v
+multiplicity threshold
+        |
+   +----+----------------+
+   |                     |
+SEARCH_CORRECTED      MULTIPLICITY /
+IMPROVED              HELDOUT REJECTED
+   |
+   v
+complete current search set
+   |
+   v
+search-budget selection
+   |
 independent review
-              |
-use-time history/base/candidate-set freshness
-              |
-        Graph N -> N+1
-
-Graph N, rejected candidates, and evaluation receipts remain preserved.
+   |
+use-time exposure/history/base freshness
+   |
+Graph N -> Graph N+1
 ```
 
-## Eleven process-level planes
+## Twelve process-level planes
 
 ```text
 ATMAN-RUNTIME/1.1       privileged execution
@@ -117,32 +123,237 @@ ATMAN-CALIBRATION/1.12  historical observer audit
 ATMAN-REVISION/1.13     governed likelihood-parameter revision
 ATMAN-GRAPH/1.14        governed structural dependency-graph revision
 ATMAN-STRUCTURE/1.15    held-out structural validation / regularized selection
+ATMAN-SEARCH/1.16       finite held-out search / multiplicity governance
 ```
 
-## Selection data and evaluation data are different objects
+## Reservation must happen before held-out exposure
 
-A `StructuralValidationPolicy` fixes the held-out split policy and the structural complexity penalty.
+A v1.16 candidate cannot first inspect evaluation results and later decide whether that inspection should count.
 
-For every persisted dependency-pair sample, v1.15 derives a deterministic bucket from the immutable `sample_hash`. Evaluation uses bucket `0`; all other buckets are selection.
+`HeldOutSearchReservation` is committed before the held-out partition is evaluated.
+
+It binds:
+
+```text
+candidate hash
+search family
+exact structural context
+unique ordinal
+maximum search capacity
+effective minimum improvement
+budget keeper
+```
+
+```text
+Reserve(candidate) -> Evaluate(candidate)
+```
+
+not the reverse.
+
+If a candidate was already evaluated through the unbudgeted v1.15 runtime, the v1.16 reference runtime rejects it as fresh held-out evidence:
+
+```text
+AlreadyObserved != FreshHeldOutEvidence
+```
+
+## Repeated looks do not create new evidence
+
+One exact `candidate_hash` can own only one reservation in a search family.
+
+Re-requesting the same candidate returns the same immutable reservation and does not increase the search ordinal.
+
+```text
+RepeatedEvaluation != FreshEvidence
+```
+
+## Search budget is cumulative across history and graph changes
+
+The v1.16 search family binds:
+
+```text
+subject identity
+pair key
+structural validation policy
+search budget policy
+```
+
+It intentionally does not include one particular `history_hash` or base graph generation.
+
+So this is forbidden conceptually:
+
+```text
+History H0: candidate A -> look #1
+new sample arrives
+History H1: candidate B -> look #1 again
+```
+
+Instead:
+
+```text
+candidate A -> ordinal 1
+candidate B -> ordinal 2
+```
+
+under the same family.
+
+```text
+NewHistory != SearchBudgetReset
+```
+
+## Multiplicity raises the required improvement
+
+`HeldOutSearchBudgetPolicy` defines:
+
+```text
+max_unique_evaluations
+base_min_regularized_improvement_ppm
+multiplicity_penalty_ppm
+```
+
+For unique look `n`:
+
+```text
+required_improvement_n =
+    base_min_regularized_improvement_ppm
+    + multiplicity_penalty_ppm * (n - 1)
+```
+
+The ordinary v1.15 held-out receipt is preserved. v1.16 adds a separate search-adjusted receipt.
+
+Possible search outcomes:
+
+```text
+UNDERLYING_HELDOUT_REJECTED
+MULTIPLICITY_REJECTED
+SEARCH_CORRECTED_IMPROVED
+```
+
+Therefore a candidate may honestly have:
+
+```text
+v1.15: HELDOUT_IMPROVED
+v1.16: MULTIPLICITY_REJECTED
+```
+
+The first statement is about one held-out comparison. The second is about that comparison after accounting for prior search exposure.
+
+This linear multiplicity penalty is an explicit governance regularizer. It is not presented as a p-value or formal family-wise error theorem.
+
+## Search selection binds cumulative exposure
+
+Selection considers candidates in the current exact structural context, but records the **entire cumulative family reservation set**.
+
+Every currently reserved candidate must have a completed search-adjusted evaluation before selection can finalize.
+
+Eligible candidates require:
+
+```text
+SEARCH_CORRECTED_IMPROVED
+```
+
+The winner maximizes:
+
+```text
+search_adjusted_margin =
+    regularized_heldout_improvement
+    - multiplicity_threshold
+```
+
+A new reservation after selection changes the exposure state. Apply recomputes selection and rejects the stale receipt:
+
+```text
+OldExposureSet != CurrentSelectionAuthority
+```
+
+Current history and base graph must also still match.
+
+## Budget exhaustion is not invalidity
+
+When the configured unique-look budget is exhausted, another evaluation is forbidden under that search policy.
+
+That means only:
+
+```text
+no more held-out looks under this policy
+```
+
+not:
+
+```text
+unevaluated candidate is false
+```
+
+```text
+BudgetExhausted != CandidateInvalid
+```
+
+## Authority separation
+
+v1.16 adds:
+
+```text
+HELDOUT_SEARCH_POLICY_KEEPER
+HELDOUT_SEARCH_BUDGET_KEEPER
+HELDOUT_SEARCH_EVALUATOR
+SEARCH_BUDGET_MODEL_SELECTOR
+SEARCH_BUDGET_SELECTION_REVIEWER
+SEARCH_BUDGETED_STRUCTURAL_APPLIER
+```
+
+The core requires proposer != budget keeper, proposer != evaluator, budget keeper != evaluator, and review independence from selector/selected proposer.
+
+```text
+Propose != Reserve != Evaluate != Select != Review != Apply
+```
+
+## Runtime
+
+Worker:
+
+```bash
+python -m model.search_worker
+```
+
+Protocol operations:
+
+```text
+register_search_budget_policy
+reserve_heldout_evaluation
+evaluate_reserved_candidate
+finalize_search_budget_selection
+record_search_budget_selection_review
+apply_search_budgeted_selection
+get_search_budget_state
+```
+
+Protocol: [`docs/v1.16-multiple-comparison-search-budget.md`](docs/v1.16-multiple-comparison-search-budget.md)
+
+Invariants: [`docs/v1.16-invariants.md`](docs/v1.16-invariants.md)
+
+Machine-readable contracts:
+
+- [`schemas/heldout-search-budget-policy.schema.json`](schemas/heldout-search-budget-policy.schema.json)
+- [`schemas/heldout-search-reservation.schema.json`](schemas/heldout-search-reservation.schema.json)
+- [`schemas/search-adjusted-validation.schema.json`](schemas/search-adjusted-validation.schema.json)
+- [`schemas/search-budget-selection.schema.json`](schemas/search-budget-selection.schema.json)
+- [`schemas/search-budget-selection-review.schema.json`](schemas/search-budget-selection-review.schema.json)
+- [`schemas/search-budgeted-graph-revision.schema.json`](schemas/search-budgeted-graph-revision.schema.json)
+
+# Prior executable layers
+
+## v1.15 — Held-Out Structural Validation / Complexity-Regularized Graph Selection
+
+v1.15 separates graph discovery data from deterministic held-out evaluation and charges explicit edge complexity.
 
 ```text
 History = Selection union Evaluation
 Selection intersection Evaluation = empty
-```
-
-The split has no client-supplied per-run random salt.
-
-A `StructuralValidationCandidate` is built using **selection data only**. Its embedded v1.14 replay must bind exactly the selection sample hashes.
-
-```text
 SelectionData != EvaluationData
+BetterReplay != BetterGeneralization
+MoreEdges != MoreKnowledge
 ```
 
-## Better replay is not better generalization
-
-A candidate can pass selection replay and still fail held-out evaluation.
-
-Statuses:
+Candidate statuses:
 
 ```text
 INSUFFICIENT_HELDOUT
@@ -151,165 +362,17 @@ OVERFIT_SIGNAL
 COMPLEXITY_REJECTED
 ```
 
-`OVERFIT_SIGNAL` means:
-
-```text
-selection replay improved
-held-out raw prediction did not improve
-```
-
-Therefore:
-
-```text
-BetterReplay != BetterGeneralization
-```
-
-The failed candidate remains preserved as evidence of a hypothesis that looked good in selection but did not generalize under the bound evaluation procedure.
-
-## Complexity is charged explicitly
-
-v1.15 scores both predictive fit and graph size:
-
-```text
-base_regularized_brier = base_mean_brier + edge_penalty_ppm * base_edge_count
-proposed_regularized_brier = proposed_mean_brier + edge_penalty_ppm * proposed_edge_count
-regularized_improvement = base_regularized_brier - proposed_regularized_brier
-```
-
-A new edge that improves raw held-out Brier but not enough to pay its configured complexity penalty becomes:
-
-```text
-COMPLEXITY_REJECTED
-```
-
-```text
-MoreEdges != MoreKnowledge
-```
-
-The penalty is governance policy, not truth. It changes selection preference, not historical observations.
-
-## Selection cannot hide competing validated candidates
-
-`finalize_structural_selection` does not accept a client-curated candidate list.
-
-The runtime automatically loads every held-out-validated candidate sharing the exact:
-
-```text
-subject identity
-pair key
-base graph hash
-validation policy hash
-dependency-history hash
-```
-
-Only `HELDOUT_IMPROVED` candidates are eligible. The winner is the largest positive regularized improvement with deterministic hash tie breaking.
-
-If none passes:
-
-```text
-NO_ELIGIBLE_CANDIDATE
-```
-
-This is a statement about the current candidate set and evaluation policy, not about reality:
-
-```text
-NO_ELIGIBLE_CANDIDATE != NoRealDependency
-```
-
-## Selection has use-time freshness
-
-A selection binds the complete candidate and validation set.
-
-If a new held-out-validated competitor appears after selection:
+`finalize_structural_selection` loads every held-out-validated candidate sharing the exact subject/pair/base/policy/history context. A new validated competitor, new history, or new base graph makes an old selection stale.
 
 ```text
 OldCandidateSet != CurrentSelectionAuthority
-```
-
-If new dependency-pair evidence appears:
-
-```text
 OldHistory != CurrentSelectionAuthority
-```
-
-If the base graph changed:
-
-```text
 OldBaseGraph != CurrentSelectionAuthority
-```
-
-The runtime recomputes the current deterministic selection before apply. A stale receipt cannot mutate the current graph.
-
-## Independent authority
-
-v1.15 adds:
-
-```text
-STRUCTURAL_VALIDATION_POLICY_KEEPER
-STRUCTURAL_CANDIDATE_PROPOSER
-HELDOUT_STRUCTURAL_VALIDATOR
-STRUCTURAL_MODEL_SELECTOR
-STRUCTURAL_SELECTION_REVIEWER
-VALIDATED_STRUCTURAL_SELECTION_APPLIER
-```
-
-The held-out validator cannot be the candidate proposer. The reviewer cannot be the selector or the selected candidate proposer.
-
-```text
-Propose != Validate != Select != Review != Apply
-```
-
-## Held-out fit is still not causality
-
-The underlying v1.14 graph relation remains exactly:
-
-```text
-STATISTICAL_CONDITIONING
-```
-
-A held-out improvement means the proposed statistical structure performed better under the bound evaluation and regularization policy.
-
-It does not establish a physical mechanism or causal direction.
-
-```text
 HeldOutImprovement != CausalityProof
 RegularizedSelection != Truth
 ```
 
-## Runtime
-
-Worker:
-
-```bash
-python -m model.structure_worker
-```
-
-Protocol operations:
-
-```text
-register_structural_validation_policy
-register_structural_candidate
-record_heldout_validation
-finalize_structural_selection
-record_structural_selection_review
-apply_validated_structural_selection
-get_structural_validation_state
-```
-
-Protocol: [`docs/v1.15-heldout-structural-validation.md`](docs/v1.15-heldout-structural-validation.md)
-
-Invariants: [`docs/v1.15-invariants.md`](docs/v1.15-invariants.md)
-
-Machine-readable contracts:
-
-- [`schemas/structural-validation-policy.schema.json`](schemas/structural-validation-policy.schema.json)
-- [`schemas/structural-validation-candidate.schema.json`](schemas/structural-validation-candidate.schema.json)
-- [`schemas/heldout-structural-validation.schema.json`](schemas/heldout-structural-validation.schema.json)
-- [`schemas/structural-selection.schema.json`](schemas/structural-selection.schema.json)
-- [`schemas/structural-selection-review.schema.json`](schemas/structural-selection-review.schema.json)
-- [`schemas/validated-dependency-graph-revision.schema.json`](schemas/validated-dependency-graph-revision.schema.json)
-
-# Prior executable layers
+Protocol: [`docs/v1.15-heldout-structural-validation.md`](docs/v1.15-heldout-structural-validation.md) · Invariants: [`docs/v1.15-invariants.md`](docs/v1.15-invariants.md)
 
 ## v1.14 — Structural Dependency-Graph Revision
 
@@ -454,6 +517,7 @@ python -m model.calibration_worker
 python -m model.revision_worker
 python -m model.graph_worker
 python -m model.structure_worker
+python -m model.search_worker
 ```
 
 Reference protocols:
@@ -470,14 +534,15 @@ ATMAN-CALIBRATION/1.12
 ATMAN-REVISION/1.13
 ATMAN-GRAPH/1.14
 ATMAN-STRUCTURE/1.15
+ATMAN-SEARCH/1.16
 ```
 
-This remains a **reference process/database and formal-model boundary**, not a hostile-host sandbox and not a claim about physical multiverses, physical torsion, or real-world causality. Held-out validation reduces one form of structural overfitting but does not guarantee out-of-distribution performance. Production use additionally requires protected evaluation data, leakage controls, multiple-comparison correction when many structures are searched, temporal/external validation where appropriate, protected keys, authenticated transport, rollback-resistant storage, causal-identification methodology where causal claims matter, and operational governance.
+This remains a **reference process/database and formal-model boundary**, not a hostile-host sandbox and not a claim about physical multiverses, physical torsion, or real-world causality. Held-out validation and finite search governance reduce specific forms of structural overfitting but do not guarantee out-of-distribution performance. The v1.16 linear multiplicity threshold is governance regularization, not a formal multiple-testing significance guarantee. Production use additionally requires protected evaluation data, leakage controls, statistically justified multiple-comparison procedures where needed, temporal/external validation, protected keys, authenticated transport, rollback-resistant storage, causal-identification methodology where causal claims matter, and operational governance.
 
 ## Status
 
-**v1.15.0 — Held-Out Structural Validation / Complexity-Regularized Graph Selection research core.**
+**v1.16.0 — Multiple-Comparison / Search-Budget Governance research core.**
 
-The project now spans identity continuity, cryptographic lineage, branching/reconciliation, transition geometry, geometric A3/A4 coherence, finite verification capacity, durable verification debt, adaptive cost allocation, active information gain, evidence-bound Bayesian learning, competing hypotheses, correlated-evidence provenance, observer calibration, governed parameter revision, versioned statistical dependency DAGs, competing structural proposals, selection-only replay, deterministic held-out evaluation, explicit graph-complexity penalties, complete-candidate-set selection, independent review, use-time evidence/candidate/base freshness, append-only old/new graph history, process-separated execution, and quorum-governed trust evolution.
+The project now spans identity continuity, cryptographic lineage, branching/reconciliation, transition geometry, geometric A3/A4 coherence, finite verification capacity, durable verification debt, adaptive cost allocation, active information gain, evidence-bound Bayesian learning, competing hypotheses, correlated-evidence provenance, observer calibration, governed parameter revision, versioned statistical dependency DAGs, selection-only replay, deterministic held-out evaluation, graph-complexity penalties, finite cumulative held-out search budgets, pre-exposure reservations, multiplicity-aware improvement thresholds, search-adjusted model selection, use-time exposure/history/base freshness, append-only old/new graph history, process-separated execution, and quorum-governed trust evolution.
 
-Next targets: multiple-comparison / search-budget correction across large graph proposal spaces, nested or temporal structural validation, resolver correction receipts, rollback-resistant learning history, dynamic/cyclic dependency models, and causal-identification interfaces that remain explicitly separate from correlation-based structure learning.
+Next targets: protected/nested fresh holdout rotation, sequential-testing or alpha-spending research variants with explicit statistical assumptions, temporal/external structural validation, resolver correction receipts, rollback-resistant learning history, dynamic/cyclic dependency models, and causal-identification interfaces that remain explicitly separate from correlation-based structure learning.
