@@ -10,7 +10,11 @@ from model.runtime_verification import (
     make_capacity_policy_from_env,
 )
 from model.runtime_worker import _server_enforcement
-from model.verification_keeper import FINALIZE_OPERATION, execute_finalization_request
+from model.verification_keeper import (
+    FINALIZE_OPERATION,
+    decision_state_hash,
+    execute_finalization_request,
+)
 
 
 def main() -> int:
@@ -37,6 +41,8 @@ def main() -> int:
                 db_path=db_path,
                 policy=make_capacity_policy_from_env(),
             )
+            if request.get("operation") == "evaluate_geometric_verification" and response.get("ok") is True:
+                response["decision_state_hash"] = decision_state_hash(response["decision"])
         sys.stdout.write(json.dumps(response, sort_keys=True, separators=(",", ":")))
         return 0
     except Exception as exc:
