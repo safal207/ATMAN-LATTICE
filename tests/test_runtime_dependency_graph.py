@@ -9,7 +9,7 @@ from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 
 from model.authority import issue_authority_grant, sign_authorized_action
-from model.calibration import DependencyPairSample, _digest as calibration_digest, pair_to_dict, summarize_dependency_samples
+from model.calibration import DependencyPairSample, _digest as calibration_digest, summarize_dependency_samples
 from model.dependency_graph_revision import (
     apply_structural_graph_revision,
     make_dependency_graph,
@@ -17,6 +17,7 @@ from model.dependency_graph_revision import (
     replay_structural_graph_revision,
     review_structural_graph_revision,
 )
+from model.runtime_calibration import pair_to_dict
 from model.runtime_dependency_graph import (
     GRAPH_PROTOCOL,
     ROLE_GRAPH_BOOTSTRAP_KEEPER,
