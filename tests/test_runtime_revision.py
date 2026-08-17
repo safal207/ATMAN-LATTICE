@@ -118,6 +118,12 @@ def initialize_db(db_path):
         model_generation=5,
     )
     history = tuple(calibration(i, outcome="POSITIVE" if i % 2 == 0 else "NEGATIVE") for i in range(6))
+    bootstrap = sqlite3.connect(db_path)
+    bootstrap.execute(
+        "CREATE TABLE verification_work (work_hash TEXT PRIMARY KEY, work_ref TEXT NOT NULL UNIQUE, subject_identity_ref TEXT NOT NULL, target_gate_hash TEXT NOT NULL, work_json TEXT NOT NULL, status TEXT NOT NULL, completion_json TEXT)"
+    )
+    bootstrap.commit()
+    bootstrap.close()
     conn = _connect(str(db_path))
     conn.execute(
         "INSERT INTO multi_hypothesis_distribution(distribution_ref,distribution_json) VALUES(?,?)",
