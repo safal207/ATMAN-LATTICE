@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/safal207/ATMAN-LATTICE/schemas/multi-hypothesis-update.schema.json",
+  "title": "ATMAN-LATTICE MultiHypothesisUpdateReceipt v1.11",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["candidate_hash", "prior_distribution_hash", "posterior_distribution_hash", "evidence_hash", "likelihood_model_hash", "dependency_hash", "prior_probability_bps", "posterior_probability_bps", "prior_generation", "posterior_generation", "evidence_state_hash", "applied_at", "updater_ref", "update_hash"],
+  "properties": {
+    "candidate_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "prior_distribution_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "posterior_distribution_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "evidence_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "likelihood_model_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "dependency_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "prior_probability_bps": {"type": "array", "minItems": 2, "items": {"type": "array", "prefixItems": [{"type": "string", "minLength": 1}, {"type": "integer", "minimum": 0, "maximum": 10000}], "items": false, "minItems": 2, "maxItems": 2}},
+    "posterior_probability_bps": {"type": "array", "minItems": 2, "items": {"type": "array", "prefixItems": [{"type": "string", "minLength": 1}, {"type": "integer", "minimum": 0, "maximum": 10000}], "items": false, "minItems": 2, "maxItems": 2}},
+    "prior_generation": {"type": "integer", "minimum": 0},
+    "posterior_generation": {"type": "integer", "minimum": 1},
+    "evidence_state_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "applied_at": {"type": "integer", "minimum": 0},
+    "updater_ref": {"type": "string", "minLength": 1},
+    "update_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}
