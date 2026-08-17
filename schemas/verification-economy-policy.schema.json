@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://atman-lattice.local/schemas/verification-economy-policy.schema.json",
+  "title": "Verification Economy Policy",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["policy_ref", "budget_units", "max_funded_items", "bootstrap_cost_units", "min_samples_for_confidence", "uncertainty_premium_units", "value_weight", "risk_weight", "priority_weight", "aging_quantum", "policy_hash"],
+  "properties": {
+    "policy_ref": {"type": "string", "minLength": 1},
+    "budget_units": {"type": "integer", "minimum": 0},
+    "max_funded_items": {"type": "integer", "minimum": 0},
+    "bootstrap_cost_units": {"type": "integer", "minimum": 1},
+    "min_samples_for_confidence": {"type": "integer", "minimum": 0},
+    "uncertainty_premium_units": {"type": "integer", "minimum": 0},
+    "value_weight": {"type": "integer", "minimum": 0},
+    "risk_weight": {"type": "integer", "minimum": 0},
+    "priority_weight": {"type": "integer", "minimum": 0},
+    "aging_quantum": {"type": "integer", "minimum": 1},
+    "policy_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}
