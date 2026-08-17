@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/safal207/ATMAN-LATTICE/schemas/heldout-search-reservation.schema.json",
+  "title": "HeldOutSearchReservation",
+  "type": "object",
+  "required": ["candidate_hash", "family_hash", "context_hash", "search_policy_hash", "ordinal", "max_unique_evaluations", "effective_min_regularized_improvement_ppm", "budget_keeper_ref", "reserved_at", "reservation_hash"],
+  "properties": {
+    "candidate_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "family_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "context_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "search_policy_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "ordinal": {"type": "integer", "minimum": 1},
+    "max_unique_evaluations": {"type": "integer", "minimum": 1},
+    "effective_min_regularized_improvement_ppm": {"type": "integer", "minimum": 0},
+    "budget_keeper_ref": {"type": "string", "minLength": 1},
+    "reserved_at": {"type": "integer", "minimum": 0},
+    "reservation_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  },
+  "additionalProperties": false
+}
