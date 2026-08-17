@@ -1,10 +1,10 @@
 # ATMAN-LATTICE
 
-**A Projective Spacetime Architecture for Identity, Authority, Verification, Active Learning, Evidence Geometry, and Coherence**
+**A Projective Spacetime Architecture for Identity, Authority, Verification, Active Learning, Evidence Geometry, Calibration, and Coherence**
 
-ATMAN-LATTICE is an exploratory research repository for modeling identity across state, space, time, lineage, branching, reconciliation, authorization, transition geometry, finite verification capacity, evidence-bound learning, competing hypotheses, and correlated-evidence provenance.
+ATMAN-LATTICE is an exploratory research repository for modeling identity across state, space, time, lineage, branching, reconciliation, authorization, transition geometry, finite verification capacity, evidence-bound learning, competing hypotheses, correlated-evidence provenance, and historical observer calibration.
 
-> What must remain invariant when representation changes, futures branch, paths become order-sensitive, verification capacity saturates, and new evidence changes a system's beliefs — so that identity, ancestry, uncertainty, dependence, evidence, cost, and permission remain provable rather than merely asserted?
+> What must remain invariant when representation changes, futures branch, paths become order-sensitive, verification capacity saturates, evidence changes beliefs, and later outcomes reveal that the observer itself may have been systematically wrong?
 
 The repository does **not** claim to prove metaphysical statements about the soul, consciousness, Atman, quantum worlds, physical multiverses, or physical torsion fields. Those terms are conceptual labels and thought experiments inside a formal engineering model.
 
@@ -52,73 +52,148 @@ DifferentDerivation != IndependentSource
 DuplicateEvidence != NewKnowledge
 ConditionalEvidence != IndependentEvidence
 ValidDependencyReceipt != ProvenRealWorldIndependence
+CalibrationTarget != PosthocModel
+Resolution != OntologicalTruth
+Confidence != Calibration
+NoDependencySignal != ProvenIndependence
+DependencySignal != ProvenCausality
+CalibrationSignal != RewriteAuthority
 ```
 
-# v1.11 — Multi-Hypothesis / Correlated Evidence Geometry
+# v1.12 — Calibration / Dependency Learning
 
-v1.11 extends the closed Bayesian loop from a binary `H / not-H` model to a categorical distribution over competing explanations and makes evidence dependence a first-class runtime contract.
+v1.12 audits the observer itself.
+
+The eight process-level planes are now:
 
 ```text
-                 competing explanations
-             H:A      H:B      H:C
-               \       |       /
-                \      |      /
-             HypothesisDistribution
-                       |
-                 verification result
-                       |
-              precommitted semantics
-                       |
-              Evidence Dependency Gate
-               /          |           \
-       INDEPENDENT   CONDITIONAL    DUPLICATE
-             |            |             |
-       posterior      posterior      NO UPDATE
-             \            /             |
-              \          /       preserve receipt
-               Distribution N+1
+ATMAN-RUNTIME/1.1       privileged execution
+ATMAN-TRUST/1.2         trust-root governance
+ATMAN-VERIFY/1.7        durable verification / completion / finalization
+ATMAN-ECONOMY/1.8       measured verification cost / finite budget
+ATMAN-ACTIVE/1.9        expected information gain / next-check selection
+ATMAN-BAYES/1.10        binary evidence interpretation / posterior update
+ATMAN-MULTI/1.11        competing hypotheses / correlated-evidence provenance
+ATMAN-CALIBRATION/1.12  historical forecast, likelihood, and dependency audit
 ```
 
-The seven process-level protocol planes are now:
+## Freeze assumptions before the outcome
+
+Calibration is meaningless if the model can be changed after the answer is known.
+
+Before verification completion, `CalibrationTargetReceipt` freezes the exact:
 
 ```text
-ATMAN-RUNTIME/1.1  privileged execution
-ATMAN-TRUST/1.2    trust-root governance
-ATMAN-VERIFY/1.7   durable verification / completion / finalization
-ATMAN-ECONOMY/1.8  measured verification cost / finite budget
-ATMAN-ACTIVE/1.9   expected information gain / next-check selection
-ATMAN-BAYES/1.10   binary evidence interpretation / posterior update
-ATMAN-MULTI/1.11   competing hypotheses / correlated-evidence provenance
+distribution hash + probability vector
+likelihood model hash + likelihood vector
+dependency hash + mode + parent evidence
+source / derivation provenance
+candidate / identity
+calibration family
+commit time
 ```
 
-## Competing hypotheses stay explicit
-
-`HypothesisDistribution` binds a canonical probability vector:
+So:
 
 ```text
-H:A = 0.40
-H:B = 0.35
-H:C = 0.25
-sum = 1.00
+PosthocModel != HistoricalForecast
+Calibration requires frozen pre-outcome assumptions.
 ```
 
-A likelihood model must cover the **exact same hypothesis set**. Positive or negative evidence redistributes mass across the whole set:
+The runtime rejects target registration after the verification result or after a case has already been resolved.
+
+## Resolution is separate from truth
+
+`ResolvedOutcomeReceipt` binds a distribution/case to a resolved hypothesis and to a provenance digest for the resolution source.
 
 ```text
-Posterior(H_i) proportional to Prior(H_i) * P(observation | H_i)
+Resolution != OntologicalTruth
 ```
 
-Alternative explanations are not silently deleted merely because one becomes more likely.
+The resolution is the current authoritative calibration label. The reference model does not claim the resolver is infallible or that the hypothesis set contains every possible real-world explanation.
+
+A resolution is immutable once registered in v1.12; correction requires a later explicit protocol rather than silent history replacement.
+
+## Forecast calibration with Brier score
+
+For categorical probabilities:
+
+\[
+Brier=\sum_i(p_i-y_i)^2
+\]
+
+where `y_i=1` for the resolved hypothesis and `0` otherwise.
+
+The implementation stores deterministic integer parts-per-million scores.
+
+A binary intuition:
 
 ```text
-PosteriorDistribution != Truth
+A=100%, A resolves -> 0 ppm
+A=50%,  A resolves -> 500000 ppm
+A=0%,   A resolves -> 2000000 ppm
 ```
 
-It is a versioned belief state under explicit prior, likelihood, interpretation, and dependency assumptions.
+Therefore:
 
-## Evidence has provenance geometry
+```text
+Confidence != Calibration
+```
 
-Before completion, `EVIDENCE_DEPENDENCY_KEEPER` must classify the evidence path as one of:
+A confident miss is worse than an uncertain miss.
+
+## Likelihood calibration
+
+A v1.11 likelihood model claims:
+
+```text
+P(positive evidence | H_i)
+```
+
+After the case resolves to `H_k`, v1.12 compares the frozen `P(+|H_k)` with the evidence outcome actually observed.
+
+Conclusive positive/negative evidence receives a binary Brier score.
+
+`INCONCLUSIVE` is preserved but not forced into a binary calibration label:
+
+```text
+INCONCLUSIVE != POSITIVE
+INCONCLUSIVE != NEGATIVE
+```
+
+## Family-level observer audit
+
+Stable `calibration_family_ref` values allow repeated historical observations to be aggregated into:
+
+```text
+forecast count
+mean categorical Brier
+likelihood scored count
+mean likelihood Brier
+mean predicted positive rate
+observed positive rate
+marginal calibration gap
+```
+
+The reference diagnostic status is:
+
+```text
+INSUFFICIENT_SAMPLES
+NO_MARGINAL_MISCALIBRATION_SIGNAL
+MISCALIBRATION_SIGNAL
+```
+
+Minimum samples and alert thresholds are explicit policy inputs.
+
+```text
+DiagnosticPolicy != EvidenceHistory
+```
+
+Changing a threshold may change the label, but it does not change the underlying historical receipts.
+
+## Dependency learning
+
+v1.11 records dependency assumptions before evidence is known:
 
 ```text
 INDEPENDENT
@@ -126,174 +201,134 @@ CONDITIONAL
 DUPLICATE
 ```
 
-The declaration binds:
+v1.12 can accumulate repeated resolved pair samples for the same signal families.
+
+For binary signals `L` and `R`, the reference statistic compares:
 
 ```text
-source_event_hash
-  = underlying observed event
-
-derivation_hash
-  = this transformation / summary / projection of the source
-
-dependency_group_ref
-  = declared dependency context
-
-parent_evidence_hashes
-  = exact already accepted evidence this signal depends on
+observed P(L+ and R+)
 ```
 
-This makes a critical distinction load-bearing:
+with the empirical joint rate expected under independence:
 
 ```text
-DifferentDerivationHash != IndependentSource
+P(L+) * P(R+)
 ```
 
-A translation, summary, repost, dashboard projection, or second agent's retelling can have a different derivation while still originating from the same event.
+The signed difference is stored as `independence_gap_bps`.
 
-## Echo-chamber protection
-
-One source event cannot become several accepted independent Bayesian updates just because it appears through several paths:
+For a declared independent pair:
 
 ```text
-source S
-  |-- summary A
-  |-- summary B
-  |-- copied alert
-  `-- derived dashboard row
-
-SameSourceEvent != FourEvidenceUnits
+large historical gap -> INDEPENDENCE_CHALLENGED
+small historical gap -> NO_DEPENDENCY_SIGNAL
 ```
 
-Accepted evidence is stored with a SQLite uniqueness constraint on `source_event_hash`.
-
-Apply runs under `BEGIN IMMEDIATE`, so racing runtime processes cannot both commit the same source event as fresh accepted evidence inside the reference SQLite deployment boundary.
-
-## Duplicate evidence is preserved, not counted again
-
-`DUPLICATE` must reference exactly one accepted parent evidence receipt and preserve the same `source_event_hash`.
-
-It produces a `DuplicateEvidenceReceipt` but no posterior transition:
+For a declared conditional pair:
 
 ```text
-DuplicateEvidence -> PreserveHistory
-DuplicateEvidence -/> PosteriorAdvance
+large historical gap -> CONDITIONAL_DEPENDENCY_SUPPORTED
+small historical gap -> CONDITIONAL_DEPENDENCY_NOT_OBSERVED
 ```
 
-So:
+The names are deliberately cautious:
+
+```text
+NoDependencySignal != ProvenIndependence
+DependencySignal != ProvenCausality
+```
+
+## Why duplicate evidence is different
+
+`DUPLICATE` is already structurally proven at the provenance level in v1.11 by preserving the same source-event lineage and granting zero new posterior updates.
+
+It is therefore not promoted into an ordinary statistical dependency sample in v1.12.
 
 ```text
 DuplicateEvidence != NewKnowledge
 ```
 
-## Conditional evidence uses conditional likelihood
+## Calibration authority is separated
 
-If evidence B depends on accepted evidence A, v1.11 refuses to reuse an unconditional likelihood as if B were independent.
-
-The model must bind the exact parent evidence set:
+v1.12 adds:
 
 ```text
-Dependency.parents
-        ==
-ConditionalLikelihood.conditioning_evidence_hashes
+CALIBRATION_TARGET_KEEPER
+CALIBRATION_RESOLVER
+CALIBRATION_RECORDER
 ```
 
-This prevents naive multiplication such as:
+and preserves:
 
 ```text
-P(A | H) * P(B | H)
+FreezeModel != ResolveOutcome
+ResolveOutcome != ScoreModel
+ScoreModel != RewriteModel
 ```
 
-when the declared model actually requires something shaped like:
+The calibration plane is diagnostic and append-only. It cannot directly mutate priors, likelihoods, dependency declarations, A4 decisions, execution permissions, or trust roots.
 
 ```text
-P(A | H) * P(B | H, A)
+CalibrationSignal != RewriteAuthority
 ```
 
-## Multi-hypothesis information gain
+## Durable calibration history
 
-v1.11 computes Shannon entropy over the complete distribution:
-
-\[
-H(P)=-\sum_i P(H_i)\log_2P(H_i)
-\]
-
-and expected information gain:
-
-\[
-EIG=H(Prior)-E[H(Posterior\mid outcome)].
-\]
-
-An uninformative test whose outcome distribution is identical under every hypothesis produces zero expected information gain.
+The reference SQLite plane stores:
 
 ```text
-ExpectedInformationGain != EmpiricalCalibration
+calibration targets
+resolved outcomes
+forecast calibration receipts
+likelihood calibration receipts
+dependency pair samples
 ```
 
-## Shared-distribution freshness
+Targets are immutable after precommit. Resolutions are immutable in v1.12. Calibration observations are unique by frozen target/evidence binding, and dependency pair samples are unique by `(pair_key, resolution_hash)`.
 
-Several verification candidates may bind the same distribution. Accepted non-duplicate evidence advances:
+Protocol: [`docs/v1.12-calibration-dependency-learning.md`](docs/v1.12-calibration-dependency-learning.md)
 
-```text
-Distribution N -> Distribution N+1
-```
-
-and cohort likelihood models still bound to N are mechanically rebound to N+1 while preserving their likelihood values **and their conditioning parent set**.
-
-```text
-MultiLikelihoodRebase != MultiLikelihoodReEstimation
-```
-
-Changing actual likelihood values requires an explicit new model.
-
-## Authority separation
-
-v1.11 introduces distinct roles:
-
-```text
-MULTI_HYPOTHESIS_MODEL_KEEPER
-EVIDENCE_DEPENDENCY_KEEPER
-MULTI_EVIDENCE_RULE_KEEPER
-MULTI_HYPOTHESIS_UPDATE_KEEPER
-```
-
-Therefore:
-
-```text
-ModelAuthority
-  != DependencyAuthority
-  != InterpretationAuthority
-  != UpdateAuthority
-```
-
-The right to define competing explanations is not automatically the right to declare evidence independent.
-
-## Epistemic boundary
-
-A valid dependency receipt proves **which dependency assumption the runtime committed and used**. It does not prove that the real-world signals are truly independent, conditional, or duplicated.
-
-```text
-ValidDependencyReceipt != ProvenPhysicalCausality
-ValidLikelihoodModel != EmpiricalCalibration
-PosteriorDistribution != Truth
-```
-
-Protocol: [`docs/v1.11-multi-hypothesis-correlated-evidence.md`](docs/v1.11-multi-hypothesis-correlated-evidence.md)
-
-Invariants: [`docs/v1.11-invariants.md`](docs/v1.11-invariants.md)
+Invariants: [`docs/v1.12-invariants.md`](docs/v1.12-invariants.md)
 
 Machine-readable contracts:
 
-- [`schemas/hypothesis-distribution.schema.json`](schemas/hypothesis-distribution.schema.json)
-- [`schemas/multi-likelihood-model.schema.json`](schemas/multi-likelihood-model.schema.json)
-- [`schemas/evidence-dependency.schema.json`](schemas/evidence-dependency.schema.json)
-- [`schemas/multi-evidence-rule.schema.json`](schemas/multi-evidence-rule.schema.json)
-- [`schemas/multi-evidence-receipt.schema.json`](schemas/multi-evidence-receipt.schema.json)
-- [`schemas/multi-hypothesis-update.schema.json`](schemas/multi-hypothesis-update.schema.json)
-- [`schemas/duplicate-evidence.schema.json`](schemas/duplicate-evidence.schema.json)
-- [`schemas/multi-likelihood-rebase.schema.json`](schemas/multi-likelihood-rebase.schema.json)
-- [`schemas/multi-expected-information-gain.schema.json`](schemas/multi-expected-information-gain.schema.json)
+- [`schemas/calibration-target.schema.json`](schemas/calibration-target.schema.json)
+- [`schemas/resolved-outcome.schema.json`](schemas/resolved-outcome.schema.json)
+- [`schemas/forecast-calibration.schema.json`](schemas/forecast-calibration.schema.json)
+- [`schemas/likelihood-calibration.schema.json`](schemas/likelihood-calibration.schema.json)
+- [`schemas/dependency-pair-sample.schema.json`](schemas/dependency-pair-sample.schema.json)
+- [`schemas/dependency-calibration-snapshot.schema.json`](schemas/dependency-calibration-snapshot.schema.json)
+- [`schemas/calibration-family-snapshot.schema.json`](schemas/calibration-family-snapshot.schema.json)
 
 # Prior layers
+
+## v1.11 — Multi-Hypothesis / Correlated Evidence Geometry
+
+v1.11 extends the binary Bayesian loop to competing explanations and makes evidence dependence first-class.
+
+```text
+             H:A      H:B      H:C
+               \       |       /
+             HypothesisDistribution
+                       |
+              Evidence Dependency Gate
+               /          |           \
+       INDEPENDENT   CONDITIONAL    DUPLICATE
+             |            |             |
+       posterior      posterior      NO UPDATE
+```
+
+Key laws:
+
+```text
+PosteriorDistribution != Truth
+SameSourceEvent != IndependentEvidenceTwice
+DifferentDerivation != IndependentSource
+ConditionalEvidence != IndependentEvidence
+DuplicateEvidence != NewKnowledge
+```
+
+Protocol: [`docs/v1.11-multi-hypothesis-correlated-evidence.md`](docs/v1.11-multi-hypothesis-correlated-evidence.md) · Invariants: [`docs/v1.11-invariants.md`](docs/v1.11-invariants.md)
 
 ## v1.10 — Bayesian Evidence Loop
 
@@ -306,16 +341,12 @@ completion
  -> next active question
 ```
 
-Key laws:
-
 ```text
 Completion != EvidenceInterpretation
 Interpretation != Posterior
 Posterior != Truth
 OneCompletion != InfiniteEvidence
 ```
-
-Protocol: [`docs/v1.10-bayesian-evidence-loop.md`](docs/v1.10-bayesian-evidence-loop.md) · Invariants: [`docs/v1.10-invariants.md`](docs/v1.10-invariants.md)
 
 ## v1.9 — Information Gain / Active Verification
 
@@ -399,20 +430,20 @@ Trust mutation requires quorum approval from the current persisted root policy.
 
 ## Why this matters for AI systems
 
-Long-running agents can receive many apparently distinct observations that actually share one source, or evidence whose meaning changes after previous evidence is known. Naively treating every message as independent can make confidence rise far faster than evidence warrants.
+Long-running agents do not only need to reason under uncertainty. They also need to discover when their own uncertainty model is bad.
 
 ATMAN-LATTICE now keeps these questions separate:
 
-- What competing explanations are still alive?
-- What exact probability model is current?
-- What source event produced this evidence?
-- Is this a new source or merely a different derivation?
-- Is this evidence independent, conditional, or duplicate under the declared model?
-- If conditional, which exact prior evidence does its likelihood condition on?
-- Was that dependency classification committed before the result was known?
-- Has this source already affected the posterior?
-- What posterior follows from the explicit assumptions?
-- Who had authority to define the model, dependency, interpretation, and update?
+- What competing explanations are alive?
+- What source produced each observation?
+- Was evidence independent, conditional, or duplicate under the declared model?
+- Which exact prior and likelihood existed before the result was known?
+- What later outcome was used as the calibration reference?
+- Was the model historically overconfident or underconfident?
+- Do allegedly independent signal families repeatedly co-move more than the independence model predicts?
+- Is there enough data to say anything at all?
+- Does a diagnostic signal justify review without granting automatic rewrite authority?
+- Who had authority to freeze, resolve, score, verify, execute, or govern?
 
 ## Run
 
@@ -430,6 +461,7 @@ python -m model.economy_worker
 python -m model.active_worker
 python -m model.bayes_worker
 python -m model.multi_worker
+python -m model.calibration_worker
 ```
 
 Reference protocols:
@@ -442,14 +474,15 @@ ATMAN-ECONOMY/1.8
 ATMAN-ACTIVE/1.9
 ATMAN-BAYES/1.10
 ATMAN-MULTI/1.11
+ATMAN-CALIBRATION/1.12
 ```
 
-This remains a **reference process/database and formal-model boundary**, not a hostile-host sandbox and not a claim about physical multiverses/torsion. Production use additionally requires protected keys, authenticated transport, rollback-resistant storage/backups, protected provenance/telemetry, empirically calibrated priors and likelihood/dependency models, database/file permissions, and operational governance.
+This remains a **reference process/database and formal-model boundary**, not a hostile-host sandbox and not a claim about physical multiverses/torsion. Production use additionally requires protected keys, authenticated transport, rollback-resistant storage/backups, protected provenance and resolution sources, empirically justified hypothesis sets, calibration monitoring, database/file permissions, and operational governance.
 
 ## Status
 
-**v1.11.0 — Multi-Hypothesis / Correlated Evidence Geometry research core.**
+**v1.12.0 — Calibration / Dependency Learning research core.**
 
-The project now spans identity continuity, cryptographic lineage, branching/restore/reconciliation, transition torsion and curvature, geometric A3/A4 coherence, finite verification capacity, durable verification debt, adaptive cost allocation, information-gain selection, evidence-bound Bayesian learning, competing hypothesis distributions, explicit source/derivation provenance, duplicate suppression, conditional evidence contexts, multi-hypothesis entropy, process-separated execution, and quorum-governed trust evolution.
+The project now spans identity continuity, cryptographic lineage, branching/restore/reconciliation, transition torsion and curvature, geometric A3/A4 coherence, finite verification capacity, durable verification debt, adaptive cost allocation, information-gain selection, evidence-bound Bayesian learning, competing hypothesis distributions, correlated-evidence provenance, duplicate suppression, conditional evidence contexts, frozen pre-outcome calibration targets, immutable resolution receipts, deterministic Brier scoring, historical likelihood audit, empirical dependency challenge signals, process-separated execution, and quorum-governed trust evolution.
 
-Next targets: empirical calibration receipts for priors/likelihood/dependency assumptions, learned dependency graphs from protected provenance, rollback-resistant evidence history, automated active-selection-to-verification handoff, and concurrency stress tests across all learning planes.
+Next targets: calibration-driven model revision proposals with explicit human/governance approval, reliability diagrams / subgroup calibration, protected resolver provenance, rollback-resistant calibration history, learned dependency-graph proposals, and concurrency stress tests across all learning planes.
