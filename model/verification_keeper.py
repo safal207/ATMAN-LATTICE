@@ -10,6 +10,7 @@ from model.enforcement import EnforcementContext
 from model.runtime_protocol import authority_grant_from_dict, authority_proof_from_dict
 from model.runtime_verification import (
     VERIFY_PROTOCOL,
+    RuntimeVerificationDecisionReceipt,
     _evaluate,
     _mapping,
     _state,
@@ -30,11 +31,27 @@ def _digest(value: object) -> str:
     return sha256(_canonical_json(value)).hexdigest()
 
 
+def decision_state_hash(decision: RuntimeVerificationDecisionReceipt | Mapping[str, object]) -> str:
+    if isinstance(decision, RuntimeVerificationDecisionReceipt):
+        decision.validate()
+        data = runtime_decision_to_dict(decision)
+    else:
+        data = dict(decision)
+    data.pop("decided_at", None)
+    data.pop("runtime_decision_hash", None)
+    return _digest(
+        {
+            "domain": "ATMAN-LATTICE/runtime-verification-state/v1.7",
+            "decision_state": data,
+        }
+    )
+
+
 def action_finalize_verification(
     *,
     subject_identity_ref: str,
     target_gate_hash: str,
-    runtime_decision_hash: str,
+    decision_state_hash: str,
     schedule_generation: int,
     pressure_hash: str | None,
     finalized_at: int,
@@ -43,7 +60,7 @@ def action_finalize_verification(
         "operation": FINALIZE_OPERATION,
         "subject_identity_ref": subject_identity_ref,
         "target_gate_hash": target_gate_hash,
-        "runtime_decision_hash": runtime_decision_hash,
+        "decision_state_hash": decision_state_hash,
         "schedule_generation": schedule_generation,
         "pressure_hash": pressure_hash,
         "finalized_at": finalized_at,
@@ -79,6 +96,7 @@ def _enforce(
 class VerificationFinalizationReceipt:
     subject_identity_ref: str
     target_gate_hash: str
+    decision_state_hash: str
     runtime_decision_hash: str
     decision: str
     schedule_generation: int
@@ -92,6 +110,7 @@ class VerificationFinalizationReceipt:
             "domain": "ATMAN-LATTICE/verification-finalization/v1.7",
             "subject_identity_ref": self.subject_identity_ref,
             "target_gate_hash": self.target_gate_hash,
+            "decision_state_hash": self.decision_state_hash,
             "runtime_decision_hash": self.runtime_decision_hash,
             "decision": self.decision,
             "schedule_generation": self.schedule_generation,
@@ -107,6 +126,7 @@ class VerificationFinalizationReceipt:
             raise ValueError("invalid finalization fields")
         for value in (
             self.target_gate_hash,
+            self.decision_state_hash,
             self.runtime_decision_hash,
             self.authority_proof_hash,
             self.finalization_hash,
@@ -135,13 +155,14 @@ def execute_finalization_request(
         raise ValueError("request_id is required")
     payload = _mapping(request.get("payload", {}), "payload")
     gate = geometric_observer_from_dict(_mapping(payload.get("geometry_gate"), "geometry_gate"))
-    expected_decision_hash = str(payload.get("expected_runtime_decision_hash", ""))
-    if not expected_decision_hash:
-        raise ValueError("expected_runtime_decision_hash is required")
+    expected_state_hash = str(payload.get("expected_decision_state_hash", ""))
+    if not expected_state_hash:
+        raise ValueError("expected_decision_state_hash is required")
 
     state = _state(db_path)
     current = _evaluate(db_path, gate, decided_at=enforcement.now)
-    if current.runtime_decision_hash != expected_decision_hash:
+    current_state_hash = decision_state_hash(current)
+    if current_state_hash != expected_state_hash:
         raise PermissionError("stale verification decision: current runtime state no longer matches preview")
 
     pressure = state.get("pressure")
@@ -149,7 +170,7 @@ def execute_finalization_request(
     action = action_finalize_verification(
         subject_identity_ref=gate.subject_identity_ref,
         target_gate_hash=gate.gate_hash,
-        runtime_decision_hash=current.runtime_decision_hash,
+        decision_state_hash=current_state_hash,
         schedule_generation=int(state["schedule_generation"]),
         pressure_hash=pressure_hash,
         finalized_at=enforcement.now,
@@ -167,6 +188,7 @@ def execute_finalization_request(
     fields = {
         "subject_identity_ref": gate.subject_identity_ref,
         "target_gate_hash": gate.gate_hash,
+        "decision_state_hash": current_state_hash,
         "runtime_decision_hash": current.runtime_decision_hash,
         "decision": current.decision,
         "schedule_generation": int(state["schedule_generation"]),
@@ -181,6 +203,7 @@ def execute_finalization_request(
         "protocol": VERIFY_PROTOCOL,
         "request_id": request_id,
         "ok": True,
+        "decision_state_hash": current_state_hash,
         "decision": runtime_decision_to_dict(current),
         "finalization": finalization_to_dict(receipt),
     }
