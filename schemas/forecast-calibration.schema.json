@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/safal207/ATMAN-LATTICE/schemas/forecast-calibration.schema.json",
+  "title": "ATMAN-LATTICE ForecastCalibrationReceipt v1.12",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["target_hash","resolution_hash","calibration_family_ref","distribution_hash","resolved_hypothesis_ref","resolved_probability_bps","brier_score_ppm","calibrated_at","calibration_hash"],
+  "properties": {
+    "target_hash": {"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "resolution_hash": {"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "calibration_family_ref": {"type":"string","minLength":1},
+    "distribution_hash": {"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "resolved_hypothesis_ref": {"type":"string","minLength":1},
+    "resolved_probability_bps": {"type":"integer","minimum":0,"maximum":10000},
+    "brier_score_ppm": {"type":"integer","minimum":0,"maximum":2000000},
+    "calibrated_at": {"type":"integer","minimum":0},
+    "calibration_hash": {"type":"string","pattern":"^[0-9a-f]{64}$"}
+  }
+}
