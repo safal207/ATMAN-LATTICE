@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/safal207/ATMAN-LATTICE/schemas/search-adjusted-validation.schema.json",
+  "title": "SearchAdjustedValidationReceipt",
+  "type": "object",
+  "required": ["candidate_hash", "reservation_hash", "underlying_validation_hash", "family_hash", "context_hash", "ordinal", "effective_min_regularized_improvement_ppm", "underlying_status", "status", "proposer_ref", "budget_keeper_ref", "evaluator_ref", "evaluated_at", "evaluation_hash"],
+  "properties": {
+    "candidate_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "reservation_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "underlying_validation_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "family_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "context_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "ordinal": {"type": "integer", "minimum": 1},
+    "effective_min_regularized_improvement_ppm": {"type": "integer", "minimum": 0},
+    "underlying_status": {"type": "string", "minLength": 1},
+    "regularized_improvement_ppm": {"type": ["integer", "null"]},
+    "search_adjusted_margin_ppm": {"type": ["integer", "null"]},
+    "status": {"enum": ["UNDERLYING_HELDOUT_REJECTED", "MULTIPLICITY_REJECTED", "SEARCH_CORRECTED_IMPROVED"]},
+    "proposer_ref": {"type": "string", "minLength": 1},
+    "budget_keeper_ref": {"type": "string", "minLength": 1},
+    "evaluator_ref": {"type": "string", "minLength": 1},
+    "evaluated_at": {"type": "integer", "minimum": 0},
+    "evaluation_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  },
+  "additionalProperties": false
+}
