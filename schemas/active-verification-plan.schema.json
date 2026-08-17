@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/safal207/ATMAN-LATTICE/schemas/active-verification-plan.schema.json",
+  "title": "ATMAN-LATTICE ActiveVerificationPlanReceipt v1.9",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["policy_hash","economy_policy_hash","measured_at","candidate_hashes","information_gain_hashes","ranked_candidate_hashes","selected_candidate_hashes","deferred_budget_candidate_hashes","deferred_oversized_candidate_hashes","deferred_low_information_candidate_hashes","used_budget_units","budget_units","plan_hash"],
+  "properties": {
+    "policy_hash": {"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "economy_policy_hash": {"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "measured_at": {"type":"integer","minimum":0},
+    "candidate_hashes": {"type":"array","items":{"type":"string","pattern":"^[0-9a-f]{64}$"},"uniqueItems":true},
+    "information_gain_hashes": {"type":"array","items":{"type":"string","pattern":"^[0-9a-f]{64}$"},"uniqueItems":true},
+    "ranked_candidate_hashes": {"type":"array","items":{"type":"string","pattern":"^[0-9a-f]{64}$"},"uniqueItems":true},
+    "selected_candidate_hashes": {"type":"array","items":{"type":"string","pattern":"^[0-9a-f]{64}$"},"uniqueItems":true},
+    "deferred_budget_candidate_hashes": {"type":"array","items":{"type":"string","pattern":"^[0-9a-f]{64}$"},"uniqueItems":true},
+    "deferred_oversized_candidate_hashes": {"type":"array","items":{"type":"string","pattern":"^[0-9a-f]{64}$"},"uniqueItems":true},
+    "deferred_low_information_candidate_hashes": {"type":"array","items":{"type":"string","pattern":"^[0-9a-f]{64}$"},"uniqueItems":true},
+    "used_budget_units": {"type":"integer","minimum":0},
+    "budget_units": {"type":"integer","minimum":0},
+    "plan_hash": {"type":"string","pattern":"^[0-9a-f]{64}$"}
+  }
+}
