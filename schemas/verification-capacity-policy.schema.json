@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/safal207/ATMAN-LATTICE/schemas/verification-capacity-policy.schema.json",
+  "title": "VerificationCapacityPolicy",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["policy_ref", "capacity_units", "max_admitted_items", "aging_quantum", "policy_hash"],
+  "properties": {
+    "policy_ref": {"type": "string", "minLength": 1},
+    "capacity_units": {"type": "integer", "minimum": 0},
+    "max_admitted_items": {"type": "integer", "minimum": 0},
+    "aging_quantum": {"type": "integer", "minimum": 1},
+    "policy_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}
