@@ -1,10 +1,10 @@
 # ATMAN-LATTICE
 
-**A Projective Spacetime Architecture for Identity, Authority, Governance, Verification, Economy, Active Learning, and Coherence**
+**A Projective Spacetime Architecture for Identity, Authority, Verification, Active Learning, Evidence Geometry, and Coherence**
 
-ATMAN-LATTICE is an exploratory research repository for modeling identity across state, space, time, lineage, branching, possibility, reconciliation, authorization, privileged execution, trust-root evolution, transition geometry, geometric coherence, finite verification capacity, durable verification debt, adaptive verification cost, active uncertainty reduction, and evidence-bound Bayesian learning.
+ATMAN-LATTICE is an exploratory research repository for modeling identity across state, space, time, lineage, branching, reconciliation, authorization, transition geometry, finite verification capacity, evidence-bound learning, competing hypotheses, and correlated-evidence provenance.
 
-> What must remain invariant when representation changes, futures branch, paths become order-sensitive, verification capacity saturates, scarce attention must be allocated, and new evidence changes the system's uncertainty model — so that identity, ancestry, uncertainty, path dependence, evidence, cost, verification state, and permission remain provable rather than merely asserted?
+> What must remain invariant when representation changes, futures branch, paths become order-sensitive, verification capacity saturates, and new evidence changes a system's beliefs — so that identity, ancestry, uncertainty, dependence, evidence, cost, and permission remain provable rather than merely asserted?
 
 The repository does **not** claim to prove metaphysical statements about the soul, consciousness, Atman, quantum worlds, physical multiverses, or physical torsion fields. Those terms are conceptual labels and thought experiments inside a formal engineering model.
 
@@ -14,7 +14,7 @@ The repository does **not** claim to prove metaphysical statements about the sou
 Spatial axis:   S1 <----> S3 / A1 <----> S2
 Temporal axis:  S4 <----> S6 / A2 <----> S5
 
-A3 = cross-axis identity + path geometry
+A3 = cross-axis identity + path/evidence geometry
 A4 = global coherence + commit/finalization gate
 ```
 
@@ -24,10 +24,6 @@ A4 = global coherence + commit/finalization gate
 Local PASS != Global Coherence
 Historical PASS != Current Authorization
 Same identity != Same history
-Valid parents != Automatically coherent merge
-Valid token != Reusable capability
-Valid signature != Valid authority
-Execution authority != Trust-governance authority
 Potentiality != History
 Valid(A) + Valid(B) != Coexist(A,B)
 Keeper != Sovereign
@@ -45,45 +41,45 @@ DeclaredCost != AccountingCost
 FUNDED != VERIFIED
 ExpectedInformationGain != Truth
 SELECTED != VERIFIED
-UNMODELED != INVALID
 Completion != EvidenceInterpretation
 Interpretation != Posterior
 Posterior != Truth
 OneCompletion != InfiniteEvidence
 LikelihoodRebase != LikelihoodReEstimation
+PosteriorDistribution != Truth
+SameSourceEvent != IndependentEvidenceTwice
+DifferentDerivation != IndependentSource
+DuplicateEvidence != NewKnowledge
+ConditionalEvidence != IndependentEvidence
+ValidDependencyReceipt != ProvenRealWorldIndependence
 ```
 
-# v1.10 — Bayesian Evidence Loop
+# v1.11 — Multi-Hypothesis / Correlated Evidence Geometry
 
-v1.10 closes the learning loop started by v1.9.
+v1.11 extends the closed Bayesian loop from a binary `H / not-H` model to a categorical distribution over competing explanations and makes evidence dependence a first-class runtime contract.
 
 ```text
-uncertainty
-   |
-ATMAN-ACTIVE/1.9 selects next question
-   |
-ATMAN-VERIFY/1.7 completes verification
-   |
-VerificationCompletionReceipt
-   |
-precommitted interpretation
-   |
-EvidenceInterpretationReceipt
-   |
-ATMAN-BAYES/1.10
-   |
-Bayesian posterior
-   |
-new HypothesisState
-   |
-cohort propagation + likelihood freshness rebind
-   |
-recalculate expected information gain
-   |
-next question
+                 competing explanations
+             H:A      H:B      H:C
+               \       |       /
+                \      |      /
+             HypothesisDistribution
+                       |
+                 verification result
+                       |
+              precommitted semantics
+                       |
+              Evidence Dependency Gate
+               /          |           \
+       INDEPENDENT   CONDITIONAL    DUPLICATE
+             |            |             |
+       posterior      posterior      NO UPDATE
+             \            /             |
+              \          /       preserve receipt
+               Distribution N+1
 ```
 
-The six process-level protocol planes are now:
+The seven process-level protocol planes are now:
 
 ```text
 ATMAN-RUNTIME/1.1  privileged execution
@@ -91,153 +87,239 @@ ATMAN-TRUST/1.2    trust-root governance
 ATMAN-VERIFY/1.7   durable verification / completion / finalization
 ATMAN-ECONOMY/1.8  measured verification cost / finite budget
 ATMAN-ACTIVE/1.9   expected information gain / next-check selection
-ATMAN-BAYES/1.10   evidence interpretation / posterior knowledge update
+ATMAN-BAYES/1.10   binary evidence interpretation / posterior update
+ATMAN-MULTI/1.11   competing hypotheses / correlated-evidence provenance
 ```
 
-## Completion is not evidence interpretation
+## Competing hypotheses stay explicit
 
-A verification result (`PASS`, `HOLD`, `FAIL`) does not directly become a Bayesian positive/negative observation.
-
-An `EvidenceInterpretationRule` maps those decisions into:
+`HypothesisDistribution` binds a canonical probability vector:
 
 ```text
-POSITIVE
-NEGATIVE
-INCONCLUSIVE
+H:A = 0.40
+H:B = 0.35
+H:C = 0.25
+sum = 1.00
 ```
 
-and binds the exact candidate and exact likelihood-model hash.
+A likelihood model must cover the **exact same hypothesis set**. Positive or negative evidence redistributes mass across the whole set:
 
 ```text
-Completion != EvidenceInterpretation
+Posterior(H_i) proportional to Prior(H_i) * P(observation | H_i)
 ```
 
-## Interpretation is precommitted
-
-The runtime requires the interpretation rule to exist before the referenced verification completes.
+Alternative explanations are not silently deleted merely because one becomes more likely.
 
 ```text
-CommittedSemantics -> observe result   OK
-Observe result -> choose semantics     X
+PosteriorDistribution != Truth
 ```
 
-This prevents hindsight remapping of a result after it is known.
+It is a versioned belief state under explicit prior, likelihood, interpretation, and dependency assumptions.
 
-## Bayesian evidence update
+## Evidence has provenance geometry
 
-For binary hypothesis prior `p`, sensitivity `s=P(+|H)`, and false-positive probability `f=P(+|not H)`:
+Before completion, `EVIDENCE_DEPENDENCY_KEEPER` must classify the evidence path as one of:
 
 ```text
-P(H|+) = p*s / (p*s + (1-p)*f)
-P(H|-) = p*(1-s) / (p*(1-s) + (1-p)*(1-f))
+INDEPENDENT
+CONDITIONAL
+DUPLICATE
 ```
 
-`INCONCLUSIVE` preserves the numerical probability but still advances evidence state and generation because an evidence event occurred.
-
-An impossible observation under the declared model is rejected instead of being normalized into an invented posterior.
+The declaration binds:
 
 ```text
-Posterior != Truth
+source_event_hash
+  = underlying observed event
+
+derivation_hash
+  = this transformation / summary / projection of the source
+
+dependency_group_ref
+  = declared dependency context
+
+parent_evidence_hashes
+  = exact already accepted evidence this signal depends on
 ```
 
-The posterior is an explicit model state conditioned on the prior, likelihood model, interpretation rule, and verification evidence.
-
-## Exact cohort propagation
-
-Multiple active candidates may reference the same exact `HypothesisState` hash.
-
-When one completed verification advances that prior, every candidate still on that exact prior advances atomically to the same posterior. Candidates already on another hypothesis state are untouched.
+This makes a critical distinction load-bearing:
 
 ```text
-A --\
-B ----> H(N)
-C --/
-
-A produces evidence
-      |
-      v
-    H(N+1)
-      |
-B and C now use H(N+1)
+DifferentDerivationHash != IndependentSource
 ```
 
-## Likelihood freshness rebind
+A translation, summary, repost, dashboard projection, or second agent's retelling can have a different derivation while still originating from the same event.
 
-v1.9 binds likelihood models to exact hypothesis hashes. v1.10 mechanically rebinds current cohort models to the new posterior while preserving their conditional test characteristics.
+## Echo-chamber protection
 
-The model generation advances and a `LikelihoodRebaseReceipt` records old/new model hashes.
+One source event cannot become several accepted independent Bayesian updates just because it appears through several paths:
 
 ```text
-LikelihoodRebase != LikelihoodReEstimation
+source S
+  |-- summary A
+  |-- summary B
+  |-- copied alert
+  `-- derived dashboard row
+
+SameSourceEvent != FourEvidenceUnits
 ```
 
-If test sensitivity/specificity actually changed, that requires an explicit new model rather than silently changing it during posterior update.
+Accepted evidence is stored with a SQLite uniqueness constraint on `source_event_hash`.
 
-## One completion, one knowledge transition
+Apply runs under `BEGIN IMMEDIATE`, so racing runtime processes cannot both commit the same source event as fresh accepted evidence inside the reference SQLite deployment boundary.
 
-The runtime persists interpretation/update history and prevents reuse of the same completed verification as an infinite evidence generator.
+## Duplicate evidence is preserved, not counted again
+
+`DUPLICATE` must reference exactly one accepted parent evidence receipt and preserve the same `source_event_hash`.
+
+It produces a `DuplicateEvidenceReceipt` but no posterior transition:
 
 ```text
-OneCompletion != InfiniteEvidence
+DuplicateEvidence -> PreserveHistory
+DuplicateEvidence -/> PosteriorAdvance
 ```
 
-## Stale Bayesian previews cannot commit
-
-A preview binds the exact:
-
-- candidate;
-- completion hash;
-- prior hypothesis;
-- likelihood model;
-- precommitted interpretation rule;
-- shared hypothesis cohort;
-- cohort model hashes.
-
-If any of those change before apply:
+So:
 
 ```text
-preview B0
-state -> B1
-apply(B0)
-    X
-stale Bayesian evidence state
+DuplicateEvidence != NewKnowledge
 ```
+
+## Conditional evidence uses conditional likelihood
+
+If evidence B depends on accepted evidence A, v1.11 refuses to reuse an unconditional likelihood as if B were independent.
+
+The model must bind the exact parent evidence set:
+
+```text
+Dependency.parents
+        ==
+ConditionalLikelihood.conditioning_evidence_hashes
+```
+
+This prevents naive multiplication such as:
+
+```text
+P(A | H) * P(B | H)
+```
+
+when the declared model actually requires something shaped like:
+
+```text
+P(A | H) * P(B | H, A)
+```
+
+## Multi-hypothesis information gain
+
+v1.11 computes Shannon entropy over the complete distribution:
+
+\[
+H(P)=-\sum_i P(H_i)\log_2P(H_i)
+\]
+
+and expected information gain:
+
+\[
+EIG=H(Prior)-E[H(Posterior\mid outcome)].
+\]
+
+An uninformative test whose outcome distribution is identical under every hypothesis produces zero expected information gain.
+
+```text
+ExpectedInformationGain != EmpiricalCalibration
+```
+
+## Shared-distribution freshness
+
+Several verification candidates may bind the same distribution. Accepted non-duplicate evidence advances:
+
+```text
+Distribution N -> Distribution N+1
+```
+
+and cohort likelihood models still bound to N are mechanically rebound to N+1 while preserving their likelihood values **and their conditioning parent set**.
+
+```text
+MultiLikelihoodRebase != MultiLikelihoodReEstimation
+```
+
+Changing actual likelihood values requires an explicit new model.
 
 ## Authority separation
 
-v1.10 introduces:
+v1.11 introduces distinct roles:
 
 ```text
-BAYESIAN_INTERPRETATION_RULE_KEEPER
-BAYESIAN_UPDATE_KEEPER
+MULTI_HYPOTHESIS_MODEL_KEEPER
+EVIDENCE_DEPENDENCY_KEEPER
+MULTI_EVIDENCE_RULE_KEEPER
+MULTI_HYPOTHESIS_UPDATE_KEEPER
 ```
 
-The right to precommit result semantics is not the right to advance knowledge state.
+Therefore:
 
-And Bayesian update authority does not grant verification, A4 finalization, execution, or trust-governance authority.
+```text
+ModelAuthority
+  != DependencyAuthority
+  != InterpretationAuthority
+  != UpdateAuthority
+```
 
-Protocol: [`docs/v1.10-bayesian-evidence-loop.md`](docs/v1.10-bayesian-evidence-loop.md)
+The right to define competing explanations is not automatically the right to declare evidence independent.
 
-Invariants: [`docs/v1.10-invariants.md`](docs/v1.10-invariants.md)
+## Epistemic boundary
+
+A valid dependency receipt proves **which dependency assumption the runtime committed and used**. It does not prove that the real-world signals are truly independent, conditional, or duplicated.
+
+```text
+ValidDependencyReceipt != ProvenPhysicalCausality
+ValidLikelihoodModel != EmpiricalCalibration
+PosteriorDistribution != Truth
+```
+
+Protocol: [`docs/v1.11-multi-hypothesis-correlated-evidence.md`](docs/v1.11-multi-hypothesis-correlated-evidence.md)
+
+Invariants: [`docs/v1.11-invariants.md`](docs/v1.11-invariants.md)
 
 Machine-readable contracts:
 
-- [`schemas/evidence-interpretation-rule.schema.json`](schemas/evidence-interpretation-rule.schema.json)
-- [`schemas/evidence-interpretation-receipt.schema.json`](schemas/evidence-interpretation-receipt.schema.json)
-- [`schemas/bayesian-update-receipt.schema.json`](schemas/bayesian-update-receipt.schema.json)
-- [`schemas/likelihood-rebase-receipt.schema.json`](schemas/likelihood-rebase-receipt.schema.json)
+- [`schemas/hypothesis-distribution.schema.json`](schemas/hypothesis-distribution.schema.json)
+- [`schemas/multi-likelihood-model.schema.json`](schemas/multi-likelihood-model.schema.json)
+- [`schemas/evidence-dependency.schema.json`](schemas/evidence-dependency.schema.json)
+- [`schemas/multi-evidence-rule.schema.json`](schemas/multi-evidence-rule.schema.json)
+- [`schemas/multi-evidence-receipt.schema.json`](schemas/multi-evidence-receipt.schema.json)
+- [`schemas/multi-hypothesis-update.schema.json`](schemas/multi-hypothesis-update.schema.json)
+- [`schemas/duplicate-evidence.schema.json`](schemas/duplicate-evidence.schema.json)
+- [`schemas/multi-likelihood-rebase.schema.json`](schemas/multi-likelihood-rebase.schema.json)
+- [`schemas/multi-expected-information-gain.schema.json`](schemas/multi-expected-information-gain.schema.json)
 
 # Prior layers
 
+## v1.10 — Bayesian Evidence Loop
+
+```text
+completion
+ -> precommitted interpretation
+ -> Bayesian posterior
+ -> cohort propagation
+ -> likelihood freshness rebind
+ -> next active question
+```
+
+Key laws:
+
+```text
+Completion != EvidenceInterpretation
+Interpretation != Posterior
+Posterior != Truth
+OneCompletion != InfiniteEvidence
+```
+
+Protocol: [`docs/v1.10-bayesian-evidence-loop.md`](docs/v1.10-bayesian-evidence-loop.md) · Invariants: [`docs/v1.10-invariants.md`](docs/v1.10-invariants.md)
+
 ## v1.9 — Information Gain / Active Verification
 
-Explicit hypothesis state and likelihood models produce expected information gain:
-
-\[
-EIG = H(prior)-E[H(posterior\mid outcome)]
-\]
-
-and active selection ranks useful uncertainty reduction under finite cost.
+Explicit uncertainty/likelihood models rank the next useful verification question under finite cost.
 
 ```text
 ExpectedInformationGain != Truth
@@ -245,11 +327,7 @@ SELECTED != VERIFIED
 UNMODELED != INVALID
 ```
 
-Protocol: [`docs/v1.9-active-verification.md`](docs/v1.9-active-verification.md) · Invariants: [`docs/v1.9-invariants.md`](docs/v1.9-invariants.md)
-
 ## v1.8 — Adaptive Verification Economy
-
-Observation-derived cost estimates allocate finite verification budget.
 
 ```text
 DeclaredCost != AccountingCost
@@ -257,22 +335,14 @@ FUNDED != VERIFIED
 DeferredBudget != FAIL
 ```
 
-Protocol: [`docs/v1.8-adaptive-verification-economy.md`](docs/v1.8-adaptive-verification-economy.md) · Invariants: [`docs/v1.8-invariants.md`](docs/v1.8-invariants.md)
-
 ## v1.7 — Runtime Verification Plane
-
-Durable verification debt, admission, completion receipts, `PASS/HOLD/FAIL`, and authority-bound current-state finalization.
 
 ```text
 COMPLETED != PASS
 Preview != Finalization
 ```
 
-Protocol: [`docs/v1.7-runtime-verification-plane.md`](docs/v1.7-runtime-verification-plane.md) · Invariants: [`docs/v1.7-invariants.md`](docs/v1.7-invariants.md)
-
 ## v1.6 — Verification Pressure / Temporal Loom
-
-Finite verifier capacity without converting overload into semantic failure.
 
 ```text
 UNVERIFIED != INVALID
@@ -282,7 +352,7 @@ DEFERRED != PRUNED
 
 ## v1.5 — Geometric Coherence Gate
 
-Torsion and curvature evidence enter A3/A4 under explicit `PASS < HOLD < FAIL` policy semantics.
+Torsion/curvature evidence enters A3/A4 under explicit `PASS < HOLD < FAIL` policy semantics.
 
 ## v1.4 — Transition Geometry
 
@@ -313,12 +383,9 @@ Preserve(Worlds) != AuthorityToRewrite(Worlds)
 
 Trust mutation requires quorum approval from the current persisted root policy.
 
-## v1.1 — Full Runtime Plane
+## v1.1 and earlier
 
-Privileged observer, capability, consumption/revocation, and merge operations execute behind a process/database boundary.
-
-## v1.0 and earlier
-
+- **v1.1** — full privileged runtime plane and atomically serialized authorization state.
 - **v1.0** — process-separated observer runtime.
 - **v0.9** — exact pre-execution authority enforcement.
 - **v0.8** — Ed25519 signer identity, roles, scopes, policy generation.
@@ -332,23 +399,20 @@ Privileged observer, capability, consumption/revocation, and merge operations ex
 
 ## Why this matters for AI systems
 
-Long-running agents can branch, restore state, encounter path-dependent operations, change authority, accumulate more verification work than available capacity, choose among tests with different costs/information value, and learn from completed evidence.
+Long-running agents can receive many apparently distinct observations that actually share one source, or evidence whose meaning changes after previous evidence is known. Naively treating every message as independent can make confidence rise far faster than evidence warrants.
 
-ATMAN-LATTICE keeps the questions separate:
+ATMAN-LATTICE now keeps these questions separate:
 
-- Is this still the same identity and lineage?
-- Was a future considered or committed?
-- Can valid branches coexist or merge without ancestry erasure?
-- Did operation order change the result?
-- Was required verification actually completed?
-- Was work deferred only because capacity or budget ran out?
-- What verification cost was observed rather than declared?
-- Which check is expected to reduce uncertainty most?
-- How was a completed result interpreted as evidence?
-- Was that interpretation committed before the result was known?
-- What posterior follows from the explicit prior and likelihood model?
-- Is the posterior state still current at use time?
-- Did any layer have the authority required for its own action — and only that action?
+- What competing explanations are still alive?
+- What exact probability model is current?
+- What source event produced this evidence?
+- Is this a new source or merely a different derivation?
+- Is this evidence independent, conditional, or duplicate under the declared model?
+- If conditional, which exact prior evidence does its likelihood condition on?
+- Was that dependency classification committed before the result was known?
+- Has this source already affected the posterior?
+- What posterior follows from the explicit assumptions?
+- Who had authority to define the model, dependency, interpretation, and update?
 
 ## Run
 
@@ -365,6 +429,7 @@ python -m model.verification_worker
 python -m model.economy_worker
 python -m model.active_worker
 python -m model.bayes_worker
+python -m model.multi_worker
 ```
 
 Reference protocols:
@@ -376,14 +441,15 @@ ATMAN-VERIFY/1.7
 ATMAN-ECONOMY/1.8
 ATMAN-ACTIVE/1.9
 ATMAN-BAYES/1.10
+ATMAN-MULTI/1.11
 ```
 
-This remains a **reference process/database and formal-model boundary**, not a hostile-host sandbox and not a claim about physical multiverses/torsion. Production use additionally requires protected keys, authenticated transport, rollback-resistant storage/backups, protected resource telemetry, empirically calibrated priors/likelihood models, calibration monitoring, database/file permissions, and operational governance.
+This remains a **reference process/database and formal-model boundary**, not a hostile-host sandbox and not a claim about physical multiverses/torsion. Production use additionally requires protected keys, authenticated transport, rollback-resistant storage/backups, protected provenance/telemetry, empirically calibrated priors and likelihood/dependency models, database/file permissions, and operational governance.
 
 ## Status
 
-**v1.10.0 — Bayesian Evidence Loop research core.**
+**v1.11.0 — Multi-Hypothesis / Correlated Evidence Geometry research core.**
 
-The project now spans identity continuity, cryptographic lineage, branching/restore/reconciliation, transition torsion and curvature, geometric A3/A4 coherence, finite-capacity verification, durable verification debt, authority-bound completion/finalization, observation-derived cost estimation, adaptive budget allocation, expected-information-gain active selection, precommitted evidence interpretation, Bayesian posterior transitions, exact cohort propagation, likelihood freshness rebinds, process-separated execution, and quorum-governed trust evolution.
+The project now spans identity continuity, cryptographic lineage, branching/restore/reconciliation, transition torsion and curvature, geometric A3/A4 coherence, finite verification capacity, durable verification debt, adaptive cost allocation, information-gain selection, evidence-bound Bayesian learning, competing hypothesis distributions, explicit source/derivation provenance, duplicate suppression, conditional evidence contexts, multi-hypothesis entropy, process-separated execution, and quorum-governed trust evolution.
 
-Next targets: multi-hypothesis / categorical posterior state, calibration receipts for priors and likelihoods, automatic selected-work handoff into the verification scheduler, rollback-resistant evidence history, protected runtime telemetry, correlated-evidence handling, and concurrency stress tests.
+Next targets: empirical calibration receipts for priors/likelihood/dependency assumptions, learned dependency graphs from protected provenance, rollback-resistant evidence history, automated active-selection-to-verification handoff, and concurrency stress tests across all learning planes.
