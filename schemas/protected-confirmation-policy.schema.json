@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/safal207/ATMAN-LATTICE/schemas/protected-confirmation-policy.schema.json",
+  "title": "ProtectedConfirmationPolicy",
+  "type": "object",
+  "required": ["policy_ref", "subject_identity_ref", "min_confirmation_samples", "min_regularized_improvement_ppm", "registered_at", "policy_hash"],
+  "properties": {
+    "policy_ref": {"type": "string", "minLength": 1},
+    "subject_identity_ref": {"type": "string", "minLength": 1},
+    "min_confirmation_samples": {"type": "integer", "minimum": 1},
+    "min_regularized_improvement_ppm": {"type": "integer", "minimum": 0},
+    "registered_at": {"type": "integer", "minimum": 0},
+    "policy_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  },
+  "additionalProperties": false
+}
