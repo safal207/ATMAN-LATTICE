@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/safal207/ATMAN-LATTICE/schemas/replication-review.schema.json",
+  "title": "ReplicationReviewReceipt",
+  "type": "object",
+  "required": ["evaluation_hash","target_hash","batch_hash","status","drift_kind","decision","rationale_ref","batch_keeper_ref","evaluator_ref","reviewer_ref","reviewed_at","review_hash"],
+  "properties": {
+    "evaluation_hash": {"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "target_hash": {"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "batch_hash": {"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "status": {"enum":["INSUFFICIENT_REPLICATION","REPLICATED","DRIFT_SIGNAL"]},
+    "drift_kind": {"enum":["NONE","STRUCTURAL","PERFORMANCE","BOTH"]},
+    "decision": {"enum":["ACKNOWLEDGE","HOLD","DISPUTE"]},
+    "rationale_ref": {"type":"string","minLength":1},
+    "batch_keeper_ref": {"type":"string","minLength":1},
+    "evaluator_ref": {"type":"string","minLength":1},
+    "reviewer_ref": {"type":"string","minLength":1},
+    "reviewed_at": {"type":"integer","minimum":0},
+    "review_hash": {"type":"string","pattern":"^[0-9a-f]{64}$"}
+  },
+  "additionalProperties": false
+}
