@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/safal207/ATMAN-LATTICE/schemas/dependency-graph-state.schema.json",
+  "title": "DependencyGraphState",
+  "type": "object",
+  "required": ["graph_ref", "subject_identity_ref", "generation", "edges", "evidence_state_hash", "graph_hash"],
+  "properties": {
+    "graph_ref": {"type": "string", "minLength": 1},
+    "subject_identity_ref": {"type": "string", "minLength": 1},
+    "generation": {"type": "integer", "minimum": 0},
+    "edges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["parent_model_ref", "child_model_ref", "relation", "edge_hash"],
+        "properties": {
+          "parent_model_ref": {"type": "string", "minLength": 1},
+          "child_model_ref": {"type": "string", "minLength": 1},
+          "relation": {"const": "STATISTICAL_CONDITIONING"},
+          "edge_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+        },
+        "additionalProperties": false
+      }
+    },
+    "evidence_state_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "graph_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  },
+  "additionalProperties": false
+}
