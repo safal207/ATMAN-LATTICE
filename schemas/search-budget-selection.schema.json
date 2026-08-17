@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/safal207/ATMAN-LATTICE/schemas/search-budget-selection.schema.json",
+  "title": "SearchBudgetSelectionReceipt",
+  "type": "object",
+  "required": ["selection_ref", "subject_identity_ref", "pair_key", "base_graph_hash", "structural_policy_hash", "search_policy_hash", "history_hash", "context_hash", "family_hash", "family_reservation_hashes", "current_candidate_hashes", "current_evaluation_hashes", "budget_used", "budget_remaining", "status", "selector_ref", "selected_at", "selection_hash"],
+  "properties": {
+    "selection_ref": {"type": "string", "minLength": 1},
+    "subject_identity_ref": {"type": "string", "minLength": 1},
+    "pair_key": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "base_graph_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "structural_policy_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "search_policy_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "history_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "context_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "family_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "family_reservation_hashes": {"type": "array", "items": {"type": "string", "pattern": "^[0-9a-f]{64}$"}, "minItems": 1, "uniqueItems": true},
+    "current_candidate_hashes": {"type": "array", "items": {"type": "string", "pattern": "^[0-9a-f]{64}$"}, "minItems": 1, "uniqueItems": true},
+    "current_evaluation_hashes": {"type": "array", "items": {"type": "string", "pattern": "^[0-9a-f]{64}$"}, "minItems": 1, "uniqueItems": true},
+    "budget_used": {"type": "integer", "minimum": 1},
+    "budget_remaining": {"type": "integer", "minimum": 0},
+    "selected_candidate_hash": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
+    "selected_evaluation_hash": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
+    "selected_search_adjusted_margin_ppm": {"type": ["integer", "null"]},
+    "status": {"enum": ["SELECTED", "NO_SEARCH_CORRECTED_CANDIDATE"]},
+    "selector_ref": {"type": "string", "minLength": 1},
+    "selected_at": {"type": "integer", "minimum": 0},
+    "selection_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  },
+  "additionalProperties": false
+}
