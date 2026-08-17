@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://atman-lattice.local/schemas/verification-completion-receipt.schema.json",
+  "title": "VerificationCompletionReceipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["work_hash","subject_identity_ref","target_gate_hash","schedule_generation","pressure_hash","decision","evidence_digest","completed_at","actor_ref","completion_hash"],
+  "properties": {
+    "work_hash": {"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "subject_identity_ref": {"type":"string","minLength":1},
+    "target_gate_hash": {"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "schedule_generation": {"type":"integer","minimum":1},
+    "pressure_hash": {"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "decision": {"enum":["PASS","HOLD","FAIL"]},
+    "evidence_digest": {"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "completed_at": {"type":"integer","minimum":0},
+    "actor_ref": {"type":"string","minLength":1},
+    "completion_hash": {"type":"string","pattern":"^[0-9a-f]{64}$"}
+  }
+}
