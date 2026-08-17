@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/safal207/ATMAN-LATTICE/schemas/structural-graph-revision-proposal.schema.json",
+  "title": "StructuralGraphRevisionProposal",
+  "type": "object",
+  "required": ["proposal_ref", "subject_identity_ref", "pair_key", "calibration_snapshot_hash", "base_graph_hash", "base_generation", "proposed_generation", "direction", "change_kind", "parent_model_ref", "child_model_ref", "proposed_edges", "reason_ref", "proposer_ref", "proposed_at", "proposal_hash"],
+  "properties": {
+    "proposal_ref": {"type": "string", "minLength": 1},
+    "subject_identity_ref": {"type": "string", "minLength": 1},
+    "pair_key": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "calibration_snapshot_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "base_graph_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "base_generation": {"type": "integer", "minimum": 0},
+    "proposed_generation": {"type": "integer", "minimum": 1},
+    "direction": {"enum": ["LEFT_TO_RIGHT", "RIGHT_TO_LEFT"]},
+    "change_kind": {"enum": ["ADD_CONDITIONAL_EDGE", "REMOVE_CONDITIONAL_EDGE"]},
+    "parent_model_ref": {"type": "string", "minLength": 1},
+    "child_model_ref": {"type": "string", "minLength": 1},
+    "proposed_edges": {"type": "array", "items": {"type": "object"}},
+    "reason_ref": {"type": "string", "minLength": 1},
+    "proposer_ref": {"type": "string", "minLength": 1},
+    "proposed_at": {"type": "integer", "minimum": 0},
+    "proposal_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  },
+  "additionalProperties": false
+}
