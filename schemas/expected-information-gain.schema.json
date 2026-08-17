@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/safal207/ATMAN-LATTICE/schemas/expected-information-gain.schema.json",
+  "title": "ATMAN-LATTICE ExpectedInformationGainReceipt v1.9",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["candidate_hash","hypothesis_hash","likelihood_model_hash","prior_entropy_microbits","expected_posterior_entropy_microbits","expected_information_gain_microbits","estimated_cost_units","information_per_cost_scaled","computed_at","information_gain_hash"],
+  "properties": {
+    "candidate_hash": {"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "hypothesis_hash": {"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "likelihood_model_hash": {"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "prior_entropy_microbits": {"type":"integer","minimum":0},
+    "expected_posterior_entropy_microbits": {"type":"integer","minimum":0},
+    "expected_information_gain_microbits": {"type":"integer","minimum":0},
+    "estimated_cost_units": {"type":"integer","minimum":1},
+    "information_per_cost_scaled": {"type":"integer","minimum":0},
+    "computed_at": {"type":"integer","minimum":0},
+    "information_gain_hash": {"type":"string","pattern":"^[0-9a-f]{64}$"}
+  }
+}
