@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "atman-lattice"
-version = "1.15.0"
-description = "Executable invariants for identity, authority, active Bayesian learning, calibrated model revision, structural graph learning, and held-out complexity-regularized validation"
+version = "1.16.0"
+description = "Executable invariants for identity, authority, active Bayesian learning, calibrated structural revision, held-out validation, and finite multiple-comparison search governance"
 requires-python = ">=3.10"
 dependencies = [
     "cryptography>=42",
