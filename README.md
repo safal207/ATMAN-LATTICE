@@ -1,10 +1,10 @@
 # ATMAN-LATTICE
 
-**A Projective Spacetime Architecture for Identity, Authority, Governance, Verification, and Coherence**
+**A Projective Spacetime Architecture for Identity, Authority, Governance, Verification, Economy, and Coherence**
 
-ATMAN-LATTICE is an exploratory research repository for modeling identity across state, space, time, lineage, branching, possibility, reconciliation, authorization, privileged execution, trust-root evolution, transition geometry, geometric coherence, finite verification capacity, and durable verification debt.
+ATMAN-LATTICE is an exploratory research repository for modeling identity across state, space, time, lineage, branching, possibility, reconciliation, authorization, privileged execution, trust-root evolution, transition geometry, geometric coherence, finite verification capacity, durable verification debt, and adaptive verification-budget allocation.
 
-> What must remain invariant when representation changes, futures branch, paths become order-sensitive, verification capacity saturates, or authority itself changes — so that identity, ancestry, uncertainty, path dependence, verification state, and permission remain provable rather than merely asserted?
+> What must remain invariant when representation changes, futures branch, paths become order-sensitive, verification capacity saturates, or scarce attention must be allocated — so that identity, ancestry, uncertainty, path dependence, verification state, cost evidence, and permission remain provable rather than merely asserted?
 
 The repository does **not** claim to prove metaphysical statements about the soul, sleep, consciousness, Atman, quantum worlds, physical multiverses, or physical torsion fields. Those terms are conceptual labels and thought experiments inside a formal engineering model.
 
@@ -50,7 +50,146 @@ Deferred != Pruned
 COMPLETED != PASS
 Preview != Finalization
 VerifierCapacity != RealityCapacity
+DeclaredCost != AccountingCost
+FUNDED != VERIFIED
+FUNDED != PASS
+DeferredBudget != FAIL
 ```
+
+# v1.8 — Adaptive Verification Economy
+
+v1.8 adds an economic plane for allocating finite verification attention without letting a submitter's declared verification cost become accounting truth.
+
+```text
+existing verification debt
+        |
+        v
+EconomicVerificationCandidate
+        |
+        +-- value
+        +-- risk
+        +-- priority
+        +-- age
+        +-- estimator class
+        |
+        v
+ATMAN-ECONOMY/1.8
+        |
+        +-- observed-cost estimator
+        +-- uncertainty premium
+        +-- finite budget
+        +-- deterministic allocation
+        |
+        +-- FUNDED
+        +-- DEFERRED_BUDGET
+        +-- DEFERRED_OVERSIZED
+```
+
+The four process-level protocol planes are now:
+
+```text
+ATMAN-RUNTIME/1.1  privileged execution
+ATMAN-TRUST/1.2    trust-root governance
+ATMAN-VERIFY/1.7   durable verification/debt/finalization
+ATMAN-ECONOMY/1.8  adaptive verification-budget allocation
+```
+
+## Declared cost is provenance, not accounting truth
+
+An economic candidate must reference existing v1.7 verification work. Its original `cost_units` is preserved as `declared_cost_units`, but the allocator does not trust that field as the cost used for budget decisions.
+
+```text
+DeclaredCost != AccountingCost
+```
+
+If there is no observed history for an estimator class, the reference runtime uses:
+
+```text
+bootstrap cost + uncertainty premium
+```
+
+not the caller's declared number.
+
+## Completion-bound observed cost
+
+A `CostObservationReceipt` is accepted only when:
+
+- the work exists;
+- the economic candidate already exists;
+- the v1.7 work is completed;
+- the observation binds the exact `completion_hash`;
+- the estimator key matches the candidate;
+- `VERIFICATION_COST_METER` authority is current;
+- the meter identity comes from the authority grant;
+- no conflicting observation already exists for the same work hash.
+
+Cost observations feed a hash-bound `CostEstimatorSnapshot` with sample count, total observed cost, ceiling arithmetic mean, and the exact observation hashes.
+
+The reference implementation authenticates accounting measurements; it does **not** claim to automatically measure CPU cycles, energy, API spend, or wall-clock cost. Production should bind the meter to protected resource telemetry or billing evidence.
+
+## Adaptive allocation
+
+The reference allocator ranks by utility per estimated cost:
+
+```text
+utility =
+    value * value_weight
+  + risk * risk_weight
+  + priority * priority_weight
+  + floor(wait_time / aging_quantum)
+```
+
+Historical observed cost can therefore reorder future verification attention. Low-sample estimators receive an explicit uncertainty premium.
+
+Every candidate is accounted for exactly once:
+
+```text
+CANDIDATES = FUNDED ∪ DEFERRED_BUDGET ∪ DEFERRED_OVERSIZED
+```
+
+with disjoint dispositions.
+
+And the semantic separation remains load-bearing:
+
+```text
+FUNDED != VERIFIED
+FUNDED != PASS
+DEFERRED != FAIL
+```
+
+The economy plane decides where scarce verification resource goes. It does not decide the verification result or A4 truth/coherence result.
+
+## Economy preview vs finalization
+
+`preview_budget_allocation` returns a state hash and deterministic allocation. Finalization requires `VERIFICATION_BUDGET_KEEPER` authority over the exact current economy state, policy, allocation, next generation, and runtime time.
+
+If candidates or estimator evidence change after preview:
+
+```text
+preview E0
+state -> E1
+finalize(E0)
+    X
+stale verification economy state
+```
+
+So:
+
+```text
+OldEconomicPreview != CurrentBudgetAuthority
+```
+
+Protocol: [`docs/v1.8-adaptive-verification-economy.md`](docs/v1.8-adaptive-verification-economy.md)
+
+Invariants: [`docs/v1.8-invariants.md`](docs/v1.8-invariants.md)
+
+Machine-readable contracts:
+
+- [`schemas/verification-cost-observation.schema.json`](schemas/verification-cost-observation.schema.json)
+- [`schemas/verification-cost-estimator.schema.json`](schemas/verification-cost-estimator.schema.json)
+- [`schemas/verification-economic-candidate.schema.json`](schemas/verification-economic-candidate.schema.json)
+- [`schemas/verification-economy-policy.schema.json`](schemas/verification-economy-policy.schema.json)
+- [`schemas/verification-budget-allocation.schema.json`](schemas/verification-budget-allocation.schema.json)
 
 # v1.7 — Runtime Verification Plane
 
@@ -70,14 +209,6 @@ ATMAN-VERIFY/1.7
       +-- finalize with VERIFICATION_KEEPER authority
 ```
 
-The three process-level protocol planes are now:
-
-```text
-ATMAN-RUNTIME/1.1  privileged execution
-ATMAN-TRUST/1.2    trust-root governance
-ATMAN-VERIFY/1.7   durable verification/debt/finalization
-```
-
 ## Durable verification debt
 
 Work is persisted in SQLite as:
@@ -92,8 +223,6 @@ COMPLETED
 
 A process restart does not erase deferred verification work while the runtime database survives.
 
-The scheduler uses server-owned capacity configuration. Client claims about capacity do not replace runtime policy.
-
 ```text
 UNVERIFIED != INVALID
 DEFERRED != PRUNED
@@ -101,19 +230,9 @@ DEFERRED != PRUNED
 
 ## Completion is an explicit verdict
 
-`VerificationCompletionReceipt` binds the exact:
+`VerificationCompletionReceipt` binds exact work, identity, geometry gate, schedule generation, pressure receipt, PASS/HOLD/FAIL result, evidence digest, verifier actor, and runtime completion time.
 
-- work hash;
-- subject identity;
-- target geometry gate;
-- schedule generation;
-- pressure receipt;
-- PASS/HOLD/FAIL result;
-- evidence digest;
-- verifier actor;
-- runtime completion time.
-
-Only work admitted in the **current** pressure window can be completed.
+Only work admitted in the current pressure window can be completed.
 
 ```text
 COMPLETED != PASS
@@ -134,22 +253,9 @@ all results = PASS
 runtime decision = PASS
 ```
 
-Otherwise:
-
-```text
-pending work        -> HOLD
-deferred work       -> HOLD
-completion HOLD     -> HOLD
-completion FAIL     -> FAIL
-base geometry FAIL  -> FAIL
-HOLD + no work      -> HOLD
-```
+Otherwise pending/deferred/HOLD results remain `HOLD`, and any completed `FAIL` yields `FAIL`.
 
 ## Preview vs authoritative finalization
-
-`evaluate_geometric_verification` returns a diagnostic runtime decision plus a stable `decision_state_hash`.
-
-The time-stamped decision receipt may change as time advances; the state digest does not change merely because the clock changed.
 
 Authoritative finalization requires:
 
@@ -163,27 +269,11 @@ current schedule generation
 current pressure hash
 ```
 
-If verification state changes between preview and finalization:
-
-```text
-preview S0
-state -> S1
-finalize(S0)
-    X
-stale verification decision
-```
-
-This is the v1.7 use-time binding for global verification state.
+If verification state changes between preview and finalization, the old preview is rejected.
 
 Protocol: [`docs/v1.7-runtime-verification-plane.md`](docs/v1.7-runtime-verification-plane.md)
 
 Invariants: [`docs/v1.7-invariants.md`](docs/v1.7-invariants.md)
-
-Machine-readable contracts:
-
-- [`schemas/verification-completion-receipt.schema.json`](schemas/verification-completion-receipt.schema.json)
-- [`schemas/runtime-verification-decision.schema.json`](schemas/runtime-verification-decision.schema.json)
-- [`schemas/verification-finalization-receipt.schema.json`](schemas/verification-finalization-receipt.schema.json)
 
 # Prior layers
 
@@ -195,8 +285,6 @@ Finite A3/A4 capacity is modeled without converting overload into a semantic ver
 OFFERED = ADMITTED ∪ DEFERRED_CAPACITY ∪ DEFERRED_OVERSIZED
 ADMITTED != VERIFIED
 ```
-
-Aging raises old work over time so continuous fresh arrivals do not automatically starve older evidence.
 
 Protocol: [`docs/v1.6-verification-pressure.md`](docs/v1.6-verification-pressure.md) · Invariants: [`docs/v1.6-invariants.md`](docs/v1.6-invariants.md)
 
@@ -268,7 +356,7 @@ Protocol: [`docs/v1.0-atman-runtime.md`](docs/v1.0-atman-runtime.md) · Invarian
 
 ## Why this matters for AI systems
 
-Long-running agents can have valid alternative plans, restored memories, order-sensitive operations, changing authority, and more verification work than available capacity.
+Long-running agents can have valid alternative plans, restored memories, order-sensitive operations, changing authority, more verification work than available capacity, and verification checks with very different real resource costs.
 
 ATMAN-LATTICE keeps different questions separate:
 
@@ -279,7 +367,9 @@ ATMAN-LATTICE keeps different questions separate:
 - Did operation order change the result?
 - Is path dependence acceptable, HOLD-worthy, or rejected?
 - Was verification actually completed?
-- Was it only deferred because capacity ran out?
+- Was it only deferred because capacity or budget ran out?
+- What cost was merely declared, and what cost was independently accounted?
+- Which verification debt receives scarce budget now?
 - Did the verifier return PASS/HOLD/FAIL?
 - Is the preview still current at finalization time?
 - Did the finalizer have authority?
@@ -304,20 +394,27 @@ Verification worker:
 python -m model.verification_worker
 ```
 
+Verification economy worker:
+
+```bash
+python -m model.economy_worker
+```
+
 Reference protocols:
 
 ```text
 ATMAN-RUNTIME/1.1
 ATMAN-TRUST/1.2
 ATMAN-VERIFY/1.7
+ATMAN-ECONOMY/1.8
 ```
 
-This remains a **reference process/database and formal-model boundary**, not a hostile-host sandbox or a claim about physical multiverses/torsion. Production use additionally requires protected keys, authenticated transport, rollback-resistant durable storage/backups, measured resource accounting, database/file permissions, and operational governance.
+This remains a **reference process/database and formal-model boundary**, not a hostile-host sandbox or a claim about physical multiverses/torsion. Production use additionally requires protected keys, authenticated transport, rollback-resistant durable storage/backups, operating-system/tool-bound resource metering, database/file permissions, and operational governance.
 
 ## Status
 
-**v1.7.0 — Runtime Verification Plane research core.**
+**v1.8.0 — Adaptive Verification Economy research core.**
 
-The project now spans identity continuity, cryptographic lineage, potential-vs-committed futures, restore/fork semantics, narrative-preserving reconciliation, transition torsion/curvature, policy-bound A3/A4 geometric coherence, finite verification-pressure scheduling, durable verification debt, authority-bound completion/finalization, one-time authorization, asymmetric signer authority, process-separated execution, serialized runtime state, and quorum-governed trust-root evolution.
+The project now spans identity continuity, cryptographic lineage, potential-vs-committed futures, restore/fork semantics, narrative-preserving reconciliation, transition torsion/curvature, policy-bound A3/A4 geometric coherence, finite verification-pressure scheduling, durable verification debt, authority-bound completion/finalization, authenticated cost observations, observation-derived adaptive cost estimation, stale-safe budget finalization, one-time authorization, asymmetric signer authority, process-separated execution, serialized runtime state, and quorum-governed trust-root evolution.
 
-Next targets: adaptive verification budgeting from measured runtime cost, automatic work decomposition for oversized checks, persistent finalization/audit history, rollback-resistant verification state, compensation receipts, generalized ancestry proofs, concurrency stress tests, and real agent planning/memory/tool integrations.
+Next targets: bind cost meters to actual protected runtime telemetry, automatically apply funded allocations into the verification scheduler, decompose oversized verification work, persist budget-finalization history, rollback-resistant economy state, compensation receipts, concurrency stress tests, and real agent planning/memory/tool integrations.
