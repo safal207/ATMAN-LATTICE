@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/safal207/ATMAN-LATTICE/schemas/replication-policy.schema.json",
+  "title": "ReplicationPolicy",
+  "type": "object",
+  "required": ["policy_ref","subject_identity_ref","min_replication_samples","min_temporal_gap","min_regularized_improvement_ppm","max_proposed_brier_degradation_ppm","persistent_drift_epochs","registered_at","policy_hash"],
+  "properties": {
+    "policy_ref": {"type":"string","minLength":1},
+    "subject_identity_ref": {"type":"string","minLength":1},
+    "min_replication_samples": {"type":"integer","minimum":1},
+    "min_temporal_gap": {"type":"integer","minimum":0},
+    "min_regularized_improvement_ppm": {"type":"integer","minimum":0},
+    "max_proposed_brier_degradation_ppm": {"type":"integer","minimum":0},
+    "persistent_drift_epochs": {"type":"integer","minimum":1},
+    "registered_at": {"type":"integer","minimum":0},
+    "policy_hash": {"type":"string","pattern":"^[0-9a-f]{64}$"}
+  },
+  "additionalProperties": false
+}
