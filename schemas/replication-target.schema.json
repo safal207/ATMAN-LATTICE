@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/safal207/ATMAN-LATTICE/schemas/replication-target.schema.json",
+  "title": "ReplicationTargetReceipt",
+  "type": "object",
+  "required": ["target_ref","subject_identity_ref","pair_key","confirmed_revision_hash","candidate_hash","confirmed_graph_hash","confirmed_generation","confirmation_evaluation_hash","confirmation_review_hash","confirmation_batch_hash","confirmation_source_ref","confirmation_evaluated_at","baseline_proposed_mean_brier_ppm","baseline_regularized_improvement_ppm","candidate_proposer_ref","confirmation_evaluator_ref","confirmation_reviewer_ref","registered_at","target_hash"],
+  "properties": {
+    "target_ref": {"type":"string","minLength":1},
+    "subject_identity_ref": {"type":"string","minLength":1},
+    "pair_key": {"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "confirmed_revision_hash": {"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "candidate_hash": {"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "confirmed_graph_hash": {"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "confirmed_generation": {"type":"integer","minimum":1},
+    "confirmation_evaluation_hash": {"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "confirmation_review_hash": {"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "confirmation_batch_hash": {"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "confirmation_source_ref": {"type":"string","minLength":1},
+    "confirmation_evaluated_at": {"type":"integer","minimum":0},
+    "baseline_proposed_mean_brier_ppm": {"type":"integer","minimum":0,"maximum":1000000},
+    "baseline_regularized_improvement_ppm": {"type":"integer","exclusiveMinimum":0},
+    "candidate_proposer_ref": {"type":"string","minLength":1},
+    "confirmation_evaluator_ref": {"type":"string","minLength":1},
+    "confirmation_reviewer_ref": {"type":"string","minLength":1},
+    "registered_at": {"type":"integer","minimum":0},
+    "target_hash": {"type":"string","pattern":"^[0-9a-f]{64}$"}
+  },
+  "additionalProperties": false
+}
