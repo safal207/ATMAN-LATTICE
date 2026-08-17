@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/safal207/ATMAN-LATTICE/schemas/model-revision-replay-case.schema.json",
+  "title": "ATMAN-LATTICE ModelRevisionReplayCase v1.13",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["calibration_hash","resolved_hypothesis_ref","observed_outcome","old_predicted_positive_bps","proposed_predicted_positive_bps","old_brier_score_ppm","proposed_brier_score_ppm","case_hash"],
+  "properties": {
+    "calibration_hash": {"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "resolved_hypothesis_ref": {"type":"string","minLength":1},
+    "observed_outcome": {"enum":["POSITIVE","NEGATIVE"]},
+    "old_predicted_positive_bps": {"type":"integer","minimum":0,"maximum":10000},
+    "proposed_predicted_positive_bps": {"type":"integer","minimum":0,"maximum":10000},
+    "old_brier_score_ppm": {"type":"integer","minimum":0,"maximum":1000000},
+    "proposed_brier_score_ppm": {"type":"integer","minimum":0,"maximum":1000000},
+    "case_hash": {"type":"string","pattern":"^[0-9a-f]{64}$"}
+  }
+}
