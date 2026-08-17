@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/safal207/ATMAN-LATTICE/schemas/multi-expected-information-gain.schema.json",
+  "title": "ATMAN-LATTICE MultiExpectedInformationGainReceipt v1.11",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["candidate_hash", "distribution_hash", "likelihood_model_hash", "prior_entropy_microbits", "expected_posterior_entropy_microbits", "expected_information_gain_microbits", "computed_at", "information_gain_hash"],
+  "properties": {
+    "candidate_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "distribution_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "likelihood_model_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "prior_entropy_microbits": {"type": "integer", "minimum": 0},
+    "expected_posterior_entropy_microbits": {"type": "integer", "minimum": 0},
+    "expected_information_gain_microbits": {"type": "integer", "minimum": 0},
+    "computed_at": {"type": "integer", "minimum": 0},
+    "information_gain_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}
