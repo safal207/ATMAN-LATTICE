@@ -1,12 +1,12 @@
 # ATMAN-LATTICE
 
-**A Projective Spacetime Architecture for Identity, Authority, Verification, Active Learning, Calibration, Governed Revision, and Coherence**
+**A Projective Spacetime Architecture for Identity, Authority, Verification, Active Learning, Calibration, Governed Revision, Structural Evidence Graphs, and Coherence**
 
-ATMAN-LATTICE is an exploratory research repository for modeling identity across state, space, time, lineage, branching, reconciliation, authorization, transition geometry, finite verification capacity, evidence-bound learning, competing hypotheses, correlated-evidence provenance, observer calibration, and governed correction of the observer's own models.
+ATMAN-LATTICE is an exploratory research repository for modeling identity across state, space, time, lineage, branching, reconciliation, authorization, transition geometry, finite verification capacity, evidence-bound learning, competing hypotheses, correlated-evidence provenance, observer calibration, governed parameter correction, and governed revision of the observer's own statistical dependency graph.
 
-> What must remain invariant when representation changes, futures branch, paths become order-sensitive, evidence changes beliefs, later outcomes reveal that the observer was wrong, and the observer then proposes to change itself?
+> What must remain invariant when representation changes, futures branch, paths become order-sensitive, evidence changes beliefs, later outcomes reveal observer error, and the observer then proposes to change both its parameters and its map of statistical dependencies?
 
-The repository does **not** claim to prove metaphysical statements about the soul, consciousness, Atman, quantum worlds, physical multiverses, or physical torsion fields. Those terms are conceptual labels and thought experiments inside a formal engineering model.
+The repository does **not** claim to prove metaphysical statements about the soul, consciousness, Atman, quantum worlds, physical multiverses, physical torsion fields, or real-world causal structure. Those terms are conceptual labels and thought experiments inside a formal engineering model.
 
 ## Core geometry
 
@@ -57,39 +57,44 @@ Review != Apply
 OldReplay != CurrentRevisionAuthority
 LearningFromError != ErasingError
 HistoricalFit != FutureTruth
+CorrelationChallenge != CausalityProof
+GraphEdge != PhysicalCause
+StructuralProposal != StructuralMutation
+OldStructuralReplay != CurrentStructuralRevisionAuthority
+LearningStructure != ErasingPriorStructure
 ```
 
-# v1.13 — Calibration-Governed Model Revision
+# v1.14 — Structural Dependency-Graph Revision
 
-v1.13 creates a governed correction path from historical model error to a new model generation without allowing the observer to hide or silently overwrite its earlier mistake.
+v1.14 moves from changing likelihood numbers to changing the **structure of the observer's statistical dependency model** while keeping causality claims outside what the protocol can prove.
 
 ```text
-historical calibration
-        |
-MISCALIBRATION_SIGNAL
-        |
-        v
-ModelRevisionProposal
-        |
-        v
-CounterfactualReplay
-        |
-        v
-Independent Review
-        |
-        v
-APPROVE / HOLD / REJECT
-        |
-        v
-use-time revalidation
-        |
-        v
-Model N -> Model N+1
+historical dependency calibration
+              |
+     INDEPENDENCE_CHALLENGED
+              |
+              v
+ competing structural proposals
+        /             \
+      L -> R         R -> L
+        \             /
+         \           /
+      leave-one-out replay
+              |
+      independent review
+              |
+       APPROVE/HOLD/REJECT
+              |
+        use-time replay
+        + graph freshness
+              |
+              v
+        Graph N -> N+1
 
-old Model N remains preserved
+Graph N remains preserved
 ```
 
-The nine process-level planes are now:
+The ten process-level planes are now:
 
 ```text
 ATMAN-RUNTIME/1.1       privileged execution
@@ -100,207 +105,230 @@ ATMAN-ACTIVE/1.9        expected information gain / next-check selection
 ATMAN-BAYES/1.10        evidence interpretation / posterior update
 ATMAN-MULTI/1.11        competing hypotheses / correlated-evidence provenance
 ATMAN-CALIBRATION/1.12  historical observer audit
-ATMAN-REVISION/1.13     governed model revision
+ATMAN-REVISION/1.13     governed likelihood-parameter revision
+ATMAN-GRAPH/1.14        governed structural dependency-graph revision
 ```
 
-## Calibration can trigger a proposal, not a mutation
+## Statistical conditioning is not causality
 
-The revision runtime reconstructs the current v1.12 calibration-family snapshot from persisted observations.
-
-A proposal is accepted only when the snapshot says:
+A v1.14 dependency edge has exactly one relation:
 
 ```text
-MISCALIBRATION_SIGNAL
+STATISTICAL_CONDITIONING
 ```
 
-It binds the exact:
+There is deliberately no `CAUSES` relation in the reference protocol.
 
 ```text
-current distribution hash
-current likelihood model hash
-calibration snapshot hash
-current model generation
-proposed next-generation likelihood vector
-conditioning evidence context
-proposer
-reason
+GraphEdge != PhysicalCause
+ValidGraphReceipt != ProvenPhysicalCausality
 ```
 
-So:
+A graph receipt proves what statistical structure the system committed and how that structure changed. It does not prove a physical mechanism.
 
-```text
-CalibrationSignal != RewriteAuthority
-Proposal != Mutation
-```
+## Direction is not inferred from correlation
 
-## Counterfactual replay
-
-A proposal is replayed on the same persisted, resolved historical observations.
-
-Every replay case records:
-
-```text
-historical calibration hash
-resolved hypothesis
-observed POSITIVE / NEGATIVE
-old predicted probability
-proposed predicted probability
-old Brier score
-proposed Brier score
-```
-
-The replay receipt binds the exact case set and reports:
-
-```text
-INSUFFICIENT_SCORABLE_CASES
-IMPROVED
-NO_IMPROVEMENT
-```
-
-`IMPROVED` requires strictly lower mean Brier score on the bound history.
-
-```text
-ReplayImprovement != Approval
-HistoricalFit != FutureTruth
-```
-
-Historical improvement is evidence for review, not proof of future correctness.
-
-## Independent review
-
-A proposal cannot approve itself:
-
-```text
-proposer_ref != reviewer_ref
-```
-
-Review outcomes:
-
-```text
-APPROVE
-HOLD
-REJECT
-```
-
-`APPROVE` is structurally forbidden unless the replay is `IMPROVED`.
-
-```text
-Replay != Review
-Review != Apply
-```
-
-## Apply is revalidated at use time
-
-Before mutation the runtime checks again that:
-
-- current model hash still equals the proposal base model;
-- current distribution still equals the proposal base distribution;
-- proposal, replay, and review hashes match exactly;
-- replay is `IMPROVED`;
-- review is `APPROVE`;
-- all currently persisted relevant calibration observations still produce the same replay state.
-
-If new calibration evidence appeared after review:
-
-```text
-old replay
-   |
-new resolved case
-   |
-apply old replay
-   X
-
-stale counterfactual replay
-```
-
-Therefore:
-
-```text
-OldReplay != CurrentRevisionAuthority
-```
-
-A new proposal/replay/review cycle is required.
-
-## Learning does not erase the mistake
-
-Successful apply creates:
-
-```text
-MultiLikelihoodModel generation N+1
-```
-
-and moves the current model pointer to it.
-
-But `model_revision_history` preserves both:
-
-```text
-base model JSON
-new model JSON
-proposal
-replay
-review
-revision receipt
-```
-
-All earlier calibration targets, resolutions, and scores remain untouched.
-
-```text
-NewModel != RewrittenOldModel
-LearningFromError != ErasingError
-```
-
-## Authority separation
-
-v1.13 adds:
-
-```text
-MODEL_REVISION_PROPOSER
-MODEL_REVISION_REPLAY_KEEPER
-MODEL_REVISION_REVIEWER
-MODEL_REVISION_APPLIER
-```
-
-These are independent permissions.
-
-```text
-Diagnose != Propose != Replay != Review != Apply
-```
-
-## Scope boundary: numeric revision, not causal rewrite
-
-v1.13 revises likelihood **values** while preserving the current hypothesis set and the model's exact conditioning-evidence context.
-
-It does not automatically convert:
+When v1.12 reports:
 
 ```text
 INDEPENDENCE_CHALLENGED
 ```
 
-into a new conditional dependency graph.
+v1.14 does not silently choose a direction.
 
-That would change the semantic structure of the evidence model, not merely its calibration parameters.
+The same historical challenge may generate competing proposals:
 
 ```text
-DependencyChallenge != DependencyRewriteAuthority
+L -> R
+R -> L
 ```
 
-Protocol: [`docs/v1.13-calibration-governed-model-revision.md`](docs/v1.13-calibration-governed-model-revision.md)
+Both bind the same exact base graph generation and calibration challenge.
 
-Invariants: [`docs/v1.13-invariants.md`](docs/v1.13-invariants.md)
+```text
+CorrelationChallenge != DirectionProof
+CorrelationChallenge != CausalityProof
+```
+
+## Graph state is versioned and acyclic
+
+`DependencyGraphState` binds:
+
+```text
+graph_ref
+subject_identity_ref
+generation
+canonical edge set
+evidence_state_hash
+graph_hash
+```
+
+The reference graph is a DAG. A proposal that would create a cycle is rejected before issuance.
+
+```text
+A -> B -> C
+C -> A   # rejected in v1.14
+```
+
+This is a constraint of this reference model, not a claim that feedback systems cannot exist. Cyclic/dynamic graphical models require a later explicit model.
+
+## Structural replay uses leave-one-out history
+
+A structural proposal is not approved because a correlation statistic looks large.
+
+It must replay on the persisted `DependencyPairSample` history.
+
+For every historical case `i`:
+
+```text
+remove i from the training counts
+score base structure on i
+score proposed structure on i
+```
+
+An independent structure predicts from the remaining marginal child-positive rate.
+
+A conditional structure predicts from the remaining child-positive rate among observations with the same parent outcome.
+
+Both are scored with deterministic Brier score.
+
+Replay outcomes:
+
+```text
+INSUFFICIENT_REPLAY
+STRUCTURE_IMPROVED
+NO_STRUCTURE_IMPROVEMENT
+```
+
+Only `STRUCTURE_IMPROVED` can be approved.
+
+```text
+ReplayImprovement != CausalityProof
+HistoricalStructuralFit != FutureTruth
+```
+
+## Review and apply remain separate
+
+The structural revision chain is:
+
+```text
+DependencyCalibrationSnapshot
+ -> StructuralGraphRevisionProposal
+ -> StructuralGraphReplayReceipt
+ -> StructuralGraphReviewReceipt
+ -> DependencyGraphRevisionReceipt
+```
+
+The reviewer must be distinct from the proposer.
+
+```text
+Proposal != Replay != Review != Apply
+APPROVE != Mutation
+```
+
+## Apply revalidates current evidence
+
+At apply time, the runtime recomputes structural replay from current dependency-pair history.
+
+If a new resolved sample appeared after review, the old replay is rejected:
+
+```text
+OldStructuralReplay != CurrentStructuralRevisionAuthority
+```
+
+The current graph hash and generation must also still match the proposal base.
+
+This gives competing proposals useful semantics: several alternatives may coexist against Graph N, but after one becomes Graph N+1 the others remain preserved and become stale rather than silently applying to a different world.
+
+## Learning structure does not erase the old map
+
+Successful apply stores complete old and new graph JSON in append-only history:
+
+```text
+Graph N
+  |
+proposal -> replay -> review
+  |
+Graph N+1
+```
+
+Both generations remain inspectable.
+
+```text
+LearningStructure != ErasingPriorStructure
+```
+
+Historical v1.11 evidence dependency receipts are not rewritten. Event-level source hashes, derivations, dependency declarations, and parent evidence hashes remain historical facts.
+
+## Authority separation
+
+v1.14 adds:
+
+```text
+DEPENDENCY_GRAPH_BOOTSTRAP_KEEPER
+STRUCTURAL_GRAPH_REVISION_PROPOSER
+STRUCTURAL_GRAPH_REPLAY_KEEPER
+STRUCTURAL_GRAPH_REVISION_REVIEWER
+STRUCTURAL_GRAPH_REVISION_APPLIER
+```
+
+The bootstrap permission initializes generation 0 only and cannot overwrite an existing graph.
+
+```text
+Bootstrap != OngoingRewriteAuthority
+Propose != Replay != Review != Apply
+```
+
+## Runtime
+
+Worker:
+
+```bash
+python -m model.graph_worker
+```
+
+Protocol operations:
+
+```text
+register_dependency_graph
+register_graph_revision_proposal
+record_graph_revision_replay
+record_graph_revision_review
+apply_graph_revision
+get_graph_revision_state
+```
+
+Protocol: [`docs/v1.14-structural-dependency-graph-revision.md`](docs/v1.14-structural-dependency-graph-revision.md)
+
+Invariants: [`docs/v1.14-invariants.md`](docs/v1.14-invariants.md)
 
 Machine-readable contracts:
 
-- [`schemas/model-revision-proposal.schema.json`](schemas/model-revision-proposal.schema.json)
-- [`schemas/model-revision-replay-case.schema.json`](schemas/model-revision-replay-case.schema.json)
-- [`schemas/model-revision-counterfactual-replay.schema.json`](schemas/model-revision-counterfactual-replay.schema.json)
-- [`schemas/model-revision-review.schema.json`](schemas/model-revision-review.schema.json)
-- [`schemas/model-revision-receipt.schema.json`](schemas/model-revision-receipt.schema.json)
+- [`schemas/dependency-graph-state.schema.json`](schemas/dependency-graph-state.schema.json)
+- [`schemas/structural-graph-revision-proposal.schema.json`](schemas/structural-graph-revision-proposal.schema.json)
+- [`schemas/structural-graph-replay.schema.json`](schemas/structural-graph-replay.schema.json)
+- [`schemas/structural-graph-review.schema.json`](schemas/structural-graph-review.schema.json)
+- [`schemas/dependency-graph-revision.schema.json`](schemas/dependency-graph-revision.schema.json)
 
 # Prior executable layers
 
-## v1.12 — Calibration / Dependency Learning
+## v1.13 — Calibration-Governed Model Revision
 
-Freeze pre-outcome assumptions, register later resolution, score forecasts/likelihoods with deterministic Brier metrics, and challenge historical independence assumptions without automatically rewriting the model.
+Historical model error can produce a parameter revision proposal, but mutation requires counterfactual replay, independent review, and use-time replay freshness.
+
+```text
+CalibrationSignal != RewriteAuthority
+Proposal != Mutation
+ReplayImprovement != Approval
+Review != Apply
+OldReplay != CurrentRevisionAuthority
+LearningFromError != ErasingError
+HistoricalFit != FutureTruth
+```
+
+Protocol: [`docs/v1.13-calibration-governed-model-revision.md`](docs/v1.13-calibration-governed-model-revision.md) · Invariants: [`docs/v1.13-invariants.md`](docs/v1.13-invariants.md)
+
+## v1.12 — Calibration / Dependency Learning
 
 ```text
 PosthocModel != HistoricalForecast
@@ -309,8 +337,6 @@ NoDependencySignal != ProvenIndependence
 DependencySignal != ProvenCausality
 CalibrationSignal != RewriteAuthority
 ```
-
-Protocol: [`docs/v1.12-calibration-dependency-learning.md`](docs/v1.12-calibration-dependency-learning.md) · Invariants: [`docs/v1.12-invariants.md`](docs/v1.12-invariants.md)
 
 ## v1.11 — Multi-Hypothesis / Correlated Evidence Geometry
 
@@ -427,6 +453,7 @@ python -m model.bayes_worker
 python -m model.multi_worker
 python -m model.calibration_worker
 python -m model.revision_worker
+python -m model.graph_worker
 ```
 
 Reference protocols:
@@ -441,14 +468,15 @@ ATMAN-BAYES/1.10
 ATMAN-MULTI/1.11
 ATMAN-CALIBRATION/1.12
 ATMAN-REVISION/1.13
+ATMAN-GRAPH/1.14
 ```
 
-This remains a **reference process/database and formal-model boundary**, not a hostile-host sandbox and not a claim about physical multiverses/torsion. Counterfactual replay is historical evaluation, not proof of out-of-distribution performance. Production use additionally requires protected keys, authenticated transport, rollback-resistant storage, protected resolution provenance, held-out evaluation, drift monitoring, database/file permissions, and operational governance.
+This remains a **reference process/database and formal-model boundary**, not a hostile-host sandbox and not a claim about physical multiverses, physical torsion, or real-world causality. Structural replay is historical predictive evaluation, not causal identification and not proof of out-of-distribution performance. Production use additionally requires protected keys, authenticated transport, rollback-resistant storage, protected resolution provenance, held-out evaluation, drift monitoring, causal-identification methodology where causal claims matter, database/file permissions, and operational governance.
 
 ## Status
 
-**v1.13.0 — Calibration-Governed Model Revision research core.**
+**v1.14.0 — Structural Dependency-Graph Revision research core.**
 
-The project now spans identity continuity, cryptographic lineage, branching/reconciliation, transition torsion and curvature, geometric A3/A4 coherence, finite verification capacity, durable verification debt, adaptive cost allocation, active information gain, evidence-bound Bayesian learning, multi-hypothesis distributions, correlated-evidence provenance, observer calibration, frozen historical model audit, governed counterfactual revision, independent review, use-time replay freshness, append-only old/new model history, process-separated execution, and quorum-governed trust evolution.
+The project now spans identity continuity, cryptographic lineage, branching/reconciliation, transition torsion and curvature, geometric A3/A4 coherence, finite verification capacity, durable verification debt, adaptive cost allocation, active information gain, evidence-bound Bayesian learning, multi-hypothesis distributions, correlated-evidence provenance, observer calibration, governed parameter revision, versioned statistical dependency DAGs, competing orientation proposals, leave-one-out structural replay, independent review, use-time structural freshness, append-only old/new graph history, process-separated execution, and quorum-governed trust evolution.
 
-Next targets: **structural dependency-graph revision**, held-out/cross-validation replay partitions, resolver correction receipts, rollback-resistant learning history, and concurrency stress across calibration/revision races.
+Next targets: held-out structural evaluation partitions, graph-complexity penalties, resolver correction receipts, rollback-resistant learning history, dynamic/cyclic dependency models, causal-identification interfaces that remain explicitly separate from correlation-based structure learning, and concurrency stress across calibration/revision/graph races.
