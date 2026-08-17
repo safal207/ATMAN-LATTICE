@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/safal207/ATMAN-LATTICE/schemas/hypothesis-distribution.schema.json",
+  "title": "ATMAN-LATTICE HypothesisDistribution v1.11",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["distribution_ref", "subject_identity_ref", "probability_bps", "evidence_state_hash", "generation", "distribution_hash"],
+  "properties": {
+    "distribution_ref": {"type": "string", "minLength": 1},
+    "subject_identity_ref": {"type": "string", "minLength": 1},
+    "probability_bps": {
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "type": "array",
+        "prefixItems": [
+          {"type": "string", "minLength": 1},
+          {"type": "integer", "minimum": 0, "maximum": 10000}
+        ],
+        "items": false,
+        "minItems": 2,
+        "maxItems": 2
+      }
+    },
+    "evidence_state_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "generation": {"type": "integer", "minimum": 0},
+    "distribution_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}
