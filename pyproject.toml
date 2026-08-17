@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "atman-lattice"
-version = "1.6.0"
-description = "Executable invariants for identity, authority, transition geometry, geometric coherence, and verification pressure under finite capacity"
+version = "1.7.0"
+description = "Executable invariants for identity, authority, transition geometry, finite verification capacity, durable verification debt, and authority-bound finalization"
 requires-python = ">=3.10"
 dependencies = [
     "cryptography>=42",
