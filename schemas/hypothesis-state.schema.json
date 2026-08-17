@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/safal207/ATMAN-LATTICE/schemas/hypothesis-state.schema.json",
+  "title": "ATMAN-LATTICE HypothesisState v1.9",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["hypothesis_ref","subject_identity_ref","true_probability_bps","evidence_state_hash","generation","hypothesis_hash"],
+  "properties": {
+    "hypothesis_ref": {"type":"string","minLength":1},
+    "subject_identity_ref": {"type":"string","minLength":1},
+    "true_probability_bps": {"type":"integer","minimum":0,"maximum":10000},
+    "evidence_state_hash": {"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "generation": {"type":"integer","minimum":0},
+    "hypothesis_hash": {"type":"string","pattern":"^[0-9a-f]{64}$"}
+  }
+}
