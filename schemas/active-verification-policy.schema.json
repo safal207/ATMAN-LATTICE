@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/safal207/ATMAN-LATTICE/schemas/active-verification-policy.schema.json",
+  "title": "ATMAN-LATTICE ActiveVerificationPolicy v1.9",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["policy_ref","budget_units","max_selected_items","minimum_information_gain_microbits","aging_quantum","aging_weight","risk_weight","policy_hash"],
+  "properties": {
+    "policy_ref": {"type":"string","minLength":1},
+    "budget_units": {"type":"integer","minimum":0},
+    "max_selected_items": {"type":"integer","minimum":0},
+    "minimum_information_gain_microbits": {"type":"integer","minimum":0},
+    "aging_quantum": {"type":"integer","minimum":1},
+    "aging_weight": {"type":"integer","minimum":0},
+    "risk_weight": {"type":"integer","minimum":0},
+    "policy_hash": {"type":"string","pattern":"^[0-9a-f]{64}$"}
+  }
+}
