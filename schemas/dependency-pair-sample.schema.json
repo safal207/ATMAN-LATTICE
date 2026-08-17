@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/safal207/ATMAN-LATTICE/schemas/dependency-pair-sample.schema.json",
+  "title": "ATMAN-LATTICE DependencyPairSample v1.12",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["pair_key","resolution_hash","dependency_group_ref","left_model_ref","right_model_ref","declared_mode","resolved_hypothesis_ref","left_evidence_hash","right_evidence_hash","left_positive","right_positive","sampled_at","sample_hash"],
+  "properties": {
+    "pair_key": {"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "resolution_hash": {"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "dependency_group_ref": {"type":"string","minLength":1},
+    "left_model_ref": {"type":"string","minLength":1},
+    "right_model_ref": {"type":"string","minLength":1},
+    "declared_mode": {"enum":["INDEPENDENT","CONDITIONAL"]},
+    "resolved_hypothesis_ref": {"type":"string","minLength":1},
+    "left_evidence_hash": {"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "right_evidence_hash": {"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "left_positive": {"type":"boolean"},
+    "right_positive": {"type":"boolean"},
+    "sampled_at": {"type":"integer","minimum":0},
+    "sample_hash": {"type":"string","pattern":"^[0-9a-f]{64}$"}
+  }
+}
