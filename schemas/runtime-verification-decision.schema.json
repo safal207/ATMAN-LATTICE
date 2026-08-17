@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://atman-lattice.local/schemas/runtime-verification-decision.schema.json",
+  "title": "RuntimeVerificationDecisionReceipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["subject_identity_ref","target_gate_hash","base_decision","schedule_generation","required_work_hashes","completed_completion_hashes","pending_work_hashes","deferred_work_hashes","decision","reasons","decided_at","runtime_decision_hash"],
+  "properties": {
+    "subject_identity_ref": {"type":"string","minLength":1},
+    "target_gate_hash": {"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "base_decision": {"enum":["PASS","HOLD","FAIL"]},
+    "schedule_generation": {"type":"integer","minimum":0},
+    "pressure_hash": {"anyOf":[{"type":"null"},{"type":"string","pattern":"^[0-9a-f]{64}$"}]},
+    "required_work_hashes": {"type":"array","items":{"type":"string","pattern":"^[0-9a-f]{64}$"},"uniqueItems":true},
+    "completed_completion_hashes": {"type":"array","items":{"type":"string","pattern":"^[0-9a-f]{64}$"},"uniqueItems":true},
+    "pending_work_hashes": {"type":"array","items":{"type":"string","pattern":"^[0-9a-f]{64}$"},"uniqueItems":true},
+    "deferred_work_hashes": {"type":"array","items":{"type":"string","pattern":"^[0-9a-f]{64}$"},"uniqueItems":true},
+    "decision": {"enum":["PASS","HOLD","FAIL"]},
+    "reasons": {"type":"array","items":{"type":"string"}},
+    "decided_at": {"type":"integer","minimum":0},
+    "runtime_decision_hash": {"type":"string","pattern":"^[0-9a-f]{64}$"}
+  }
+}
