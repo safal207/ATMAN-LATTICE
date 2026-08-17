@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://atman-lattice.local/schemas/verification-budget-allocation.schema.json",
+  "title": "Verification Budget Allocation Receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["policy_hash", "measured_at", "candidate_hashes", "estimator_snapshot_hashes", "estimated_costs", "ranked_candidate_hashes", "funded_candidate_hashes", "deferred_budget_candidate_hashes", "deferred_oversized_candidate_hashes", "used_budget_units", "budget_units", "budget_status", "allocation_hash"],
+  "properties": {
+    "policy_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "measured_at": {"type": "integer", "minimum": 0},
+    "candidate_hashes": {"type": "array", "uniqueItems": true, "items": {"type": "string", "pattern": "^[0-9a-f]{64}$"}},
+    "estimator_snapshot_hashes": {"type": "array", "uniqueItems": true, "items": {"type": "string", "pattern": "^[0-9a-f]{64}$"}},
+    "estimated_costs": {
+      "type": "array",
+      "items": {
+        "type": "array",
+        "prefixItems": [
+          {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+          {"type": "integer", "minimum": 1}
+        ],
+        "items": false,
+        "minItems": 2,
+        "maxItems": 2
+      }
+    },
+    "ranked_candidate_hashes": {"type": "array", "uniqueItems": true, "items": {"type": "string", "pattern": "^[0-9a-f]{64}$"}},
+    "funded_candidate_hashes": {"type": "array", "uniqueItems": true, "items": {"type": "string", "pattern": "^[0-9a-f]{64}$"}},
+    "deferred_budget_candidate_hashes": {"type": "array", "uniqueItems": true, "items": {"type": "string", "pattern": "^[0-9a-f]{64}$"}},
+    "deferred_oversized_candidate_hashes": {"type": "array", "uniqueItems": true, "items": {"type": "string", "pattern": "^[0-9a-f]{64}$"}},
+    "used_budget_units": {"type": "integer", "minimum": 0},
+    "budget_units": {"type": "integer", "minimum": 0},
+    "budget_status": {"enum": ["NORMAL", "PRESSURED", "SATURATED"]},
+    "allocation_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}
