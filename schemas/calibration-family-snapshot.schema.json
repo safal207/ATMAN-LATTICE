@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/safal207/ATMAN-LATTICE/schemas/calibration-family-snapshot.schema.json",
+  "title": "ATMAN-LATTICE CalibrationFamilySnapshot v1.12",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["calibration_family_ref","forecast_count","mean_forecast_brier_ppm","likelihood_scored_count","mean_likelihood_brier_ppm","mean_predicted_positive_bps","observed_positive_rate_bps","marginal_calibration_gap_bps","min_samples","marginal_gap_threshold_bps","status","measured_at","snapshot_hash"],
+  "properties": {
+    "calibration_family_ref": {"type":"string","minLength":1},
+    "forecast_count": {"type":"integer","minimum":0},
+    "mean_forecast_brier_ppm": {"type":["integer","null"],"minimum":0,"maximum":2000000},
+    "likelihood_scored_count": {"type":"integer","minimum":0},
+    "mean_likelihood_brier_ppm": {"type":["integer","null"],"minimum":0,"maximum":1000000},
+    "mean_predicted_positive_bps": {"type":["integer","null"],"minimum":0,"maximum":10000},
+    "observed_positive_rate_bps": {"type":["integer","null"],"minimum":0,"maximum":10000},
+    "marginal_calibration_gap_bps": {"type":["integer","null"],"minimum":-10000,"maximum":10000},
+    "min_samples": {"type":"integer","minimum":1},
+    "marginal_gap_threshold_bps": {"type":"integer","minimum":0,"maximum":10000},
+    "status": {"enum":["INSUFFICIENT_SAMPLES","NO_MARGINAL_MISCALIBRATION_SIGNAL","MISCALIBRATION_SIGNAL"]},
+    "measured_at": {"type":"integer","minimum":0},
+    "snapshot_hash": {"type":"string","pattern":"^[0-9a-f]{64}$"}
+  }
+}
