@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://atman-lattice.local/schemas/verification-finalization-receipt.schema.json",
+  "title": "VerificationFinalizationReceipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["subject_identity_ref","target_gate_hash","decision_state_hash","runtime_decision_hash","decision","schedule_generation","authority_proof_hash","finalized_at","finalization_hash"],
+  "properties": {
+    "subject_identity_ref": {"type":"string","minLength":1},
+    "target_gate_hash": {"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "decision_state_hash": {"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "runtime_decision_hash": {"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "decision": {"enum":["PASS","HOLD","FAIL"]},
+    "schedule_generation": {"type":"integer","minimum":0},
+    "pressure_hash": {"anyOf":[{"type":"null"},{"type":"string","pattern":"^[0-9a-f]{64}$"}]},
+    "authority_proof_hash": {"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "finalized_at": {"type":"integer","minimum":0},
+    "finalization_hash": {"type":"string","pattern":"^[0-9a-f]{64}$"}
+  }
+}
