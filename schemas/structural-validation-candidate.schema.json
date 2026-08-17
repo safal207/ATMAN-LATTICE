@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/safal207/ATMAN-LATTICE/schemas/structural-validation-candidate.schema.json",
+  "title": "StructuralValidationCandidate",
+  "type": "object",
+  "required": ["candidate_ref", "subject_identity_ref", "pair_key", "policy_hash", "history_hash", "split_hash", "selection_sample_hashes", "evaluation_sample_hashes", "proposal", "selection_replay", "proposer_ref", "created_at", "candidate_hash"],
+  "properties": {
+    "candidate_ref": {"type": "string", "minLength": 1},
+    "subject_identity_ref": {"type": "string", "minLength": 1},
+    "pair_key": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "policy_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "history_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "split_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "selection_sample_hashes": {"type": "array", "items": {"type": "string", "pattern": "^[0-9a-f]{64}$"}, "uniqueItems": true},
+    "evaluation_sample_hashes": {"type": "array", "items": {"type": "string", "pattern": "^[0-9a-f]{64}$"}, "uniqueItems": true},
+    "proposal": {"type": "object"},
+    "selection_replay": {"type": "object"},
+    "proposer_ref": {"type": "string", "minLength": 1},
+    "created_at": {"type": "integer", "minimum": 0},
+    "candidate_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  },
+  "additionalProperties": false
+}
