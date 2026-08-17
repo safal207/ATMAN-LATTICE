@@ -1,10 +1,10 @@
 # ATMAN-LATTICE
 
-**A Projective Spacetime Architecture for Identity, Authority, Verification, Active Learning, Calibration, Governed Revision, Structural Evidence Graphs, Finite Search, Protected Confirmation, and Coherence**
+**A Projective Spacetime Architecture for Identity, Authority, Verification, Active Learning, Calibration, Governed Revision, Structural Evidence Graphs, Finite Search, Protected Confirmation, Replication Drift, and Coherence**
 
-ATMAN-LATTICE is an exploratory research repository for modeling identity across state, space, time, lineage, branching, reconciliation, authorization, transition geometry, finite verification capacity, evidence-bound learning, competing hypotheses, correlated-evidence provenance, observer calibration, governed parameter and structural revision, held-out validation, finite model search, and one-shot confirmation on provenance-fresh evidence.
+ATMAN-LATTICE is an exploratory research repository for modeling identity across state, space, time, lineage, branching, reconciliation, authorization, transition geometry, finite verification capacity, evidence-bound learning, competing hypotheses, correlated-evidence provenance, observer calibration, governed parameter and structural revision, held-out validation, finite model search, protected one-shot confirmation, and temporal/external replication monitoring.
 
-> What must remain invariant when an observer can search many models, learn from held-out feedback, and therefore needs a final control surface that search itself cannot repeatedly consume?
+> What must remain invariant when an observer can search, confirm, deploy a model, and then discover that time or environment may have changed underneath a previously valid conclusion?
 
 The repository does **not** claim to prove metaphysical statements about the soul, consciousness, Atman, quantum worlds, physical multiverses, physical torsion fields, or real-world causal structure. These are conceptual labels and thought experiments inside a formal engineering model.
 
@@ -47,11 +47,13 @@ held-out structural validation
           ↓
 finite multiple-comparison search budget
           ↓
-PROTECTED FRESH CONFIRMATION
-          ↓
-independent review
+protected fresh confirmation
           ↓
 confirmed graph revision
+          ↓
+TEMPORAL / EXTERNAL REPLICATION
+          ↓
+replication review + drift series
 ```
 
 ## Accumulated executable warnings
@@ -100,39 +102,120 @@ SearchHoldout != ConfirmationHoldout
 CONFIRMED != ProvenCausality
 Confirmation != Truth
 CONFIRMED != APPLIED
+OneConfirmation != PermanentGeneralization
+InternalFreshHoldout != ExternalReplication
+Confirmed_t != Confirmed_t+1
+DifferentSourceRef != ProvenIndependence
+Replication != Retraining
+DriftSignal != RollbackAuthority
+REPLICATED != UniversalValidity
 ```
 
-# v1.17 — Protected Fresh Holdout Rotation
+# v1.18 — Temporal / External Replication & Confirmation Drift
 
-v1.17 introduces a final confirmation plane **after** v1.16 has already searched, multiplicity-corrected, selected, and independently reviewed a structural candidate.
+v1.18 adds a monitoring plane **after** a graph has passed v1.17 protected confirmation and has been applied.
 
 ```text
-DISCOVERY
-   ↓
-selection-only model construction
-   ↓
-v1.15 held-out validation
-   ↓
-v1.16 finite-search correction
-   ↓
-selected model + APPROVE review
-   ↓
-sealed provenance-fresh confirmation batch
-   ↓
-one-shot exposure authorization
-   ↓
-final confirmation scoring
-   ↓
-independent confirmation review
-   ↓
-confirmed apply
+v1.17 CONFIRMED graph revision
+        ↓
+ReplicationTargetReceipt
+        ↓
+   ┌────┴───────────────┐
+   │                    │
+TEMPORAL             EXTERNAL
+   │                    │
+   └────────┬───────────┘
+            ↓
+   TEMPORAL_EXTERNAL
+            ↓
+fresh replication batch
+            ↓
+frozen-model scoring
+            ↓
+REPLICATED / DRIFT_SIGNAL
+            ↓
+independent review
+            ↓
+replication series
+            ↓
+PERSISTENT_DRIFT_SIGNAL
 ```
 
-## Freshness means new provenance
+## One confirmation is not permanent generalization
 
-v1.17 deliberately does not create another bucket from the same calibration/search dataset.
+v1.17 answers:
 
-A protected confirmation batch must be disjoint from search history by:
+> Did this selected structure generalize to one protected provenance-fresh final confirmation batch?
+
+v1.18 asks:
+
+> Does the **same frozen confirmed structure** continue to generalize later, elsewhere, or both?
+
+```text
+OneConfirmation != PermanentGeneralization
+Confirmed_t != Confirmed_t+1
+```
+
+A replication target binds the exact historical baseline:
+
+```text
+v1.17 confirmed revision hash
+candidate hash
+confirmed graph hash + generation
+confirmation evaluation + review
+confirmation batch + source
+baseline confirmed-model Brier score
+baseline regularized structural improvement
+```
+
+The baseline is immutable.
+
+## Three replication modes
+
+```text
+TEMPORAL
+EXTERNAL
+TEMPORAL_EXTERNAL
+```
+
+### Temporal
+
+Temporal replication enforces:
+
+```text
+collected_from - confirmation_evaluated_at >= min_temporal_gap
+```
+
+and later replication generations form a strict lineage with non-overlapping collection windows:
+
+```text
+R0 -> R1 -> R2 -> ...
+```
+
+### External
+
+`EXTERNAL` and `TEMPORAL_EXTERNAL` require a `source_ref` different from the source used by the original v1.17 confirmation batch.
+
+That prevents an internal rerun from being labeled external.
+
+It does **not** prove that the sources are genuinely independent in every scientific or institutional sense:
+
+```text
+DifferentSourceRef != ProvenIndependence
+ExternalReplication != OntologicalIndependence
+```
+
+## Freshness remains provenance-based
+
+Replication evidence must be disjoint from:
+
+```text
+search / discovery history
+v1.17 confirmation batches
+prior replication batches
+```
+
+using exact:
 
 ```text
 sample_hash
@@ -141,125 +224,114 @@ left_evidence_hash
 right_evidence_hash
 ```
 
-It must also be disjoint from every prior confirmation batch for the same subject/pair.
-
 Therefore:
 
 ```text
-NewSplit != FreshEvidence
-NewBatchName != NewEvidence
-RepartitionedOldData != FreshHoldout
+NewSampleHash != FreshProvenance
+NewDerivation != NewEvidenceSource
+ReusedResolution != Replication
 ```
 
-A caller cannot wrap the same resolved event in a different sample object and call it fresh.
+## Replication does not retrain
 
-## Confirmation data is not a search surface
+The selected structure is evaluated using the original frozen candidate selection/training samples.
 
-Protected batch sample JSON lives in separate confirmation runtime state.
-
-The search and structural protocol surfaces do not expose an operation that enumerates confirmation samples.
-
-The reference implementation provides a logical/process/database boundary. It is **not** a hostile-host data room; production deployment additionally needs protected storage, ACLs, leakage controls, and audit logging.
-
-## One selection, one final look
-
-A `ConfirmationExposureReceipt` binds one exact:
+Replication data is **score-only**.
 
 ```text
-v1.16 selection
-selected candidate
-v1.16 review
-confirmation batch
-confirmation policy
-search history
-base graph
+Replication != Retraining
+ReplicationData != TrainingData
 ```
 
-Rules:
+This keeps drift observable instead of immediately fitting it away.
+
+## Drift has two dimensions
+
+### Structural drift
+
+The confirmed graph no longer beats its original base graph by more than the configured threshold.
+
+### Performance drift
+
+The confirmed model's Brier score degrades beyond the allowed amount relative to its original v1.17 confirmation baseline.
+
+`drift_kind` is explicit:
 
 ```text
-OneSelection -> AtMostOneConfirmationExposure
-OneBatch -> AtMostOneSelection
+NONE
+STRUCTURAL
+PERFORMANCE
+BOTH
 ```
 
-If the final confirmation rejects the model, the same search selection does not get another final batch until it passes. The workflow returns to discovery/search instead.
-
-## Confirmation does not train on confirmation
-
-Predictions are fitted from the candidate's already-bound selection/training samples.
-
-The protected final batch is used only for scoring.
-
-The reference score retains v1.15 graph-complexity regularization:
+and evaluation status is:
 
 ```text
-base_regularized_brier = base_mean_brier + edge_penalty * base_edges
-proposed_regularized_brier = proposed_mean_brier + edge_penalty * proposed_edges
-regularized_improvement = base_regularized_brier - proposed_regularized_brier
+INSUFFICIENT_REPLICATION
+REPLICATED
+DRIFT_SIGNAL
 ```
 
-Statuses:
+A drift signal is monitoring evidence only:
 
 ```text
-INSUFFICIENT_CONFIRMATION
-CONFIRMATION_REJECTED
-CONFIRMED
+DriftSignal != ModelFalsehood
+DriftSignal != DriftCause
+DriftSignal != RollbackAuthority
 ```
 
-`CONFIRMED` requires enough scoreable fresh cases and regularized improvement above the explicit confirmation-policy threshold.
+No v1.18 role can mutate the dependency graph.
 
-## Confirmation is still not truth
+## Persistent drift
 
-The graph relation remains:
+Acknowledged replication epochs can be summarized into `ReplicationSeriesSnapshot`.
+
+When:
 
 ```text
-STATISTICAL_CONDITIONING
+consecutive_drift_count >= persistent_drift_epochs
 ```
 
-Passing a protected final holdout strengthens evidence that the selected statistical structure generalized beyond its search surfaces.
-
-It does not prove a physical mechanism, universal validity, causal direction, or ontological truth.
+the snapshot emits:
 
 ```text
-CONFIRMED != ProvenCausality
-Confirmation != Truth
+PERSISTENT_DRIFT_SIGNAL
 ```
 
-## Freshness is checked again at use time
+This remains a governance input rather than an automatic rollback.
 
-Before confirmation evaluation and again before apply, the runtime reconstructs the current v1.16 search state.
+## Current-model binding
 
-New search evidence, changed candidate exposure, a changed winner, or a changed base graph makes the old confirmation chain stale.
+The runtime evaluates a replication target only while its `confirmed_graph_hash` still matches the current graph.
 
-The runtime also rechecks that protected confirmation provenance did not later leak into search history.
+After a newer governed graph revision, the old target remains historical evidence but no longer describes current model status.
 
 ```text
-OldSearchSelection != CurrentConfirmationAuthority
-LaterLeakage != ProtectedHoldout
+HistoricalReplicationTarget != CurrentModelStatus
+OldConfirmedGraph != CurrentReplicationAuthority
 ```
 
 ## Authority separation
 
-v1.17 adds:
+v1.18 adds:
 
 ```text
-CONFIRMATION_POLICY_KEEPER
-CONFIRMATION_BATCH_KEEPER
-CONFIRMATION_EXPOSURE_KEEPER
-CONFIRMATION_EVALUATOR
-CONFIRMATION_REVIEWER
-CONFIRMED_STRUCTURAL_APPLIER
+REPLICATION_POLICY_KEEPER
+REPLICATION_TARGET_KEEPER
+REPLICATION_BATCH_KEEPER
+REPLICATION_EVALUATOR
+REPLICATION_REVIEWER
+REPLICATION_MONITOR_KEEPER
 ```
 
-Core separations include:
+Important separations include:
 
 ```text
-candidate proposer != batch keeper
-search selector != batch keeper
-exposure keeper != proposer / selector / batch keeper
-evaluator != proposer / selector / batch keeper / exposure keeper
-reviewer != proposer / selector / evaluator
-CONFIRMED != APPLIED
+replication batch keeper != candidate proposer
+replication batch keeper != original confirmation evaluator
+replication evaluator != batch keeper / candidate proposer / original confirmation evaluator
+replication reviewer != batch keeper / evaluator
+monitoring authority != mutation authority
 ```
 
 ## Runtime
@@ -267,39 +339,39 @@ CONFIRMED != APPLIED
 Worker:
 
 ```bash
-python -m model.confirm_worker
+python -m model.replication_worker
 ```
 
 Protocol:
 
 ```text
-ATMAN-CONFIRM/1.17
+ATMAN-REPLICATE/1.18
 ```
 
 Operations:
 
 ```text
-register_confirmation_policy
-seal_confirmation_batch
-authorize_confirmation_exposure
-evaluate_confirmation
-record_confirmation_review
-apply_confirmed_structural_selection
-get_confirmation_state
+register_replication_policy
+register_replication_target
+seal_replication_batch
+evaluate_replication
+record_replication_review
+finalize_replication_snapshot
+get_replication_state
 ```
 
-Protocol document: [`docs/v1.17-protected-fresh-holdout.md`](docs/v1.17-protected-fresh-holdout.md)
+Protocol document: [`docs/v1.18-temporal-external-replication.md`](docs/v1.18-temporal-external-replication.md)
 
-Invariants: [`docs/v1.17-invariants.md`](docs/v1.17-invariants.md)
+Invariants: [`docs/v1.18-invariants.md`](docs/v1.18-invariants.md)
 
 Machine-readable contracts:
 
-- [`schemas/protected-confirmation-policy.schema.json`](schemas/protected-confirmation-policy.schema.json)
-- [`schemas/protected-confirmation-batch.schema.json`](schemas/protected-confirmation-batch.schema.json)
-- [`schemas/confirmation-exposure.schema.json`](schemas/confirmation-exposure.schema.json)
-- [`schemas/confirmation-evaluation.schema.json`](schemas/confirmation-evaluation.schema.json)
-- [`schemas/confirmation-review.schema.json`](schemas/confirmation-review.schema.json)
-- [`schemas/confirmed-graph-revision.schema.json`](schemas/confirmed-graph-revision.schema.json)
+- [`schemas/replication-policy.schema.json`](schemas/replication-policy.schema.json)
+- [`schemas/replication-target.schema.json`](schemas/replication-target.schema.json)
+- [`schemas/replication-batch.schema.json`](schemas/replication-batch.schema.json)
+- [`schemas/replication-evaluation.schema.json`](schemas/replication-evaluation.schema.json)
+- [`schemas/replication-review.schema.json`](schemas/replication-review.schema.json)
+- [`schemas/replication-series-snapshot.schema.json`](schemas/replication-series-snapshot.schema.json)
 
 ## Process planes
 
@@ -317,16 +389,22 @@ ATMAN-GRAPH/1.14        governed structural dependency-graph revision
 ATMAN-STRUCTURE/1.15    held-out structural validation / regularization
 ATMAN-SEARCH/1.16       finite multiple-comparison search governance
 ATMAN-CONFIRM/1.17      protected one-shot fresh confirmation
+ATMAN-REPLICATE/1.18    temporal/external replication + drift monitoring
 ```
 
 ## Backward compatibility
 
-v1.17 is the stronger structural-confirmation path. v1.16 remains available as a historical/backward-compatible protocol rather than silently changing the semantics of an existing wire contract.
+v1.18 does not change the v1.17 wire contract. `ATMAN-CONFIRM/1.17` remains the strongest structural mutation path; `ATMAN-REPLICATE/1.18` is deliberately read/append-only with respect to graph state.
 
-A strict deployment profile should route final structural mutation through `ATMAN-CONFIRM/1.17` after installing its policy and disable/directly restrict legacy structural-apply endpoints at the deployment boundary.
+A strict deployment profile should:
+
+1. route structural mutation through `ATMAN-CONFIRM/1.17`;
+2. create a new v1.18 target for each newly confirmed current graph;
+3. use replication signals as inputs to a separate future governance/remediation workflow rather than silently rolling back state.
 
 # Historical layers
 
+- **v1.17** — protected one-shot provenance-fresh confirmation. [`protocol`](docs/v1.17-protected-fresh-holdout.md) · [`invariants`](docs/v1.17-invariants.md)
 - **v1.16** — finite held-out search budget and multiplicity-aware thresholding. [`protocol`](docs/v1.16-multiple-comparison-search-budget.md) · [`invariants`](docs/v1.16-invariants.md)
 - **v1.15** — held-out structural validation and graph-complexity regularization. [`protocol`](docs/v1.15-heldout-structural-validation.md) · [`invariants`](docs/v1.15-invariants.md)
 - **v1.14** — governed statistical dependency-DAG revision. [`protocol`](docs/v1.14-structural-dependency-graph-revision.md) · [`invariants`](docs/v1.14-invariants.md)
@@ -367,12 +445,13 @@ python -m model.graph_worker
 python -m model.structure_worker
 python -m model.search_worker
 python -m model.confirm_worker
+python -m model.replication_worker
 ```
 
 ## Status
 
-**v1.17.0 — Protected Fresh Holdout Rotation research core.**
+**v1.18.0 — Temporal / External Replication & Confirmation Drift research core.**
 
-The project now preserves a traceable chain from identity and authority through verification, Bayesian learning, calibration, structural search, held-out evaluation, finite search exposure, and one-shot provenance-fresh final confirmation before the strongest structural apply path.
+The project now preserves a traceable chain from identity and authority through verification, Bayesian learning, calibration, structural search, protected confirmation, and post-confirmation temporal/external replication with explicit drift history.
 
-Production work still requires protected keys, authenticated transport, rollback-resistant storage, protected confirmation data, leakage detection, external/temporal validation where appropriate, formal statistical testing where statistical error guarantees are claimed, causal-identification methodology where causal claims matter, and operational governance.
+Production work still requires protected keys, authenticated transport, rollback-resistant storage, signed/external dataset provenance where externality claims matter, leakage detection, robust source-independence procedures, formal statistical testing where statistical error guarantees are claimed, causal-identification/transportability methodology where causal claims matter, and explicit operational governance for any remediation or rollback action.
