@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/safal207/ATMAN-LATTICE/schemas/structural-validation-policy.schema.json",
+  "title": "StructuralValidationPolicy",
+  "type": "object",
+  "required": ["policy_ref", "subject_identity_ref", "evaluation_modulus", "min_selection_samples", "min_evaluation_samples", "dependency_threshold_bps", "edge_penalty_ppm", "registered_at", "policy_hash"],
+  "properties": {
+    "policy_ref": {"type": "string", "minLength": 1},
+    "subject_identity_ref": {"type": "string", "minLength": 1},
+    "evaluation_modulus": {"type": "integer", "minimum": 2},
+    "min_selection_samples": {"type": "integer", "minimum": 2},
+    "min_evaluation_samples": {"type": "integer", "minimum": 1},
+    "dependency_threshold_bps": {"type": "integer", "minimum": 0, "maximum": 10000},
+    "edge_penalty_ppm": {"type": "integer", "minimum": 0},
+    "registered_at": {"type": "integer", "minimum": 0},
+    "policy_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  },
+  "additionalProperties": false
+}
