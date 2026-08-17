@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/safal207/ATMAN-LATTICE/schemas/resolved-outcome.schema.json",
+  "title": "ATMAN-LATTICE ResolvedOutcomeReceipt v1.12",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["resolution_ref","distribution_ref","subject_identity_ref","resolved_hypothesis_ref","resolution_source_hash","resolved_at","resolver_ref","resolution_hash"],
+  "properties": {
+    "resolution_ref": {"type":"string","minLength":1},
+    "distribution_ref": {"type":"string","minLength":1},
+    "subject_identity_ref": {"type":"string","minLength":1},
+    "resolved_hypothesis_ref": {"type":"string","minLength":1},
+    "resolution_source_hash": {"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "resolved_at": {"type":"integer","minimum":0},
+    "resolver_ref": {"type":"string","minLength":1},
+    "resolution_hash": {"type":"string","pattern":"^[0-9a-f]{64}$"}
+  }
+}
