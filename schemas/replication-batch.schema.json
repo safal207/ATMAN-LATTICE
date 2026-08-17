@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/safal207/ATMAN-LATTICE/schemas/replication-batch.schema.json",
+  "title": "ReplicationBatch",
+  "type": "object",
+  "required": ["batch_ref","target_hash","subject_identity_ref","pair_key","mode","source_ref","environment_ref","collected_from","collected_to","generation","previous_batch_hash","sample_hashes","resolution_hashes","evidence_hashes","sample_count","batch_keeper_ref","sealed_at","batch_hash"],
+  "properties": {
+    "batch_ref": {"type":"string","minLength":1},
+    "target_hash": {"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "subject_identity_ref": {"type":"string","minLength":1},
+    "pair_key": {"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "mode": {"enum":["TEMPORAL","EXTERNAL","TEMPORAL_EXTERNAL"]},
+    "source_ref": {"type":"string","minLength":1},
+    "environment_ref": {"type":"string","minLength":1},
+    "collected_from": {"type":"integer","minimum":0},
+    "collected_to": {"type":"integer","minimum":0},
+    "generation": {"type":"integer","minimum":0},
+    "previous_batch_hash": {"type":["string","null"],"pattern":"^[0-9a-f]{64}$"},
+    "sample_hashes": {"type":"array","items":{"type":"string","pattern":"^[0-9a-f]{64}$"},"minItems":1,"uniqueItems":true},
+    "resolution_hashes": {"type":"array","items":{"type":"string","pattern":"^[0-9a-f]{64}$"},"minItems":1,"uniqueItems":true},
+    "evidence_hashes": {"type":"array","items":{"type":"string","pattern":"^[0-9a-f]{64}$"},"minItems":2,"uniqueItems":true},
+    "sample_count": {"type":"integer","minimum":1},
+    "batch_keeper_ref": {"type":"string","minLength":1},
+    "sealed_at": {"type":"integer","minimum":0},
+    "batch_hash": {"type":"string","pattern":"^[0-9a-f]{64}$"}
+  },
+  "additionalProperties": false
+}
