@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/safal207/ATMAN-LATTICE/schemas/verification-coverage-receipt.schema.json",
+  "title": "VerificationCoverageReceipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["pressure_hash", "base_decision", "completed_work_hashes", "pending_admitted_work_hashes", "deferred_work_hashes", "decision", "reasons", "coverage_hash"],
+  "properties": {
+    "pressure_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "base_decision": {"enum": ["PASS", "HOLD", "FAIL"]},
+    "completed_work_hashes": {"type": "array", "uniqueItems": true, "items": {"type": "string", "pattern": "^[0-9a-f]{64}$"}},
+    "pending_admitted_work_hashes": {"type": "array", "uniqueItems": true, "items": {"type": "string", "pattern": "^[0-9a-f]{64}$"}},
+    "deferred_work_hashes": {"type": "array", "uniqueItems": true, "items": {"type": "string", "pattern": "^[0-9a-f]{64}$"}},
+    "decision": {"enum": ["PASS", "HOLD", "FAIL"]},
+    "reasons": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "coverage_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}
