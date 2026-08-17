@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/safal207/ATMAN-LATTICE/schemas/protected-confirmation-batch.schema.json",
+  "title": "ProtectedConfirmationBatch",
+  "type": "object",
+  "required": ["batch_ref", "subject_identity_ref", "pair_key", "source_ref", "sample_hashes", "resolution_hashes", "evidence_hashes", "sample_count", "batch_keeper_ref", "sealed_at", "batch_hash"],
+  "properties": {
+    "batch_ref": {"type": "string", "minLength": 1},
+    "subject_identity_ref": {"type": "string", "minLength": 1},
+    "pair_key": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "source_ref": {"type": "string", "minLength": 1},
+    "sample_hashes": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "pattern": "^[0-9a-f]{64}$"}},
+    "resolution_hashes": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "pattern": "^[0-9a-f]{64}$"}},
+    "evidence_hashes": {"type": "array", "minItems": 2, "uniqueItems": true, "items": {"type": "string", "pattern": "^[0-9a-f]{64}$"}},
+    "sample_count": {"type": "integer", "minimum": 1},
+    "batch_keeper_ref": {"type": "string", "minLength": 1},
+    "sealed_at": {"type": "integer", "minimum": 0},
+    "batch_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  },
+  "additionalProperties": false
+}
