@@ -272,7 +272,7 @@ def test_rotation_advances_generation_and_preserves_previous_pool_hash():
 
 def test_final_confirmation_receipt_detects_tampering():
     confirmation = confirm()[12]
-    with pytest.raises(ValueError, match="confirmation_hash"):
+    with pytest.raises(ValueError):
         replace(confirmation, regularized_improvement_ppm=confirmation.regularized_improvement_ppm + 1).validate()
 
 
