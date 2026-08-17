@@ -6,7 +6,7 @@ import sqlite3
 from typing import Mapping
 
 from model.authority import AuthorityGrant, AuthorityProof, verify_authority_proof
-from model.calibration import pair_from_dict, summarize_dependency_samples
+from model.calibration import summarize_dependency_samples
 from model.dependency_graph_revision import (
     DependencyGraphEdge,
     DependencyGraphRevisionReceipt,
@@ -23,6 +23,7 @@ from model.dependency_graph_revision import (
     review_structural_graph_revision,
 )
 from model.enforcement import EnforcementContext
+from model.runtime_calibration import pair_from_dict
 from model.runtime_protocol import authority_grant_from_dict, authority_proof_from_dict
 from model.runtime_revision import _connect as revision_connect
 from model.runtime_verification import verification_scope
