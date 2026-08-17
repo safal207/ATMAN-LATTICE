@@ -1,12 +1,12 @@
 # ATMAN-LATTICE
 
-**A Projective Spacetime Architecture for Identity, Authority, Governance, and Coherence**
+**A Projective Spacetime Architecture for Identity, Authority, Governance, Verification, and Coherence**
 
-ATMAN-LATTICE is an exploratory research repository for modeling identity across state, space, time, lineage, branching, possibility, reconciliation, authorization, signer authority, privileged execution, trust-root evolution, transition geometry, geometric coherence, and finite verification capacity.
+ATMAN-LATTICE is an exploratory research repository for modeling identity across state, space, time, lineage, branching, possibility, reconciliation, authorization, privileged execution, trust-root evolution, transition geometry, geometric coherence, finite verification capacity, and durable verification debt.
 
-> What must remain invariant when representation changes, futures branch, paths become order-sensitive, verification capacity saturates, or authority itself changes — so that identity, ancestry, path dependence, uncertainty, and permission remain provable rather than merely asserted?
+> What must remain invariant when representation changes, futures branch, paths become order-sensitive, verification capacity saturates, or authority itself changes — so that identity, ancestry, uncertainty, path dependence, verification state, and permission remain provable rather than merely asserted?
 
-The repository does **not** claim to prove metaphysical statements about the soul, sleep, consciousness, Atman, quantum worlds, physical multiverses, or physical torsion fields. Those terms are conceptual labels and thought experiments inside a formal model. The engineering target is testable continuity, provenance, freshness, authority, governance, compatibility, path dependence, verification coverage, and globally coherent execution.
+The repository does **not** claim to prove metaphysical statements about the soul, sleep, consciousness, Atman, quantum worlds, physical multiverses, or physical torsion fields. Those terms are conceptual labels and thought experiments inside a formal engineering model.
 
 ## Core geometry
 
@@ -17,11 +17,11 @@ Spatial axis:   S1 <----> S3 / A1 <----> S2
 Temporal axis:  S4 <----> S6 / A2 <----> S5
                 past       observer       future
 
-A3 = Observer(A1, A2)
-A4 = Coherence(A1, A2, A3)
+A3 = Observer(A1, A2) + path geometry
+A4 = Global coherence + commit gate
 ```
 
-The accumulated executable warnings are:
+## Accumulated executable warnings
 
 ```text
 Local PASS != Global Coherence
@@ -34,197 +34,189 @@ Revocation != History erasure
 Valid signature != Valid authority
 Historical authority != Current authority
 Granted role != Required operation role
-Verified proof != Executed permission unless checked before use
 Caller claim != Runtime authority
-Caller mutation != Runtime mutation
 Client ledger != Runtime authorization state
 Execution authority != Trust-governance authority
-Bootstrap trust != Ongoing trust authority
 Potentiality != History
 Valid(A) + Valid(B) != Coexist(A,B)
-Composite state != Permission to erase parent histories
 Keeper != Sovereign
 Valid(A) + Valid(B) != Commute(A,B)
 Same result != Same journey
 Torsion != Invalidity
-Semantic return != History erasure
 HOLD != FAIL
-A3 local consistency != A4 global commit permission
 Unverified != Invalid
-Capacity admission != Semantic verdict
 ADMITTED != VERIFIED
 Deferred != Pruned
+COMPLETED != PASS
+Preview != Finalization
+VerifierCapacity != RealityCapacity
 ```
 
-## v1.6 — Verification Pressure / Temporal Loom
+# v1.7 — Runtime Verification Plane
 
-v1.6 models finite A3/A4 verification capacity without converting overload into a semantic verdict.
+v1.7 moves geometric verification pressure from an in-memory formal model into a durable process/database plane.
 
 ```text
-branch/path evidence
-  |   |   |   |   |   |
-  v   v   v   v   v   v
-       verifier
-   finite capacity
-       |
-       +-- ADMITTED
-       +-- DEFERRED_CAPACITY
-       +-- DEFERRED_OVERSIZED
+A3/A4 geometry
+      |
+      v
+ATMAN-VERIFY/1.7
+      |
+      +-- submit verification debt
+      +-- schedule under server-owned capacity
+      +-- preserve deferred / oversized work
+      +-- complete admitted work with PASS/HOLD/FAIL
+      +-- preview current runtime decision
+      +-- finalize with VERIFICATION_KEEPER authority
 ```
 
-The central law is:
+The three process-level protocol planes are now:
+
+```text
+ATMAN-RUNTIME/1.1  privileged execution
+ATMAN-TRUST/1.2    trust-root governance
+ATMAN-VERIFY/1.7   durable verification/debt/finalization
+```
+
+## Durable verification debt
+
+Work is persisted in SQLite as:
+
+```text
+SUBMITTED
+ADMITTED
+DEFERRED_CAPACITY
+DEFERRED_OVERSIZED
+COMPLETED
+```
+
+A process restart does not erase deferred verification work while the runtime database survives.
+
+The scheduler uses server-owned capacity configuration. Client claims about capacity do not replace runtime policy.
 
 ```text
 UNVERIFIED != INVALID
+DEFERRED != PRUNED
 ```
 
-A work item that cannot be processed in the current capacity window remains explicit evidence. It is deferred, not silently dropped and not labeled FAIL.
+## Completion is an explicit verdict
 
-### Deterministic pressure accounting
+`VerificationCompletionReceipt` binds the exact:
 
-`VerificationWorkItem` binds the exact subject, evidence digest, declared cost, priority, submission time, and work hash.
+- work hash;
+- subject identity;
+- target geometry gate;
+- schedule generation;
+- pressure receipt;
+- PASS/HOLD/FAIL result;
+- evidence digest;
+- verifier actor;
+- runtime completion time.
 
-`VerificationCapacityPolicy` binds:
+Only work admitted in the **current** pressure window can be completed.
 
 ```text
-capacity_units
-max_admitted_items
-aging_quantum
+COMPLETED != PASS
 ```
 
-The deterministic scheduler uses an aging-aware effective priority:
+A completed `FAIL` dominates complete coverage.
+
+## Geometric HOLD discharge
+
+A geometric `HOLD` may become runtime `PASS` only through explicit completed verification:
 
 ```text
-effective_priority = priority + floor(wait_time / aging_quantum)
+base geometry = HOLD
+required verification work exists
+all required work completed
+all results = PASS
+---------------------------
+runtime decision = PASS
 ```
 
-so old work can rise above continuously arriving fresh work.
-
-Every offered item must appear exactly once:
+Otherwise:
 
 ```text
-OFFERED = ADMITTED ∪ DEFERRED_CAPACITY ∪ DEFERRED_OVERSIZED
+pending work        -> HOLD
+deferred work       -> HOLD
+completion HOLD     -> HOLD
+completion FAIL     -> FAIL
+base geometry FAIL  -> FAIL
+HOLD + no work      -> HOLD
 ```
 
-with pairwise-disjoint dispositions. Overload may defer verification; it may not erase the need to verify.
+## Preview vs authoritative finalization
 
-Pressure states are:
+`evaluate_geometric_verification` returns a diagnostic runtime decision plus a stable `decision_state_hash`.
+
+The time-stamped decision receipt may change as time advances; the state digest does not change merely because the clock changed.
+
+Authoritative finalization requires:
 
 ```text
-NORMAL     -> everything admitted
-PRESSURED  -> some admitted, some deferred
-SATURATED  -> nothing offered can be admitted now
+VERIFICATION_KEEPER
++
+exact current decision_state_hash
++
+current schedule generation
++
+current pressure hash
 ```
 
-### Admission is not completion
-
-A second gate tracks verification coverage:
+If verification state changes between preview and finalization:
 
 ```text
-ADMITTED
-   |
-   +-- completed
-   +-- pending
-
-DEFERRED
-   |
-   +-- preserved as unresolved verification debt
+preview S0
+state -> S1
+finalize(S0)
+    X
+stale verification decision
 ```
 
-Therefore:
+This is the v1.7 use-time binding for global verification state.
 
-```text
-ADMITTED != VERIFIED
-```
+Protocol: [`docs/v1.7-runtime-verification-plane.md`](docs/v1.7-runtime-verification-plane.md)
 
-A base `PASS` survives only when every required item was admitted **and** completed.
-
-```text
-all required work completed  -> base decision may survive
-pending admitted work        -> HOLD
-deferred required work       -> HOLD
-invalid pressure evidence    -> FAIL
-claim deferred work complete -> FAIL
-```
-
-This is the operational version of the Temporal Loom lesson: finite throughput is a property of the verifier, not evidence that excess branches are wrong.
-
-Protocol: [`docs/v1.6-verification-pressure.md`](docs/v1.6-verification-pressure.md)
-
-Invariants: [`docs/v1.6-invariants.md`](docs/v1.6-invariants.md)
+Invariants: [`docs/v1.7-invariants.md`](docs/v1.7-invariants.md)
 
 Machine-readable contracts:
 
-- [`schemas/verification-work-item.schema.json`](schemas/verification-work-item.schema.json)
-- [`schemas/verification-capacity-policy.schema.json`](schemas/verification-capacity-policy.schema.json)
-- [`schemas/verification-pressure-receipt.schema.json`](schemas/verification-pressure-receipt.schema.json)
-- [`schemas/verification-coverage-receipt.schema.json`](schemas/verification-coverage-receipt.schema.json)
+- [`schemas/verification-completion-receipt.schema.json`](schemas/verification-completion-receipt.schema.json)
+- [`schemas/runtime-verification-decision.schema.json`](schemas/runtime-verification-decision.schema.json)
+- [`schemas/verification-finalization-receipt.schema.json`](schemas/verification-finalization-receipt.schema.json)
+
+# Prior layers
+
+## v1.6 — Verification Pressure / Temporal Loom
+
+Finite A3/A4 capacity is modeled without converting overload into a semantic verdict.
+
+```text
+OFFERED = ADMITTED ∪ DEFERRED_CAPACITY ∪ DEFERRED_OVERSIZED
+ADMITTED != VERIFIED
+```
+
+Aging raises old work over time so continuous fresh arrivals do not automatically starve older evidence.
+
+Protocol: [`docs/v1.6-verification-pressure.md`](docs/v1.6-verification-pressure.md) · Invariants: [`docs/v1.6-invariants.md`](docs/v1.6-invariants.md)
 
 ## v1.5 — Geometric Coherence Gate
 
-v1.5 connects transition-geometry evidence directly to the A3/A4 hierarchy.
+Torsion/curvature evidence enters A3/A4 under explicit `PASS < HOLD < FAIL` policy semantics.
 
-```text
-A1 + A2
-   |
-   v
-  A3
-   +-- torsion evidence
-   +-- curvature evidence
-   +-- geometric policy
-   v
-A3-GEOMETRY
-PASS / HOLD / FAIL
-   |
-   v
-A4-GEOMETRY
-```
-
-The default policy preserves history-only torsion/holonomy as evidence, places semantic torsion/curvature on `HOLD`, and allows explicit policy to escalate to `FAIL`.
-
-A4 aggregates monotonically:
-
-```text
-PASS < HOLD < FAIL
-```
-
-Protocol: [`docs/v1.5-geometric-coherence-gate.md`](docs/v1.5-geometric-coherence-gate.md)
-
-Invariants: [`docs/v1.5-invariants.md`](docs/v1.5-invariants.md)
+Protocol: [`docs/v1.5-geometric-coherence-gate.md`](docs/v1.5-geometric-coherence-gate.md) · Invariants: [`docs/v1.5-invariants.md`](docs/v1.5-invariants.md)
 
 ## v1.4 — Transition Geometry
 
-v1.4 introduces discrete engineering analogues of torsion and curvature. These are not claims about physical torsion fields.
-
-For two valid transitions:
+Discrete engineering analogues of torsion and curvature:
 
 \[
-\tau_X(A,B)=\Delta(B\circ A(X),A\circ B(X)).
+\tau_X(A,B)=\Delta(B\circ A(X),A\circ B(X))
 \]
-
-Torsion classifications:
-
-```text
-CLOSED
-SEMANTICALLY_CLOSED_HISTORY_DIVERGENT
-TORSION_DETECTED
-```
-
-For a closed loop:
 
 \[
-\kappa_X(L)=\Delta(X,L(X)).
+\kappa_X(L)=\Delta(X,L(X))
 \]
-
-Curvature classifications:
-
-```text
-FLAT_LOOP
-SEMANTICALLY_CLOSED_WITH_HOLONOMY
-CURVATURE_DETECTED
-```
-
-The core rules are:
 
 ```text
 Same result != Same journey
@@ -232,13 +224,9 @@ Torsion != Invalidity
 Semantic closure != History erasure
 ```
 
-Protocol: [`docs/v1.4-transition-geometry.md`](docs/v1.4-transition-geometry.md)
-
-Invariants: [`docs/v1.4-invariants.md`](docs/v1.4-invariants.md)
+Protocol: [`docs/v1.4-transition-geometry.md`](docs/v1.4-transition-geometry.md) · Invariants: [`docs/v1.4-invariants.md`](docs/v1.4-invariants.md)
 
 ## v1.3 — Multiverse Semantics
-
-v1.3 separates potential futures from committed history, adds explicit branch coexistence/incursion semantics, and requires narrative-preserving composition.
 
 ```text
 Potentiality != History
@@ -247,74 +235,54 @@ Composite(C) => Parents(C) preserved
 Preserve(Worlds) != AuthorityToRewrite(Worlds)
 ```
 
-Protocol: [`docs/v1.3-multiverse-semantics.md`](docs/v1.3-multiverse-semantics.md)
-
-Invariants: [`docs/v1.3-invariants.md`](docs/v1.3-invariants.md)
+Protocol: [`docs/v1.3-multiverse-semantics.md`](docs/v1.3-multiverse-semantics.md) · Invariants: [`docs/v1.3-invariants.md`](docs/v1.3-invariants.md)
 
 ## v1.2 — Trust-Root Evolution
 
-v1.2 separates execution and trust governance:
+Trust-root mutation requires a quorum of distinct currently trusted roots over the exact transition. Persisted trust policy outranks stale bootstrap configuration.
 
-```text
-execution plane:   ATMAN-RUNTIME/1.1
-governance plane:  ATMAN-TRUST/1.2
-```
-
-Trust-root mutation requires a quorum of distinct currently trusted roots over the exact transition, and persisted trust policy outranks stale bootstrap configuration after initialization.
-
-Protocol: [`docs/v1.2-trust-root-evolution.md`](docs/v1.2-trust-root-evolution.md)
-
-Invariants: [`docs/v1.2-invariants.md`](docs/v1.2-invariants.md)
+Protocol: [`docs/v1.2-trust-root-evolution.md`](docs/v1.2-trust-root-evolution.md) · Invariants: [`docs/v1.2-invariants.md`](docs/v1.2-invariants.md)
 
 ## v1.1 — Full Runtime Plane
 
-v1.1 closes the privileged lifecycle inside one reference runtime plane, including observer execution, token issue/consume/revoke, merge, server-owned capability secrets, and atomically serialized authorization state.
+Observer execution, token issue/consume/revoke, merge, server-owned secrets, and atomically serialized authorization state live behind `ATMAN-RUNTIME/1.1`.
 
-> **At most one terminal authorization event may commit for an exact token digest.**
-
-Protocol: [`docs/v1.1-full-runtime-plane.md`](docs/v1.1-full-runtime-plane.md)
-
-Invariants: [`docs/v1.1-invariants.md`](docs/v1.1-invariants.md)
+Protocol: [`docs/v1.1-full-runtime-plane.md`](docs/v1.1-full-runtime-plane.md) · Invariants: [`docs/v1.1-invariants.md`](docs/v1.1-invariants.md)
 
 ## v1.0 — ATMAN Runtime
 
-v1.0 introduced the process-separated privileged observer plane:
+Client permission claims do not become privileged execution until a separate runtime process independently verifies exact authority.
 
-> **Client permission claims do not become privileged execution until the runtime process independently verifies the exact authority.**
-
-Protocol: [`docs/v1.0-atman-runtime.md`](docs/v1.0-atman-runtime.md)
-
-Invariants: [`docs/v1.0-invariants.md`](docs/v1.0-invariants.md)
+Protocol: [`docs/v1.0-atman-runtime.md`](docs/v1.0-atman-runtime.md) · Invariants: [`docs/v1.0-invariants.md`](docs/v1.0-invariants.md)
 
 ## Earlier evolution
 
 - **v0.2** — executable A1/A2/A3/A4 observers.
 - **v0.3** — SHA-256 parent-linked identity lineage.
-- **v0.4** — freshness, context binding, and `UseToken`.
+- **v0.4** — freshness/context binding and `UseToken`.
 - **v0.5** — restore creates a new branch; restore is not continuation.
-- **v0.6** — branch merge with exact ancestry and explicit conflict resolution.
-- **v0.7** — one-time consumption/revocation and authenticated authorization ledger.
-- **v0.8** — Ed25519 signer identity, roles, scopes, and policy generations.
+- **v0.6** — branch reconciliation with explicit conflict resolution.
+- **v0.7** — one-time consumption/revocation ledger.
+- **v0.8** — Ed25519 signer identity and scoped authority.
 - **v0.9** — exact pre-execution authority enforcement.
 
 ## Why this matters for AI systems
 
-The same integrity problem appears when agents move through working memory, simulations, alternative plans, checkpoints, restored branches, reconciled memories, changing tool contexts, delegated capabilities, long-horizon execution, governance changes, order-sensitive tool workflows, and verification backlogs.
+Long-running agents can have valid alternative plans, restored memories, order-sensitive operations, changing authority, and more verification work than available capacity.
 
-ATMAN-LATTICE keeps these questions separate:
+ATMAN-LATTICE keeps different questions separate:
 
 - Is this still the same identity?
 - Is this the same history?
-- Is this merely a possible future, or was it committed?
-- Can two individually valid branches coexist?
-- Did transition order change the result?
-- Does path dependence require HOLD/reconciliation?
-- Was required verification actually completed?
-- Was work merely deferred because verifier capacity was exhausted?
-- Did a composite result preserve every parent history?
-- Is authorization still current?
-- Did this signer have authority?
-- Did privileged execution occur inside the intended trust boundary?
+- Was this future merely considered or actually committed?
+- Can two valid branches coexist?
+- Did operation order change the result?
+- Is path dependence acceptable, HOLD-worthy, or rejected?
+- Was verification actually completed?
+- Was it only deferred because capacity ran out?
+- Did the verifier return PASS/HOLD/FAIL?
+- Is the preview still current at finalization time?
+- Did the finalizer have authority?
 - Who had authority to change the roots that define authority?
 
 ## Run
@@ -324,27 +292,32 @@ python -m pip install -e . pytest
 python -m pytest -q
 ```
 
-Reference runtime worker:
+Execution/trust worker:
 
 ```bash
 python -m model.runtime_worker
 ```
 
-It accepts:
+Verification worker:
 
-```text
-ATMAN-RUNTIME/1.1  — privileged execution plane
-ATMAN-TRUST/1.2    — trust governance plane
+```bash
+python -m model.verification_worker
 ```
 
-The v1.3 multiverse semantics, v1.4 transition geometry, v1.5 geometric coherence gate, and v1.6 verification-pressure model currently live as explicit executable model primitives rather than new wire protocols.
+Reference protocols:
 
-This remains a **reference process/database and formal-model boundary**, not a hostile-host sandbox or a claim about physical multiverses/torsion. Production use additionally requires protected keys, protected durable storage, authenticated transport, measured server-owned resource accounting, rollback-resistant backups, database/file permissions, and operational governance.
+```text
+ATMAN-RUNTIME/1.1
+ATMAN-TRUST/1.2
+ATMAN-VERIFY/1.7
+```
+
+This remains a **reference process/database and formal-model boundary**, not a hostile-host sandbox or a claim about physical multiverses/torsion. Production use additionally requires protected keys, authenticated transport, rollback-resistant durable storage/backups, measured resource accounting, database/file permissions, and operational governance.
 
 ## Status
 
-**v1.6.0 — Verification Pressure / Temporal Loom research core.**
+**v1.7.0 — Runtime Verification Plane research core.**
 
-The project now spans identity continuity, cryptographic lineage, potential-vs-committed futures, restore/fork semantics, cross-branch compatibility, narrative-preserving composition, transition torsion/curvature, policy-bound A3/A4 geometric coherence, explicit finite-capacity verification scheduling, preserved verification debt, PASS/HOLD/FAIL coverage semantics, one-time authorization, asymmetric signer authority, runtime enforcement, atomically serialized authorization state, and quorum-governed trust-root evolution.
+The project now spans identity continuity, cryptographic lineage, potential-vs-committed futures, restore/fork semantics, narrative-preserving reconciliation, transition torsion/curvature, policy-bound A3/A4 geometric coherence, finite verification-pressure scheduling, durable verification debt, authority-bound completion/finalization, one-time authorization, asymmetric signer authority, process-separated execution, serialized runtime state, and quorum-governed trust-root evolution.
 
-Next targets: runtime wire integration for geometric/pressure gates, adaptive verification budgeting, measured server-owned work cost, rollback-resistant trust recovery, emergency governance, compensation receipts, generalized ancestry proofs, concurrency stress tests, and real agent planning/memory/tool integration.
+Next targets: adaptive verification budgeting from measured runtime cost, automatic work decomposition for oversized checks, persistent finalization/audit history, rollback-resistant verification state, compensation receipts, generalized ancestry proofs, concurrency stress tests, and real agent planning/memory/tool integrations.
