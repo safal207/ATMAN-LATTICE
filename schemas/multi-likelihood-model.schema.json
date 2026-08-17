@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/safal207/ATMAN-LATTICE/schemas/multi-likelihood-model.schema.json",
+  "title": "ATMAN-LATTICE MultiLikelihoodModel v1.11",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["candidate_hash", "distribution_hash", "positive_likelihood_bps", "conditioning_evidence_hashes", "model_ref", "model_generation", "model_hash"],
+  "properties": {
+    "candidate_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "distribution_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "positive_likelihood_bps": {
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "type": "array",
+        "prefixItems": [
+          {"type": "string", "minLength": 1},
+          {"type": "integer", "minimum": 0, "maximum": 10000}
+        ],
+        "items": false,
+        "minItems": 2,
+        "maxItems": 2
+      }
+    },
+    "conditioning_evidence_hashes": {"type": "array", "items": {"type": "string", "pattern": "^[0-9a-f]{64}$"}, "uniqueItems": true},
+    "model_ref": {"type": "string", "minLength": 1},
+    "model_generation": {"type": "integer", "minimum": 0},
+    "model_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}
