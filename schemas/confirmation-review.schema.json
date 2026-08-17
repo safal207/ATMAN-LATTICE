@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/safal207/ATMAN-LATTICE/schemas/confirmation-review.schema.json",
+  "title": "ConfirmationReviewReceipt",
+  "type": "object",
+  "required": ["evaluation_hash", "selection_hash", "candidate_hash", "status", "decision", "rationale_ref", "proposer_ref", "selector_ref", "evaluator_ref", "reviewer_ref", "reviewed_at", "review_hash"],
+  "properties": {
+    "evaluation_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "selection_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "candidate_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "status": {"enum": ["INSUFFICIENT_CONFIRMATION", "CONFIRMED", "CONFIRMATION_REJECTED"]},
+    "decision": {"enum": ["APPROVE", "HOLD", "REJECT"]},
+    "rationale_ref": {"type": "string", "minLength": 1},
+    "proposer_ref": {"type": "string", "minLength": 1},
+    "selector_ref": {"type": "string", "minLength": 1},
+    "evaluator_ref": {"type": "string", "minLength": 1},
+    "reviewer_ref": {"type": "string", "minLength": 1},
+    "reviewed_at": {"type": "integer", "minimum": 0},
+    "review_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  },
+  "additionalProperties": false
+}
