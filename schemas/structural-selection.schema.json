@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/safal207/ATMAN-LATTICE/schemas/structural-selection.schema.json",
+  "title": "StructuralSelectionReceipt",
+  "type": "object",
+  "required": ["selection_ref", "subject_identity_ref", "pair_key", "base_graph_hash", "policy_hash", "history_hash", "candidate_hashes", "validation_hashes", "status", "selector_ref", "selected_at", "selection_hash"],
+  "properties": {
+    "selection_ref": {"type": "string", "minLength": 1},
+    "subject_identity_ref": {"type": "string", "minLength": 1},
+    "pair_key": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "base_graph_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "policy_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "history_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "candidate_hashes": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "pattern": "^[0-9a-f]{64}$"}},
+    "validation_hashes": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "pattern": "^[0-9a-f]{64}$"}},
+    "selected_candidate_hash": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
+    "selected_validation_hash": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
+    "selected_regularized_improvement_ppm": {"type": ["integer", "null"]},
+    "status": {"enum": ["SELECTED", "NO_ELIGIBLE_CANDIDATE"]},
+    "selector_ref": {"type": "string", "minLength": 1},
+    "selected_at": {"type": "integer", "minimum": 0},
+    "selection_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  },
+  "additionalProperties": false
+}
