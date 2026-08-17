@@ -89,11 +89,11 @@ def test_observed_cost_can_change_budget_allocation_order():
     estimators = {
         "geometry": build_cost_estimator(
             "geometry",
-            [observation("e", estimator_key="geometry", cost=18), observation("g", estimator_key="geometry", cost=18)],
+            [observation("e", estimator_key="geometry", cost=18), observation("b", estimator_key="geometry", cost=18)],
         ),
         "policy": build_cost_estimator(
             "policy",
-            [observation("i", estimator_key="policy", cost=3), observation("k", estimator_key="policy", cost=3)],
+            [observation("c", estimator_key="policy", cost=3), observation("d", estimator_key="policy", cost=3)],
         ),
     }
     allocation = allocate_verification_budget([geometry, policy_check], estimators, policy(budget_units=10), measured_at=200)
