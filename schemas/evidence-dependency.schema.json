@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/safal207/ATMAN-LATTICE/schemas/evidence-dependency.schema.json",
+  "title": "ATMAN-LATTICE EvidenceDependencyDeclaration v1.11",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["candidate_hash", "source_event_hash", "derivation_hash", "dependency_group_ref", "mode", "parent_evidence_hashes", "declaration_ref", "declaration_generation", "declared_at", "dependency_hash"],
+  "properties": {
+    "candidate_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "source_event_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "derivation_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "dependency_group_ref": {"type": "string", "minLength": 1},
+    "mode": {"enum": ["INDEPENDENT", "CONDITIONAL", "DUPLICATE"]},
+    "parent_evidence_hashes": {"type": "array", "items": {"type": "string", "pattern": "^[0-9a-f]{64}$"}, "uniqueItems": true},
+    "declaration_ref": {"type": "string", "minLength": 1},
+    "declaration_generation": {"type": "integer", "minimum": 0},
+    "declared_at": {"type": "integer", "minimum": 0},
+    "dependency_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}
