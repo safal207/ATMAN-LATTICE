@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/safal207/ATMAN-LATTICE/schemas/calibration-target.schema.json",
+  "title": "ATMAN-LATTICE CalibrationTargetReceipt v1.12",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["target_ref","calibration_family_ref","candidate_hash","distribution_ref","subject_identity_ref","distribution_hash","probability_bps","likelihood_model_hash","likelihood_model_ref","positive_likelihood_bps","conditioning_evidence_hashes","dependency_hash","dependency_group_ref","dependency_mode","source_event_hash","derivation_hash","parent_evidence_hashes","committed_at","target_hash"],
+  "properties": {
+    "target_ref": {"type":"string","minLength":1},
+    "calibration_family_ref": {"type":"string","minLength":1},
+    "candidate_hash": {"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "distribution_ref": {"type":"string","minLength":1},
+    "subject_identity_ref": {"type":"string","minLength":1},
+    "distribution_hash": {"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "probability_bps": {"type":"array","minItems":2,"items":{"type":"array","prefixItems":[{"type":"string","minLength":1},{"type":"integer","minimum":0,"maximum":10000}],"items":false}},
+    "likelihood_model_hash": {"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "likelihood_model_ref": {"type":"string","minLength":1},
+    "positive_likelihood_bps": {"type":"array","minItems":2,"items":{"type":"array","prefixItems":[{"type":"string","minLength":1},{"type":"integer","minimum":0,"maximum":10000}],"items":false}},
+    "conditioning_evidence_hashes": {"type":"array","items":{"type":"string","pattern":"^[0-9a-f]{64}$"}},
+    "dependency_hash": {"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "dependency_group_ref": {"type":"string","minLength":1},
+    "dependency_mode": {"enum":["INDEPENDENT","CONDITIONAL","DUPLICATE"]},
+    "source_event_hash": {"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "derivation_hash": {"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "parent_evidence_hashes": {"type":"array","items":{"type":"string","pattern":"^[0-9a-f]{64}$"}},
+    "committed_at": {"type":"integer","minimum":0},
+    "target_hash": {"type":"string","pattern":"^[0-9a-f]{64}$"}
+  }
+}
