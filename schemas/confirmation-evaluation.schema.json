@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/safal207/ATMAN-LATTICE/schemas/confirmation-evaluation.schema.json",
+  "title": "ConfirmationEvaluationReceipt",
+  "type": "object",
+  "required": ["selection_hash", "candidate_hash", "batch_hash", "exposure_hash", "confirmation_policy_hash", "case_hashes", "evaluated_case_count", "min_confirmation_samples", "base_mean_brier_ppm", "proposed_mean_brier_ppm", "raw_improvement_ppm", "base_regularized_brier_ppm", "proposed_regularized_brier_ppm", "regularized_improvement_ppm", "required_min_regularized_improvement_ppm", "status", "proposer_ref", "selector_ref", "batch_keeper_ref", "exposure_keeper_ref", "evaluator_ref", "evaluated_at", "evaluation_hash"],
+  "properties": {
+    "selection_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "candidate_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "batch_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "exposure_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "confirmation_policy_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "case_hashes": {"type": "array", "uniqueItems": true, "items": {"type": "string", "pattern": "^[0-9a-f]{64}$"}},
+    "evaluated_case_count": {"type": "integer", "minimum": 0},
+    "min_confirmation_samples": {"type": "integer", "minimum": 1},
+    "base_mean_brier_ppm": {"type": ["integer", "null"]},
+    "proposed_mean_brier_ppm": {"type": ["integer", "null"]},
+    "raw_improvement_ppm": {"type": ["integer", "null"]},
+    "base_regularized_brier_ppm": {"type": ["integer", "null"]},
+    "proposed_regularized_brier_ppm": {"type": ["integer", "null"]},
+    "regularized_improvement_ppm": {"type": ["integer", "null"]},
+    "required_min_regularized_improvement_ppm": {"type": "integer", "minimum": 0},
+    "status": {"enum": ["INSUFFICIENT_CONFIRMATION", "CONFIRMED", "CONFIRMATION_REJECTED"]},
+    "proposer_ref": {"type": "string", "minLength": 1},
+    "selector_ref": {"type": "string", "minLength": 1},
+    "batch_keeper_ref": {"type": "string", "minLength": 1},
+    "exposure_keeper_ref": {"type": "string", "minLength": 1},
+    "evaluator_ref": {"type": "string", "minLength": 1},
+    "evaluated_at": {"type": "integer", "minimum": 0},
+    "evaluation_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  },
+  "additionalProperties": false
+}
