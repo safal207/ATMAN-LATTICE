@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/safal207/ATMAN-LATTICE/schemas/duplicate-evidence.schema.json",
+  "title": "ATMAN-LATTICE DuplicateEvidenceReceipt v1.11",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["evidence_hash", "parent_evidence_hash", "source_event_hash", "derivation_hash", "observed_at", "duplicate_hash"],
+  "properties": {
+    "evidence_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "parent_evidence_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "source_event_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "derivation_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "observed_at": {"type": "integer", "minimum": 0},
+    "duplicate_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}
