@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/safal207/ATMAN-LATTICE/schemas/replication-series-snapshot.schema.json",
+  "title": "ReplicationSeriesSnapshot",
+  "type": "object",
+  "required": ["target_hash","policy_hash","evaluation_hashes","review_hashes","latest_generation","replication_count","stable_count","drift_count","consecutive_drift_count","persistent_drift_epochs","latest_status","signal","measured_at","snapshot_hash"],
+  "properties": {
+    "target_hash": {"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "policy_hash": {"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "evaluation_hashes": {"type":"array","items":{"type":"string","pattern":"^[0-9a-f]{64}$"},"minItems":1,"uniqueItems":true},
+    "review_hashes": {"type":"array","items":{"type":"string","pattern":"^[0-9a-f]{64}$"},"minItems":1,"uniqueItems":true},
+    "latest_generation": {"type":"integer","minimum":0},
+    "replication_count": {"type":"integer","minimum":1},
+    "stable_count": {"type":"integer","minimum":0},
+    "drift_count": {"type":"integer","minimum":0},
+    "consecutive_drift_count": {"type":"integer","minimum":0},
+    "persistent_drift_epochs": {"type":"integer","minimum":1},
+    "latest_status": {"enum":["INSUFFICIENT_REPLICATION","REPLICATED","DRIFT_SIGNAL"]},
+    "signal": {"enum":["STABLE_HISTORY","DRIFT_OBSERVED","PERSISTENT_DRIFT_SIGNAL"]},
+    "measured_at": {"type":"integer","minimum":0},
+    "snapshot_hash": {"type":"string","pattern":"^[0-9a-f]{64}$"}
+  },
+  "additionalProperties": false
+}
