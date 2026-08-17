@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/safal207/ATMAN-LATTICE/schemas/structural-selection-review.schema.json",
+  "title": "StructuralSelectionReviewReceipt",
+  "type": "object",
+  "required": ["selection_hash", "decision", "rationale_ref", "selector_ref", "reviewer_ref", "reviewed_at", "review_hash"],
+  "properties": {
+    "selection_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "selected_candidate_hash": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
+    "decision": {"enum": ["APPROVE", "HOLD", "REJECT"]},
+    "rationale_ref": {"type": "string", "minLength": 1},
+    "selector_ref": {"type": "string", "minLength": 1},
+    "proposer_ref": {"type": ["string", "null"], "minLength": 1},
+    "reviewer_ref": {"type": "string", "minLength": 1},
+    "reviewed_at": {"type": "integer", "minimum": 0},
+    "review_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  },
+  "additionalProperties": false
+}
