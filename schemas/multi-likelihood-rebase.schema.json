@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/safal207/ATMAN-LATTICE/schemas/multi-likelihood-rebase.schema.json",
+  "title": "ATMAN-LATTICE MultiLikelihoodRebaseReceipt v1.11",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["candidate_hash", "old_model_hash", "new_model_hash", "prior_distribution_hash", "posterior_distribution_hash", "conditioning_evidence_hashes", "old_model_generation", "new_model_generation", "rebased_at", "rebase_hash"],
+  "properties": {
+    "candidate_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "old_model_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "new_model_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "prior_distribution_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "posterior_distribution_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "conditioning_evidence_hashes": {"type": "array", "items": {"type": "string", "pattern": "^[0-9a-f]{64}$"}, "uniqueItems": true},
+    "old_model_generation": {"type": "integer", "minimum": 0},
+    "new_model_generation": {"type": "integer", "minimum": 1},
+    "rebased_at": {"type": "integer", "minimum": 0},
+    "rebase_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}
