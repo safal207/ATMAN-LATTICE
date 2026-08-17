@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/safal207/ATMAN-LATTICE/schemas/verification-likelihood-model.schema.json",
+  "title": "ATMAN-LATTICE VerificationLikelihoodModel v1.9",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["candidate_hash","hypothesis_hash","positive_if_true_bps","positive_if_false_bps","model_ref","model_generation","model_hash"],
+  "properties": {
+    "candidate_hash": {"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "hypothesis_hash": {"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "positive_if_true_bps": {"type":"integer","minimum":0,"maximum":10000},
+    "positive_if_false_bps": {"type":"integer","minimum":0,"maximum":10000},
+    "model_ref": {"type":"string","minLength":1},
+    "model_generation": {"type":"integer","minimum":0},
+    "model_hash": {"type":"string","pattern":"^[0-9a-f]{64}$"}
+  }
+}
