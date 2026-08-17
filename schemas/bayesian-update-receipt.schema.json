@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/safal207/ATMAN-LATTICE/schemas/bayesian-update-receipt.schema.json",
+  "title": "ATMAN-LATTICE BayesianUpdateReceipt v1.10",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["candidate_hash", "prior_hypothesis_hash", "posterior_hypothesis_hash", "interpretation_hash", "likelihood_model_hash", "prior_probability_bps", "posterior_probability_bps", "prior_generation", "posterior_generation", "evidence_state_hash", "applied_at", "updater_ref", "update_hash"],
+  "properties": {
+    "candidate_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "prior_hypothesis_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "posterior_hypothesis_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "interpretation_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "likelihood_model_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "prior_probability_bps": {"type": "integer", "minimum": 0, "maximum": 10000},
+    "posterior_probability_bps": {"type": "integer", "minimum": 0, "maximum": 10000},
+    "prior_generation": {"type": "integer", "minimum": 0},
+    "posterior_generation": {"type": "integer", "minimum": 1},
+    "evidence_state_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "applied_at": {"type": "integer", "minimum": 0},
+    "updater_ref": {"type": "string", "minLength": 1},
+    "update_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}
