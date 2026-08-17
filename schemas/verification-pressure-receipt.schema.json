@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/safal207/ATMAN-LATTICE/schemas/verification-pressure-receipt.schema.json",
+  "title": "VerificationPressureReceipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["policy_hash", "measured_at", "offered_work_hashes", "ranked_work_hashes", "admitted_work_hashes", "deferred_capacity_work_hashes", "deferred_oversized_work_hashes", "capacity_units", "used_units", "pressure_status", "pressure_hash"],
+  "properties": {
+    "policy_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "measured_at": {"type": "integer", "minimum": 0},
+    "offered_work_hashes": {"type": "array", "uniqueItems": true, "items": {"type": "string", "pattern": "^[0-9a-f]{64}$"}},
+    "ranked_work_hashes": {"type": "array", "uniqueItems": true, "items": {"type": "string", "pattern": "^[0-9a-f]{64}$"}},
+    "admitted_work_hashes": {"type": "array", "uniqueItems": true, "items": {"type": "string", "pattern": "^[0-9a-f]{64}$"}},
+    "deferred_capacity_work_hashes": {"type": "array", "uniqueItems": true, "items": {"type": "string", "pattern": "^[0-9a-f]{64}$"}},
+    "deferred_oversized_work_hashes": {"type": "array", "uniqueItems": true, "items": {"type": "string", "pattern": "^[0-9a-f]{64}$"}},
+    "capacity_units": {"type": "integer", "minimum": 0},
+    "used_units": {"type": "integer", "minimum": 0},
+    "pressure_status": {"enum": ["NORMAL", "PRESSURED", "SATURATED"]},
+    "pressure_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}
