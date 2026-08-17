@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/safal207/ATMAN-LATTICE/schemas/search-budgeted-graph-revision.schema.json",
+  "title": "SearchBudgetedGraphRevisionReceipt",
+  "type": "object",
+  "required": ["selection_hash", "review_hash", "candidate_hash", "reservation_hash", "evaluation_hash", "underlying_validation_hash", "underlying_validated_revision_hash", "base_graph_hash", "new_graph_hash", "base_generation", "new_generation", "applier_ref", "applied_at", "revision_hash"],
+  "properties": {
+    "selection_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "review_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "candidate_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "reservation_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "evaluation_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "underlying_validation_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "underlying_validated_revision_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "base_graph_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "new_graph_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "base_generation": {"type": "integer", "minimum": 0},
+    "new_generation": {"type": "integer", "minimum": 1},
+    "applier_ref": {"type": "string", "minLength": 1},
+    "applied_at": {"type": "integer", "minimum": 0},
+    "revision_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  },
+  "additionalProperties": false
+}
