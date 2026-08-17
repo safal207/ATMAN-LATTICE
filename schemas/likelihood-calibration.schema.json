@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/safal207/ATMAN-LATTICE/schemas/likelihood-calibration.schema.json",
+  "title": "ATMAN-LATTICE LikelihoodCalibrationReceipt v1.12",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["target_hash","evidence_hash","resolution_hash","calibration_family_ref","likelihood_model_hash","likelihood_model_ref","resolved_hypothesis_ref","predicted_positive_bps","observed_outcome","scored","brier_score_ppm","dependency_mode","calibrated_at","calibration_hash"],
+  "properties": {
+    "target_hash": {"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "evidence_hash": {"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "resolution_hash": {"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "calibration_family_ref": {"type":"string","minLength":1},
+    "likelihood_model_hash": {"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "likelihood_model_ref": {"type":"string","minLength":1},
+    "resolved_hypothesis_ref": {"type":"string","minLength":1},
+    "predicted_positive_bps": {"type":"integer","minimum":0,"maximum":10000},
+    "observed_outcome": {"enum":["POSITIVE","NEGATIVE","INCONCLUSIVE"]},
+    "scored": {"type":"boolean"},
+    "brier_score_ppm": {"type":["integer","null"],"minimum":0,"maximum":1000000},
+    "dependency_mode": {"enum":["INDEPENDENT","CONDITIONAL","DUPLICATE"]},
+    "calibrated_at": {"type":"integer","minimum":0},
+    "calibration_hash": {"type":"string","pattern":"^[0-9a-f]{64}$"}
+  }
+}
