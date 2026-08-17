@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/safal207/ATMAN-LATTICE/schemas/dependency-graph-revision.schema.json",
+  "title": "DependencyGraphRevisionReceipt",
+  "type": "object",
+  "required": ["proposal_hash", "replay_hash", "review_hash", "base_graph_hash", "new_graph_hash", "base_generation", "new_generation", "applier_ref", "applied_at", "revision_hash"],
+  "properties": {
+    "proposal_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "replay_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "review_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "base_graph_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "new_graph_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "base_generation": {"type": "integer", "minimum": 0},
+    "new_generation": {"type": "integer", "minimum": 1},
+    "applier_ref": {"type": "string", "minLength": 1},
+    "applied_at": {"type": "integer", "minimum": 0},
+    "revision_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  },
+  "additionalProperties": false
+}
