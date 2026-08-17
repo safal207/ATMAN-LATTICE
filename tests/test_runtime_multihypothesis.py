@@ -27,6 +27,7 @@ from model.runtime_multihypothesis import (
     action_register_distribution,
     action_register_multi_model,
     action_register_rule,
+    model_from_dict,
 )
 from model.runtime_protocol import authority_grant_to_dict, authority_proof_to_dict
 from model.runtime_verification import (
@@ -40,10 +41,13 @@ from model.verification_economy import make_economic_candidate
 from model.verification_pressure import make_verification_work
 
 IDENTITY = "agent:multi-runtime"
-MODEL_NOW = 120
-SEMANTICS_NOW = 150
-COMPLETED_AT = 200
-APPLY_NOW = 250
+INIT_AT = 120
+SEM1_AT = 150
+COMPLETE1_AT = 200
+APPLY1_AT = 250
+SEM2_AT = 300
+COMPLETE2_AT = 350
+APPLY2_AT = 400
 
 
 def h(value: str) -> str:
@@ -65,12 +69,7 @@ def authority_fixture():
         subject_ref="multi-keeper",
         subject_key_id="multi-key",
         subject_public_key=actor.public_key(),
-        roles=(
-            ROLE_MULTI_MODEL_KEEPER,
-            ROLE_DEPENDENCY_KEEPER,
-            ROLE_MULTI_RULE_KEEPER,
-            ROLE_MULTI_UPDATE_KEEPER,
-        ),
+        roles=(ROLE_MULTI_MODEL_KEEPER, ROLE_DEPENDENCY_KEEPER, ROLE_MULTI_RULE_KEEPER, ROLE_MULTI_UPDATE_KEEPER),
         scopes=(verification_scope(IDENTITY),),
         policy_generation=12,
         valid_from=100,
@@ -100,30 +99,14 @@ def invoke(request, *, root, db_path, now):
 
 
 def initialize_db(db_path):
-    works = []
-    candidates = []
     conn = sqlite3.connect(db_path)
     conn.execute(
-        """
-        CREATE TABLE verification_work (
-            work_hash TEXT PRIMARY KEY,
-            work_ref TEXT NOT NULL UNIQUE,
-            subject_identity_ref TEXT NOT NULL,
-            target_gate_hash TEXT NOT NULL,
-            work_json TEXT NOT NULL,
-            status TEXT NOT NULL,
-            completion_json TEXT
-        )
-        """
+        "CREATE TABLE verification_work (work_hash TEXT PRIMARY KEY, work_ref TEXT NOT NULL UNIQUE, subject_identity_ref TEXT NOT NULL, target_gate_hash TEXT NOT NULL, work_json TEXT NOT NULL, status TEXT NOT NULL, completion_json TEXT)"
     )
     conn.execute(
-        """
-        CREATE TABLE verification_economy_candidate (
-            work_hash TEXT PRIMARY KEY,
-            candidate_json TEXT NOT NULL
-        )
-        """
+        "CREATE TABLE verification_economy_candidate (work_hash TEXT PRIMARY KEY, candidate_json TEXT NOT NULL)"
     )
+    works, candidates = [], []
     for index, name in enumerate(("a", "b", "c")):
         work = make_verification_work(
             f"work:multi:{name}",
@@ -145,7 +128,7 @@ def initialize_db(db_path):
         )
         conn.execute(
             "INSERT INTO verification_work(work_hash,work_ref,subject_identity_ref,target_gate_hash,work_json,status,completion_json) VALUES(?,?,?,?,?,?,NULL)",
-            (work.work_hash, work.work_ref, IDENTITY, chr(ord("a") + index) * 64, json.dumps(work_to_dict(work)), "SUBMITTED"),
+            (work.work_hash, work.work_ref, IDENTITY, name * 64, json.dumps(work_to_dict(work)), "SUBMITTED"),
         )
         conn.execute(
             "INSERT INTO verification_economy_candidate(work_hash,candidate_json) VALUES(?,?)",
@@ -158,18 +141,17 @@ def initialize_db(db_path):
     return tuple(works), tuple(candidates)
 
 
-def complete_work(db_path, work, *, decision="PASS"):
-    suffix = work.work_ref.rsplit(":", 1)[-1]
-    gate = suffix * 64
+def complete_work(db_path, work, *, completed_at, decision="PASS"):
+    name = work.work_ref.rsplit(":", 1)[-1]
     fields = {
         "work_hash": work.work_hash,
         "subject_identity_ref": IDENTITY,
-        "target_gate_hash": gate,
+        "target_gate_hash": name * 64,
         "schedule_generation": 1,
         "pressure_hash": "d" * 64,
         "decision": decision,
         "evidence_digest": "e" * 64,
-        "completed_at": COMPLETED_AT,
+        "completed_at": completed_at,
         "actor_ref": "verification-executor",
     }
     provisional = VerificationCompletionReceipt(**fields, completion_hash="0" * 64)
@@ -185,7 +167,7 @@ def complete_work(db_path, work, *, decision="PASS"):
     return receipt
 
 
-def distribution_request(*, actor, grant):
+def register_distribution(db_path, *, root, actor, grant):
     dist = make_hypothesis_distribution(
         "dist:root-cause",
         subject_identity_ref=IDENTITY,
@@ -194,365 +176,219 @@ def distribution_request(*, actor, grant):
         generation=1,
     )
     proof = sign_authorized_action(
-        grant,
-        private_key=actor,
-        role=ROLE_MULTI_MODEL_KEEPER,
-        scope=verification_scope(IDENTITY),
-        action=action_register_distribution(dist),
-        signed_at=MODEL_NOW,
+        grant, private_key=actor, role=ROLE_MULTI_MODEL_KEEPER, scope=verification_scope(IDENTITY),
+        action=action_register_distribution(dist), signed_at=INIT_AT,
     )
     request = {
-        "protocol": MULTI_PROTOCOL,
-        "request_id": "distribution",
-        "operation": "register_distribution",
-        "payload": {
-            "distribution_ref": dist.distribution_ref,
-            "subject_identity_ref": dist.subject_identity_ref,
-            "probability_bps": dict(dist.probability_bps),
-            "evidence_state_hash": dist.evidence_state_hash,
-            "generation": dist.generation,
-        },
-        "grant": authority_grant_to_dict(grant),
-        "proof": authority_proof_to_dict(proof),
+        "protocol": MULTI_PROTOCOL, "request_id": "dist", "operation": "register_distribution",
+        "payload": {"distribution_ref": dist.distribution_ref, "subject_identity_ref": IDENTITY, "probability_bps": dict(dist.probability_bps), "evidence_state_hash": dist.evidence_state_hash, "generation": dist.generation},
+        "grant": authority_grant_to_dict(grant), "proof": authority_proof_to_dict(proof),
     }
-    return dist, request
+    completed, response = invoke(request, root=root, db_path=db_path, now=INIT_AT)
+    assert completed.returncode == 0, response
+    return dist
 
 
-def model_request(candidate, dist, *, actor, grant, generation=1, conditioning=(), likelihoods=None):
+def register_model(db_path, candidate, dist, *, root, actor, grant, now, generation, conditioning=(), likelihoods=None):
     likelihoods = likelihoods or {"H:A": 9000, "H:B": 2000, "H:C": 1000}
     model = make_multi_likelihood_model(
         candidate_hash=candidate.candidate_hash,
         distribution=dist,
         positive_likelihood_bps=likelihoods,
         conditioning_evidence_hashes=conditioning,
-        model_ref=f"model:{candidate.work_hash[:8]}",
+        model_ref=f"model:{candidate.candidate_hash[:8]}",
         model_generation=generation,
     )
+    action = action_register_multi_model(model, dist.distribution_ref, IDENTITY)
     proof = sign_authorized_action(
-        grant,
-        private_key=actor,
-        role=ROLE_MULTI_MODEL_KEEPER,
-        scope=verification_scope(IDENTITY),
-        action=action_register_multi_model(model, dist.distribution_ref, IDENTITY),
-        signed_at=MODEL_NOW if generation == 1 else APPLY_NOW,
+        grant, private_key=actor, role=ROLE_MULTI_MODEL_KEEPER, scope=verification_scope(IDENTITY), action=action, signed_at=now,
     )
     request = {
-        "protocol": MULTI_PROTOCOL,
-        "request_id": f"model:{candidate.candidate_hash[:8]}",
-        "operation": "register_multi_likelihood_model",
-        "payload": {
-            "candidate_hash": candidate.candidate_hash,
-            "distribution_ref": dist.distribution_ref,
-            "positive_likelihood_bps": dict(model.positive_likelihood_bps),
-            "conditioning_evidence_hashes": list(conditioning),
-            "model_ref": model.model_ref,
-            "model_generation": generation,
-        },
-        "grant": authority_grant_to_dict(grant),
-        "proof": authority_proof_to_dict(proof),
+        "protocol": MULTI_PROTOCOL, "request_id": "model", "operation": "register_multi_likelihood_model",
+        "payload": {"candidate_hash": candidate.candidate_hash, "distribution_ref": dist.distribution_ref, "positive_likelihood_bps": dict(model.positive_likelihood_bps), "conditioning_evidence_hashes": list(conditioning), "model_ref": model.model_ref, "model_generation": generation},
+        "grant": authority_grant_to_dict(grant), "proof": authority_proof_to_dict(proof),
     }
-    return model, request
+    completed, response = invoke(request, root=root, db_path=db_path, now=now)
+    assert completed.returncode == 0, response
+    return model
 
 
-def dependency_request(candidate, *, actor, grant, source_event_hash, mode="INDEPENDENT", parents=(), generation=1, now=SEMANTICS_NOW):
+def register_dependency(db_path, candidate, *, root, actor, grant, now, source, mode="INDEPENDENT", parents=(), generation=1, role=ROLE_DEPENDENCY_KEEPER):
     dep = make_evidence_dependency(
         candidate_hash=candidate.candidate_hash,
-        source_event_hash=source_event_hash,
-        derivation_hash=h(f"derive:{candidate.candidate_hash}:{generation}"),
+        source_event_hash=source,
+        derivation_hash=h(f"derivation:{candidate.candidate_hash}:{generation}"),
         dependency_group_ref="group:root-cause",
         mode=mode,
         parent_evidence_hashes=parents,
-        declaration_ref=f"dependency:{candidate.candidate_hash[:8]}",
+        declaration_ref=f"dep:{candidate.candidate_hash[:8]}",
         declaration_generation=generation,
         declared_at=now,
     )
     proof = sign_authorized_action(
-        grant,
-        private_key=actor,
-        role=ROLE_DEPENDENCY_KEEPER,
-        scope=verification_scope(IDENTITY),
-        action=action_register_dependency(dep, IDENTITY),
-        signed_at=now,
+        grant, private_key=actor, role=role, scope=verification_scope(IDENTITY),
+        action=action_register_dependency(dep, IDENTITY), signed_at=now,
     )
     request = {
-        "protocol": MULTI_PROTOCOL,
-        "request_id": f"dep:{candidate.candidate_hash[:8]}",
-        "operation": "register_evidence_dependency",
-        "payload": {
-            "candidate_hash": candidate.candidate_hash,
-            "source_event_hash": dep.source_event_hash,
-            "derivation_hash": dep.derivation_hash,
-            "dependency_group_ref": dep.dependency_group_ref,
-            "mode": dep.mode,
-            "parent_evidence_hashes": list(dep.parent_evidence_hashes),
-            "declaration_ref": dep.declaration_ref,
-            "declaration_generation": dep.declaration_generation,
-        },
-        "grant": authority_grant_to_dict(grant),
-        "proof": authority_proof_to_dict(proof),
+        "protocol": MULTI_PROTOCOL, "request_id": "dep", "operation": "register_evidence_dependency",
+        "payload": {"candidate_hash": candidate.candidate_hash, "source_event_hash": dep.source_event_hash, "derivation_hash": dep.derivation_hash, "dependency_group_ref": dep.dependency_group_ref, "mode": dep.mode, "parent_evidence_hashes": list(dep.parent_evidence_hashes), "declaration_ref": dep.declaration_ref, "declaration_generation": generation},
+        "grant": authority_grant_to_dict(grant), "proof": authority_proof_to_dict(proof),
     }
-    return dep, request
+    return invoke(request, root=root, db_path=db_path, now=now)
 
 
-def rule_request(candidate, model, *, actor, grant, generation=1, now=SEMANTICS_NOW):
+def register_rule(db_path, candidate, model, *, root, actor, grant, now, generation=1):
     rule = make_multi_evidence_rule(
         candidate_hash=candidate.candidate_hash,
         likelihood_model_hash=model.model_hash,
-        pass_outcome="POSITIVE",
-        hold_outcome="INCONCLUSIVE",
-        fail_outcome="NEGATIVE",
-        rule_ref=f"rule:{candidate.candidate_hash[:8]}",
-        rule_generation=generation,
-        registered_at=now,
+        pass_outcome="POSITIVE", hold_outcome="INCONCLUSIVE", fail_outcome="NEGATIVE",
+        rule_ref=f"rule:{candidate.candidate_hash[:8]}", rule_generation=generation, registered_at=now,
     )
     proof = sign_authorized_action(
-        grant,
-        private_key=actor,
-        role=ROLE_MULTI_RULE_KEEPER,
-        scope=verification_scope(IDENTITY),
-        action=action_register_rule(rule, IDENTITY),
-        signed_at=now,
+        grant, private_key=actor, role=ROLE_MULTI_RULE_KEEPER, scope=verification_scope(IDENTITY),
+        action=action_register_rule(rule, IDENTITY), signed_at=now,
     )
     request = {
-        "protocol": MULTI_PROTOCOL,
-        "request_id": f"rule:{candidate.candidate_hash[:8]}",
-        "operation": "register_multi_evidence_rule",
-        "payload": {
-            "candidate_hash": candidate.candidate_hash,
-            "pass_outcome": rule.pass_outcome,
-            "hold_outcome": rule.hold_outcome,
-            "fail_outcome": rule.fail_outcome,
-            "rule_ref": rule.rule_ref,
-            "rule_generation": rule.rule_generation,
-        },
-        "grant": authority_grant_to_dict(grant),
-        "proof": authority_proof_to_dict(proof),
+        "protocol": MULTI_PROTOCOL, "request_id": "rule", "operation": "register_multi_evidence_rule",
+        "payload": {"candidate_hash": candidate.candidate_hash, "pass_outcome": "POSITIVE", "hold_outcome": "INCONCLUSIVE", "fail_outcome": "NEGATIVE", "rule_ref": rule.rule_ref, "rule_generation": generation},
+        "grant": authority_grant_to_dict(grant), "proof": authority_proof_to_dict(proof),
     }
-    return rule, request
+    completed, response = invoke(request, root=root, db_path=db_path, now=now)
+    assert completed.returncode == 0, response
 
 
-def preview_request(candidate_hash):
-    return {
-        "protocol": MULTI_PROTOCOL,
-        "request_id": "preview",
-        "operation": "preview_multi_update",
-        "payload": {"candidate_hash": candidate_hash, "updater_ref": "multi-keeper"},
-    }
+def preview(db_path, candidate, *, root, now):
+    request = {"protocol": MULTI_PROTOCOL, "request_id": "preview", "operation": "preview_multi_update", "payload": {"candidate_hash": candidate.candidate_hash, "updater_ref": "multi-keeper"}}
+    return invoke(request, root=root, db_path=db_path, now=now)
 
 
-def apply_request(candidate_hash, preview, *, actor, grant):
-    rebase_hashes = tuple(sorted(item["rebase_hash"] for item in preview.get("rebases", [])))
-    posterior_hash = preview.get("posterior_distribution", {}).get("distribution_hash")
+def apply_preview(db_path, candidate, preview_response, *, root, actor, grant, now):
+    rebase_hashes = tuple(sorted(item["rebase_hash"] for item in preview_response.get("rebases", [])))
+    posterior_hash = preview_response.get("posterior_distribution", {}).get("distribution_hash")
     action = action_apply_multi_update(
-        state_hash=preview["state_hash"],
-        evidence_hash=preview["evidence"]["evidence_hash"],
-        disposition=preview["disposition"],
-        result_hash=preview["result_hash"],
-        posterior_distribution_hash=posterior_hash,
-        rebase_hashes=rebase_hashes,
-        applied_at=APPLY_NOW,
+        state_hash=preview_response["state_hash"], evidence_hash=preview_response["evidence"]["evidence_hash"],
+        disposition=preview_response["disposition"], result_hash=preview_response["result_hash"],
+        posterior_distribution_hash=posterior_hash, rebase_hashes=rebase_hashes, applied_at=now,
     )
     proof = sign_authorized_action(
-        grant,
-        private_key=actor,
-        role=ROLE_MULTI_UPDATE_KEEPER,
-        scope=verification_scope(IDENTITY),
-        action=action,
-        signed_at=APPLY_NOW,
+        grant, private_key=actor, role=ROLE_MULTI_UPDATE_KEEPER, scope=verification_scope(IDENTITY), action=action, signed_at=now,
     )
-    return {
-        "protocol": MULTI_PROTOCOL,
-        "request_id": "apply",
-        "operation": "apply_multi_update",
-        "payload": {
-            "candidate_hash": candidate_hash,
-            "expected_state_hash": preview["state_hash"],
-            "expected_evidence_hash": preview["evidence"]["evidence_hash"],
-            "expected_result_hash": preview["result_hash"],
-        },
-        "grant": authority_grant_to_dict(grant),
-        "proof": authority_proof_to_dict(proof),
+    request = {
+        "protocol": MULTI_PROTOCOL, "request_id": "apply", "operation": "apply_multi_update",
+        "payload": {"candidate_hash": candidate.candidate_hash, "expected_state_hash": preview_response["state_hash"], "expected_evidence_hash": preview_response["evidence"]["evidence_hash"], "expected_result_hash": preview_response["result_hash"]},
+        "grant": authority_grant_to_dict(grant), "proof": authority_proof_to_dict(proof),
     }
+    return invoke(request, root=root, db_path=db_path, now=now)
 
 
-def bootstrap_models(db_path, *, root, actor, grant, candidates):
-    dist, request = distribution_request(actor=actor, grant=grant)
-    completed, response = invoke(request, root=root, db_path=db_path, now=MODEL_NOW)
-    assert completed.returncode == 0, response
-    models = []
-    for candidate in candidates:
-        model, request = model_request(candidate, dist, actor=actor, grant=grant)
-        completed, response = invoke(request, root=root, db_path=db_path, now=MODEL_NOW)
-        assert completed.returncode == 0, response
-        models.append(model)
-    return dist, tuple(models)
+def bootstrap(db_path, *, root, actor, grant, candidates):
+    dist = register_distribution(db_path, root=root, actor=actor, grant=grant)
+    models = tuple(register_model(db_path, c, dist, root=root, actor=actor, grant=grant, now=INIT_AT, generation=1) for c in candidates)
+    return dist, models
 
 
-def accept_independent_a(db_path, works, candidates, *, root, actor, grant):
-    dist, models = bootstrap_models(db_path, root=root, actor=actor, grant=grant, candidates=candidates)
+def accept_first(db_path, works, candidates, *, root, actor, grant):
+    prior, models = bootstrap(db_path, root=root, actor=actor, grant=grant, candidates=candidates)
     source = h("source:event:1")
-    _, request = dependency_request(candidates[0], actor=actor, grant=grant, source_event_hash=source)
-    completed, response = invoke(request, root=root, db_path=db_path, now=SEMANTICS_NOW)
+    completed, response = register_dependency(db_path, candidates[0], root=root, actor=actor, grant=grant, now=SEM1_AT, source=source)
     assert completed.returncode == 0, response
-    _, request = rule_request(candidates[0], models[0], actor=actor, grant=grant)
-    completed, response = invoke(request, root=root, db_path=db_path, now=SEMANTICS_NOW)
-    assert completed.returncode == 0, response
-    complete_work(db_path, works[0], decision="PASS")
-    completed, preview = invoke(preview_request(candidates[0].candidate_hash), root=root, db_path=db_path, now=APPLY_NOW)
-    assert completed.returncode == 0, preview
-    assert preview["disposition"] == "UPDATE"
-    completed, response = invoke(apply_request(candidates[0].candidate_hash, preview, actor=actor, grant=grant), root=root, db_path=db_path, now=APPLY_NOW)
-    assert completed.returncode == 0, response
-    return dist, models, source, response
+    register_rule(db_path, candidates[0], models[0], root=root, actor=actor, grant=grant, now=SEM1_AT)
+    complete_work(db_path, works[0], completed_at=COMPLETE1_AT)
+    completed, p = preview(db_path, candidates[0], root=root, now=APPLY1_AT)
+    assert completed.returncode == 0, p
+    completed, applied = apply_preview(db_path, candidates[0], p, root=root, actor=actor, grant=grant, now=APPLY1_AT)
+    assert completed.returncode == 0, applied
+    return prior, models, source, applied
 
 
-def test_independent_evidence_updates_distribution_and_rebases_cohort_models(tmp_path):
+def current_distribution(db_path):
+    conn = sqlite3.connect(db_path)
+    raw = json.loads(conn.execute("SELECT distribution_json FROM multi_hypothesis_distribution WHERE distribution_ref='dist:root-cause'").fetchone()[0])
+    conn.close()
+    return make_hypothesis_distribution(
+        raw["distribution_ref"], subject_identity_ref=raw["subject_identity_ref"],
+        probability_bps=dict(raw["probability_bps"]), evidence_state_hash=raw["evidence_state_hash"], generation=raw["generation"],
+    )
+
+
+def current_model(db_path, candidate):
+    conn = sqlite3.connect(db_path)
+    raw = json.loads(conn.execute("SELECT model_json FROM multi_likelihood_model WHERE candidate_hash=?", (candidate.candidate_hash,)).fetchone()[0])
+    conn.close()
+    return model_from_dict(raw)
+
+
+def test_independent_update_rebases_shared_multi_models(tmp_path):
     db_path = tmp_path / "runtime.sqlite3"
     works, candidates = initialize_db(db_path)
     root, actor, grant = authority_fixture()
-    prior, models, _, response = accept_independent_a(db_path, works, candidates, root=root, actor=actor, grant=grant)
-    posterior = response["posterior_distribution"]
+    prior, models, _, applied = accept_first(db_path, works, candidates, root=root, actor=actor, grant=grant)
+    posterior = applied["posterior_distribution"]
     assert posterior["generation"] == prior.generation + 1
     assert dict(posterior["probability_bps"])["H:A"] > 4000
-    assert len(response["rebases"]) == 3
-
-    conn = sqlite3.connect(db_path)
-    model_b = json.loads(conn.execute("SELECT model_json FROM multi_likelihood_model WHERE candidate_hash=?", (candidates[1].candidate_hash,)).fetchone()[0])
-    conn.close()
-    assert model_b["distribution_hash"] == posterior["distribution_hash"]
-    assert model_b["model_generation"] == models[1].model_generation + 1
+    assert len(applied["rebases"]) == 3
+    assert current_model(db_path, candidates[1]).model_generation == models[1].model_generation + 1
 
 
-def test_duplicate_source_is_recorded_without_second_posterior_update(tmp_path):
+def test_duplicate_source_is_preserved_without_second_update(tmp_path):
     db_path = tmp_path / "runtime.sqlite3"
     works, candidates = initialize_db(db_path)
     root, actor, grant = authority_fixture()
-    _, _, source, first = accept_independent_a(db_path, works, candidates, root=root, actor=actor, grant=grant)
-    parent_evidence = first["evidence"]["evidence_hash"]
-
-    conn = sqlite3.connect(db_path)
-    current_dist = json.loads(conn.execute("SELECT distribution_json FROM multi_hypothesis_distribution WHERE distribution_ref='dist:root-cause'").fetchone()[0])
-    current_model = json.loads(conn.execute("SELECT model_json FROM multi_likelihood_model WHERE candidate_hash=?", (candidates[1].candidate_hash,)).fetchone()[0])
-    conn.close()
-    _, dep_request = dependency_request(
-        candidates[1], actor=actor, grant=grant, source_event_hash=source, mode="DUPLICATE", parents=(parent_evidence,), now=260
-    )
-    completed, response = invoke(dep_request, root=root, db_path=db_path, now=260)
+    _, _, source, first = accept_first(db_path, works, candidates, root=root, actor=actor, grant=grant)
+    parent = first["evidence"]["evidence_hash"]
+    before = current_distribution(db_path)
+    model_b = current_model(db_path, candidates[1])
+    completed, response = register_dependency(db_path, candidates[1], root=root, actor=actor, grant=grant, now=SEM2_AT, source=source, mode="DUPLICATE", parents=(parent,), generation=2)
     assert completed.returncode == 0, response
-    from model.runtime_multihypothesis import model_from_dict
-    model_b = model_from_dict(current_model)
-    _, req = rule_request(candidates[1], model_b, actor=actor, grant=grant, generation=2, now=260)
-    completed, response = invoke(req, root=root, db_path=db_path, now=260)
-    assert completed.returncode == 0, response
-    complete_work(db_path, works[1], decision="PASS")
-    completed, preview = invoke(preview_request(candidates[1].candidate_hash), root=root, db_path=db_path, now=APPLY_NOW)
-    assert completed.returncode == 0, preview
-    assert preview["disposition"] == "DUPLICATE_NO_UPDATE"
-    completed, response = invoke(apply_request(candidates[1].candidate_hash, preview, actor=actor, grant=grant), root=root, db_path=db_path, now=APPLY_NOW)
-    assert completed.returncode == 0, response
-
-    completed, state = invoke(
-        {"protocol": MULTI_PROTOCOL, "request_id": "state", "operation": "get_multi_state", "payload": {"distribution_ref": "dist:root-cause"}},
-        root=root, db_path=db_path, now=APPLY_NOW,
-    )
-    assert completed.returncode == 0, state
-    assert state["distribution"]["distribution_hash"] == current_dist["distribution_hash"]
+    register_rule(db_path, candidates[1], model_b, root=root, actor=actor, grant=grant, now=SEM2_AT, generation=2)
+    complete_work(db_path, works[1], completed_at=COMPLETE2_AT)
+    completed, p = preview(db_path, candidates[1], root=root, now=APPLY2_AT)
+    assert completed.returncode == 0, p
+    assert p["disposition"] == "DUPLICATE_NO_UPDATE"
+    completed, applied = apply_preview(db_path, candidates[1], p, root=root, actor=actor, grant=grant, now=APPLY2_AT)
+    assert completed.returncode == 0, applied
+    after = current_distribution(db_path)
+    assert after.distribution_hash == before.distribution_hash
+    state_request = {"protocol": MULTI_PROTOCOL, "request_id": "state", "operation": "get_multi_state", "payload": {"distribution_ref": "dist:root-cause"}}
+    _, state = invoke(state_request, root=root, db_path=db_path, now=APPLY2_AT)
     assert state["accepted_evidence_count"] == 1
     assert state["duplicate_evidence_count"] == 1
 
 
-def test_same_source_cannot_be_redeclared_independent_after_it_was_counted(tmp_path):
+def test_counted_source_cannot_be_redeclared_independent_and_dependency_role_is_separate(tmp_path):
     db_path = tmp_path / "runtime.sqlite3"
     works, candidates = initialize_db(db_path)
     root, actor, grant = authority_fixture()
-    _, _, source, _ = accept_independent_a(db_path, works, candidates, root=root, actor=actor, grant=grant)
-    _, request = dependency_request(candidates[1], actor=actor, grant=grant, source_event_hash=source, mode="INDEPENDENT", now=260)
-    completed, response = invoke(request, root=root, db_path=db_path, now=260)
+    _, _, source, _ = accept_first(db_path, works, candidates, root=root, actor=actor, grant=grant)
+    completed, response = register_dependency(db_path, candidates[1], root=root, actor=actor, grant=grant, now=SEM2_AT, source=source)
     assert completed.returncode == 2
     assert "already counted" in response["error"]
+    completed, response = register_dependency(db_path, candidates[2], root=root, actor=actor, grant=grant, now=SEM2_AT, source=h("fresh-source"), role=ROLE_MULTI_MODEL_KEEPER)
+    assert completed.returncode == 2
+    assert "required_role_mismatch" in response["error"]
 
 
-def test_conditional_evidence_requires_parent_bound_likelihood_and_can_update(tmp_path):
+def test_conditional_update_uses_exact_parent_bound_likelihood(tmp_path):
     db_path = tmp_path / "runtime.sqlite3"
     works, candidates = initialize_db(db_path)
     root, actor, grant = authority_fixture()
-    _, _, _, first = accept_independent_a(db_path, works, candidates, root=root, actor=actor, grant=grant)
+    _, _, _, first = accept_first(db_path, works, candidates, root=root, actor=actor, grant=grant)
     parent = first["evidence"]["evidence_hash"]
-
-    completed, state = invoke(
-        {"protocol": MULTI_PROTOCOL, "request_id": "state", "operation": "get_multi_state", "payload": {"distribution_ref": "dist:root-cause"}},
-        root=root, db_path=db_path, now=260,
+    dist = current_distribution(db_path)
+    conditional = register_model(
+        db_path, candidates[2], dist, root=root, actor=actor, grant=grant, now=SEM2_AT, generation=3,
+        conditioning=(parent,), likelihoods={"H:A": 6000, "H:B": 9000, "H:C": 2000},
     )
-    assert completed.returncode == 0, state
-    dist = make_hypothesis_distribution(
-        state["distribution"]["distribution_ref"],
-        subject_identity_ref=state["distribution"]["subject_identity_ref"],
-        probability_bps=dict(state["distribution"]["probability_bps"]),
-        evidence_state_hash=state["distribution"]["evidence_state_hash"],
-        generation=state["distribution"]["generation"],
+    completed, response = register_dependency(
+        db_path, candidates[2], root=root, actor=actor, grant=grant, now=SEM2_AT,
+        source=h("source:event:2"), mode="CONDITIONAL", parents=(parent,), generation=2,
     )
-    conditional_model, request = model_request(
-        candidates[2], dist, actor=actor, grant=grant, generation=3, conditioning=(parent,), likelihoods={"H:A": 6000, "H:B": 9000, "H:C": 2000}
-    )
-    completed, response = invoke(request, root=root, db_path=db_path, now=260)
     assert completed.returncode == 0, response
-    _, request = dependency_request(
-        candidates[2], actor=actor, grant=grant, source_event_hash=h("source:event:2"), mode="CONDITIONAL", parents=(parent,), generation=2, now=260
-    )
-    completed, response = invoke(request, root=root, db_path=db_path, now=260)
-    assert completed.returncode == 0, response
-    _, request = rule_request(candidates[2], conditional_model, actor=actor, grant=grant, generation=2, now=260)
-    completed, response = invoke(request, root=root, db_path=db_path, now=260)
-    assert completed.returncode == 0, response
-    complete_work(db_path, works[2], decision="PASS")
-    completed, preview = invoke(preview_request(candidates[2].candidate_hash), root=root, db_path=db_path, now=APPLY_NOW)
-    assert completed.returncode == 0, preview
-    assert preview["disposition"] == "UPDATE"
-    completed, response = invoke(apply_request(candidates[2].candidate_hash, preview, actor=actor, grant=grant), root=root, db_path=db_path, now=APPLY_NOW)
-    assert completed.returncode == 0, response
-    assert response["posterior_distribution"]["generation"] == dist.generation + 1
-
-
-def test_dependency_keeper_role_is_not_replaceable_by_model_role(tmp_path):
-    db_path = tmp_path / "runtime.sqlite3"
-    _, candidates = initialize_db(db_path)
-    root, actor, grant = authority_fixture()
-    dist, models = bootstrap_models(db_path, root=root, actor=actor, grant=grant, candidates=candidates)
-    dep = make_evidence_dependency(
-        candidate_hash=candidates[0].candidate_hash,
-        source_event_hash=h("role-source"),
-        derivation_hash=h("role-derivation"),
-        dependency_group_ref="group:root-cause",
-        mode="INDEPENDENT",
-        declaration_ref="dependency:role",
-        declaration_generation=1,
-        declared_at=SEMANTICS_NOW,
-    )
-    wrong_proof = sign_authorized_action(
-        grant,
-        private_key=actor,
-        role=ROLE_MULTI_MODEL_KEEPER,
-        scope=verification_scope(IDENTITY),
-        action=action_register_dependency(dep, IDENTITY),
-        signed_at=SEMANTICS_NOW,
-    )
-    request = {
-        "protocol": MULTI_PROTOCOL,
-        "request_id": "wrong-role",
-        "operation": "register_evidence_dependency",
-        "payload": {
-            "candidate_hash": candidates[0].candidate_hash,
-            "source_event_hash": dep.source_event_hash,
-            "derivation_hash": dep.derivation_hash,
-            "dependency_group_ref": dep.dependency_group_ref,
-            "mode": dep.mode,
-            "parent_evidence_hashes": [],
-            "declaration_ref": dep.declaration_ref,
-            "declaration_generation": dep.declaration_generation,
-        },
-        "grant": authority_grant_to_dict(grant),
-        "proof": authority_proof_to_dict(wrong_proof),
-    }
-    completed, response = invoke(request, root=root, db_path=db_path, now=SEMANTICS_NOW)
-    assert completed.returncode == 2
-    assert "required_role_mismatch" in response["error"]
+    register_rule(db_path, candidates[2], conditional, root=root, actor=actor, grant=grant, now=SEM2_AT, generation=2)
+    complete_work(db_path, works[2], completed_at=COMPLETE2_AT)
+    completed, p = preview(db_path, candidates[2], root=root, now=APPLY2_AT)
+    assert completed.returncode == 0, p
+    assert p["disposition"] == "UPDATE"
+    completed, applied = apply_preview(db_path, candidates[2], p, root=root, actor=actor, grant=grant, now=APPLY2_AT)
+    assert completed.returncode == 0, applied
+    assert applied["posterior_distribution"]["generation"] == dist.generation + 1
