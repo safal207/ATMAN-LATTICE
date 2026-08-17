@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://atman-lattice.local/schemas/verification-cost-observation.schema.json",
+  "title": "Verification Cost Observation Receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["work_hash", "completion_hash", "estimator_key", "observed_cost_units", "measured_at", "meter_ref", "observation_hash"],
+  "properties": {
+    "work_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "completion_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "estimator_key": {"type": "string", "minLength": 1},
+    "observed_cost_units": {"type": "integer", "minimum": 1},
+    "measured_at": {"type": "integer", "minimum": 0},
+    "meter_ref": {"type": "string", "minLength": 1},
+    "observation_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}
