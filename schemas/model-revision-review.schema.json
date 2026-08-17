@@ -1,0 +1,18 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"https://github.com/safal207/ATMAN-LATTICE/schemas/model-revision-review.schema.json",
+  "title":"ModelRevisionReviewReceipt v1.13",
+  "type":"object",
+  "additionalProperties":false,
+  "required":["proposal_hash","replay_hash","decision","rationale_ref","proposer_ref","reviewer_ref","reviewed_at","review_hash"],
+  "properties":{
+    "proposal_hash":{"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "replay_hash":{"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "decision":{"type":"string","enum":["APPROVE","HOLD","REJECT"]},
+    "rationale_ref":{"type":"string","minLength":1},
+    "proposer_ref":{"type":"string","minLength":1},
+    "reviewer_ref":{"type":"string","minLength":1},
+    "reviewed_at":{"type":"integer","minimum":0},
+    "review_hash":{"type":"string","pattern":"^[0-9a-f]{64}$"}
+  }
+}
