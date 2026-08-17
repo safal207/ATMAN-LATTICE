@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/safal207/ATMAN-LATTICE/schemas/heldout-search-budget-policy.schema.json",
+  "title": "HeldOutSearchBudgetPolicy",
+  "type": "object",
+  "required": ["policy_ref", "subject_identity_ref", "max_unique_evaluations", "base_min_regularized_improvement_ppm", "multiplicity_penalty_ppm", "registered_at", "policy_hash"],
+  "properties": {
+    "policy_ref": {"type": "string", "minLength": 1},
+    "subject_identity_ref": {"type": "string", "minLength": 1},
+    "max_unique_evaluations": {"type": "integer", "minimum": 1},
+    "base_min_regularized_improvement_ppm": {"type": "integer", "minimum": 0},
+    "multiplicity_penalty_ppm": {"type": "integer", "minimum": 0},
+    "registered_at": {"type": "integer", "minimum": 0},
+    "policy_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  },
+  "additionalProperties": false
+}
