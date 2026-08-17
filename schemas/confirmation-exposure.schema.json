@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/safal207/ATMAN-LATTICE/schemas/confirmation-exposure.schema.json",
+  "title": "ConfirmationExposureReceipt",
+  "type": "object",
+  "required": ["selection_hash", "candidate_hash", "search_review_hash", "batch_hash", "confirmation_policy_hash", "search_history_hash", "base_graph_hash", "proposer_ref", "selector_ref", "batch_keeper_ref", "exposure_keeper_ref", "authorized_at", "exposure_hash"],
+  "properties": {
+    "selection_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "candidate_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "search_review_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "batch_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "confirmation_policy_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "search_history_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "base_graph_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "proposer_ref": {"type": "string", "minLength": 1},
+    "selector_ref": {"type": "string", "minLength": 1},
+    "batch_keeper_ref": {"type": "string", "minLength": 1},
+    "exposure_keeper_ref": {"type": "string", "minLength": 1},
+    "authorized_at": {"type": "integer", "minimum": 0},
+    "exposure_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  },
+  "additionalProperties": false
+}
