@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/safal207/ATMAN-LATTICE/schemas/evidence-interpretation-receipt.schema.json",
+  "title": "ATMAN-LATTICE EvidenceInterpretationReceipt v1.10",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["candidate_hash", "work_hash", "completion_hash", "completion_decision", "prior_hypothesis_hash", "likelihood_model_hash", "rule_hash", "outcome", "interpreted_at", "interpretation_hash"],
+  "properties": {
+    "candidate_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "work_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "completion_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "completion_decision": {"enum": ["PASS", "HOLD", "FAIL"]},
+    "prior_hypothesis_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "likelihood_model_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "rule_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "outcome": {"enum": ["POSITIVE", "NEGATIVE", "INCONCLUSIVE"]},
+    "interpreted_at": {"type": "integer", "minimum": 0},
+    "interpretation_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}
