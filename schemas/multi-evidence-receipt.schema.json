@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/safal207/ATMAN-LATTICE/schemas/multi-evidence-receipt.schema.json",
+  "title": "ATMAN-LATTICE MultiEvidenceReceipt v1.11",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["candidate_hash", "work_hash", "completion_hash", "completion_decision", "prior_distribution_hash", "likelihood_model_hash", "dependency_hash", "rule_hash", "source_event_hash", "derivation_hash", "dependency_group_ref", "dependency_mode", "parent_evidence_hashes", "outcome", "interpreted_at", "evidence_hash"],
+  "properties": {
+    "candidate_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "work_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "completion_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "completion_decision": {"enum": ["PASS", "HOLD", "FAIL"]},
+    "prior_distribution_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "likelihood_model_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "dependency_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "rule_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "source_event_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "derivation_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "dependency_group_ref": {"type": "string", "minLength": 1},
+    "dependency_mode": {"enum": ["INDEPENDENT", "CONDITIONAL", "DUPLICATE"]},
+    "parent_evidence_hashes": {"type": "array", "items": {"type": "string", "pattern": "^[0-9a-f]{64}$"}, "uniqueItems": true},
+    "outcome": {"enum": ["POSITIVE", "NEGATIVE", "INCONCLUSIVE"]},
+    "interpreted_at": {"type": "integer", "minimum": 0},
+    "evidence_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}
