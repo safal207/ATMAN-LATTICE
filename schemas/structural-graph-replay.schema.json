@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/safal207/ATMAN-LATTICE/schemas/structural-graph-replay.schema.json",
+  "title": "StructuralGraphReplayReceipt",
+  "type": "object",
+  "required": ["proposal_hash", "sample_hashes", "case_hashes", "scored_case_count", "min_cases", "status", "replayed_at", "replay_hash"],
+  "properties": {
+    "proposal_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "sample_hashes": {"type": "array", "items": {"type": "string", "pattern": "^[0-9a-f]{64}$"}},
+    "case_hashes": {"type": "array", "items": {"type": "string", "pattern": "^[0-9a-f]{64}$"}},
+    "scored_case_count": {"type": "integer", "minimum": 0},
+    "min_cases": {"type": "integer", "minimum": 2},
+    "base_mean_brier_ppm": {"type": ["integer", "null"], "minimum": 0},
+    "proposed_mean_brier_ppm": {"type": ["integer", "null"], "minimum": 0},
+    "improvement_ppm": {"type": ["integer", "null"]},
+    "status": {"enum": ["INSUFFICIENT_REPLAY", "STRUCTURE_IMPROVED", "NO_STRUCTURE_IMPROVEMENT"]},
+    "replayed_at": {"type": "integer", "minimum": 0},
+    "replay_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  },
+  "additionalProperties": false
+}
