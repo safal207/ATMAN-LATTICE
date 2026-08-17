@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/safal207/ATMAN-LATTICE/schemas/dependency-calibration-snapshot.schema.json",
+  "title": "ATMAN-LATTICE DependencyCalibrationSnapshot v1.12",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["pair_key","declared_mode","sample_count","left_positive_count","right_positive_count","both_positive_count","independence_gap_bps","min_samples","dependency_threshold_bps","assessment","measured_at","snapshot_hash"],
+  "properties": {
+    "pair_key": {"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "declared_mode": {"enum":["INDEPENDENT","CONDITIONAL"]},
+    "sample_count": {"type":"integer","minimum":0},
+    "left_positive_count": {"type":"integer","minimum":0},
+    "right_positive_count": {"type":"integer","minimum":0},
+    "both_positive_count": {"type":"integer","minimum":0},
+    "independence_gap_bps": {"type":"integer","minimum":-10000,"maximum":10000},
+    "min_samples": {"type":"integer","minimum":1},
+    "dependency_threshold_bps": {"type":"integer","minimum":0,"maximum":10000},
+    "assessment": {"enum":["INSUFFICIENT_SAMPLES","INDEPENDENCE_CHALLENGED","NO_DEPENDENCY_SIGNAL","CONDITIONAL_DEPENDENCY_SUPPORTED","CONDITIONAL_DEPENDENCY_NOT_OBSERVED"]},
+    "measured_at": {"type":"integer","minimum":0},
+    "snapshot_hash": {"type":"string","pattern":"^[0-9a-f]{64}$"}
+  }
+}
