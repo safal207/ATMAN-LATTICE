@@ -10,6 +10,7 @@ from model.runtime_verification import (
     make_capacity_policy_from_env,
 )
 from model.runtime_worker import _server_enforcement
+from model.verification_keeper import FINALIZE_OPERATION, execute_finalization_request
 
 
 def main() -> int:
@@ -22,12 +23,20 @@ def main() -> int:
         db_path = os.environ.get("ATMAN_RUNTIME_DB")
         if not db_path:
             raise ValueError("ATMAN-VERIFY/1.7 requires ATMAN_RUNTIME_DB")
-        response = execute_verification_request(
-            request,
-            enforcement=_server_enforcement(),
-            db_path=db_path,
-            policy=make_capacity_policy_from_env(),
-        )
+        enforcement = _server_enforcement()
+        if request.get("operation") == FINALIZE_OPERATION:
+            response = execute_finalization_request(
+                request,
+                enforcement=enforcement,
+                db_path=db_path,
+            )
+        else:
+            response = execute_verification_request(
+                request,
+                enforcement=enforcement,
+                db_path=db_path,
+                policy=make_capacity_policy_from_env(),
+            )
         sys.stdout.write(json.dumps(response, sort_keys=True, separators=(",", ":")))
         return 0
     except Exception as exc:
