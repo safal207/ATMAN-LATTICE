@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/safal207/ATMAN-LATTICE/schemas/verification-work-item.schema.json",
+  "title": "VerificationWorkItem",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["work_ref", "subject_identity_ref", "evidence_digest", "cost_units", "priority", "submitted_at", "work_hash"],
+  "properties": {
+    "work_ref": {"type": "string", "minLength": 1},
+    "subject_identity_ref": {"type": "string", "minLength": 1},
+    "evidence_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "cost_units": {"type": "integer", "minimum": 1},
+    "priority": {"type": "integer", "minimum": 0},
+    "submitted_at": {"type": "integer", "minimum": 0},
+    "work_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}
