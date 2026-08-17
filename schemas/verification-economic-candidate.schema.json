@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://atman-lattice.local/schemas/verification-economic-candidate.schema.json",
+  "title": "Economic Verification Candidate",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["work_hash", "subject_identity_ref", "estimator_key", "declared_cost_units", "value_units", "risk_units", "priority", "submitted_at", "candidate_hash"],
+  "properties": {
+    "work_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "subject_identity_ref": {"type": "string", "minLength": 1},
+    "estimator_key": {"type": "string", "minLength": 1},
+    "declared_cost_units": {"type": "integer", "minimum": 1},
+    "value_units": {"type": "integer", "minimum": 0},
+    "risk_units": {"type": "integer", "minimum": 0},
+    "priority": {"type": "integer", "minimum": 0},
+    "submitted_at": {"type": "integer", "minimum": 0},
+    "candidate_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}
