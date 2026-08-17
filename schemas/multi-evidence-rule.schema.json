@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/safal207/ATMAN-LATTICE/schemas/multi-evidence-rule.schema.json",
+  "title": "ATMAN-LATTICE MultiEvidenceRule v1.11",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["candidate_hash", "likelihood_model_hash", "pass_outcome", "hold_outcome", "fail_outcome", "rule_ref", "rule_generation", "registered_at", "rule_hash"],
+  "properties": {
+    "candidate_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "likelihood_model_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "pass_outcome": {"enum": ["POSITIVE", "NEGATIVE", "INCONCLUSIVE"]},
+    "hold_outcome": {"enum": ["POSITIVE", "NEGATIVE", "INCONCLUSIVE"]},
+    "fail_outcome": {"enum": ["POSITIVE", "NEGATIVE", "INCONCLUSIVE"]},
+    "rule_ref": {"type": "string", "minLength": 1},
+    "rule_generation": {"type": "integer", "minimum": 0},
+    "registered_at": {"type": "integer", "minimum": 0},
+    "rule_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}
