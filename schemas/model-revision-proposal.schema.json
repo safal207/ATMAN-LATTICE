@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/safal207/ATMAN-LATTICE/schemas/model-revision-proposal.schema.json",
+  "title": "ATMAN-LATTICE ModelRevisionProposal v1.13",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["proposal_ref","candidate_hash","subject_identity_ref","calibration_family_ref","calibration_snapshot_hash","base_distribution_hash","base_model_hash","model_ref","base_model_generation","proposed_model_generation","proposed_positive_likelihood_bps","conditioning_evidence_hashes","reason_ref","proposer_ref","proposed_at","proposal_hash"],
+  "properties": {
+    "proposal_ref": {"type":"string","minLength":1},
+    "candidate_hash": {"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "subject_identity_ref": {"type":"string","minLength":1},
+    "calibration_family_ref": {"type":"string","minLength":1},
+    "calibration_snapshot_hash": {"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "base_distribution_hash": {"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "base_model_hash": {"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "model_ref": {"type":"string","minLength":1},
+    "base_model_generation": {"type":"integer","minimum":0},
+    "proposed_model_generation": {"type":"integer","minimum":1},
+    "proposed_positive_likelihood_bps": {"type":"array","minItems":2,"items":{"type":"array","prefixItems":[{"type":"string","minLength":1},{"type":"integer","minimum":0,"maximum":10000}],"items":false}},
+    "conditioning_evidence_hashes": {"type":"array","uniqueItems":true,"items":{"type":"string","pattern":"^[0-9a-f]{64}$"}},
+    "reason_ref": {"type":"string","minLength":1},
+    "proposer_ref": {"type":"string","minLength":1},
+    "proposed_at": {"type":"integer","minimum":0},
+    "proposal_hash": {"type":"string","pattern":"^[0-9a-f]{64}$"}
+  }
+}
