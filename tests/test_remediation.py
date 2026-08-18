@@ -134,8 +134,9 @@ def proposal(action="SAFE_ROLLBACK", *, improvement=-100_000, drift_kind="BOTH",
 
 def test_persistent_drift_is_required_for_remediation():
     base, current, t, latest, snap, p, _ = proposal("HOLD")
-    stale = replace(snap, signal="DRIFT_OBSERVED")
+    stale = replace(snap, persistent_drift_epochs=3, signal="DRIFT_OBSERVED")
     stale = replace(stale, snapshot_hash=replication_digest(stale.material()))
+    stale.validate()
     with pytest.raises(ValueError, match="PERSISTENT_DRIFT_SIGNAL"):
         make_remediation_proposal(proposal_ref="proposal:nope", target=t, snapshot=stale, latest_evaluation=latest, current_graph=current, rollback_graph=base, policy=p, action="HOLD", reason_ref="too-early", proposer_ref="proposer", proposed_at=410)
 
