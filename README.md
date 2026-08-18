@@ -1,10 +1,10 @@
 # ATMAN-LATTICE
 
-**A Projective Spacetime Architecture for Identity, Authority, Verification, Active Learning, Calibration, Governed Revision, Structural Evidence Graphs, Finite Search, Protected Confirmation, Replication Drift, and Coherence**
+**A Projective Spacetime Architecture for Identity, Authority, Verification, Active Learning, Calibration, Governed Revision, Structural Evidence Graphs, Finite Search, Protected Confirmation, Replication Drift, Remediation, and Coherence**
 
-ATMAN-LATTICE is an exploratory research repository for modeling identity across state, space, time, lineage, branching, reconciliation, authorization, transition geometry, finite verification capacity, evidence-bound learning, competing hypotheses, correlated-evidence provenance, observer calibration, governed parameter and structural revision, held-out validation, finite model search, protected one-shot confirmation, and temporal/external replication monitoring.
+ATMAN-LATTICE is an exploratory research repository for modeling identity across state, space, time, lineage, branching, reconciliation, authorization, transition geometry, finite verification capacity, evidence-bound learning, competing hypotheses, correlated-evidence provenance, observer calibration, governed model revision, held-out validation, finite model search, protected confirmation, temporal/external replication, drift monitoring, and governed recovery.
 
-> What must remain invariant when an observer can search, confirm, deploy a model, and then discover that time or environment may have changed underneath a previously valid conclusion?
+> What must remain invariant when an observer can discover that a once-confirmed model has drifted — and must decide what to do without erasing the fact that the model was once supported?
 
 The repository does **not** claim to prove metaphysical statements about the soul, consciousness, Atman, quantum worlds, physical multiverses, physical torsion fields, or real-world causal structure. These are conceptual labels and thought experiments inside a formal engineering model.
 
@@ -37,23 +37,21 @@ multi-hypothesis + correlated evidence
           ↓
 observer calibration
           ↓
-governed parameter revision
+governed parameter / graph revision
           ↓
-governed dependency-graph revision
-          ↓
-selection-only replay
-          ↓
-held-out structural validation
+held-out validation + complexity regularization
           ↓
 finite multiple-comparison search budget
           ↓
-protected fresh confirmation
+protected provenance-fresh confirmation
           ↓
 confirmed graph revision
           ↓
-TEMPORAL / EXTERNAL REPLICATION
+temporal / external replication
           ↓
-replication review + drift series
+PERSISTENT_DRIFT_SIGNAL
+          ↓
+GOVERNED REMEDIATION
 ```
 
 ## Accumulated executable warnings
@@ -97,7 +95,6 @@ OneHeldOutSet != InfiniteSelectionBudget
 RepeatedEvaluation != FreshEvidence
 SearchMultiplicity != Knowledge
 NewSplit != FreshEvidence
-RepartitionedOldData != FreshHoldout
 SearchHoldout != ConfirmationHoldout
 CONFIRMED != ProvenCausality
 Confirmation != Truth
@@ -108,230 +105,163 @@ Confirmed_t != Confirmed_t+1
 DifferentSourceRef != ProvenIndependence
 Replication != Retraining
 DriftSignal != RollbackAuthority
-REPLICATED != UniversalValidity
+PersistentDrift != AutomaticRollback
+Drift != EvidenceForRollback
+RemediationApproval != RevisionApproval
+ForwardRollback != HistoryRewrite
+RecoveryChoice != ErasureOfFormerValidity
 ```
 
-# v1.18 — Temporal / External Replication & Confirmation Drift
+# v1.19 — Drift-Governed Remediation / Safe Rollback
 
-v1.18 adds a monitoring plane **after** a graph has passed v1.17 protected confirmation and has been applied.
+v1.18 deliberately stops at `PERSISTENT_DRIFT_SIGNAL`. v1.19 turns that signal into a governed decision surface rather than an automatic mutation.
 
 ```text
-v1.17 CONFIRMED graph revision
-        ↓
-ReplicationTargetReceipt
-        ↓
-   ┌────┴───────────────┐
-   │                    │
-TEMPORAL             EXTERNAL
-   │                    │
-   └────────┬───────────┘
-            ↓
-   TEMPORAL_EXTERNAL
-            ↓
-fresh replication batch
-            ↓
-frozen-model scoring
-            ↓
-REPLICATED / DRIFT_SIGNAL
-            ↓
-independent review
-            ↓
-replication series
-            ↓
 PERSISTENT_DRIFT_SIGNAL
+        ↓
+┌───────────────┬───────────────────┬────────────────────┬─────────────────────┬───────────────┐
+│               │                   │                    │                     │
+HOLD       COLLECT_MORE_DATA   PARAMETER_REVISION   STRUCTURAL_REVISION   SAFE_ROLLBACK
+│               │                   │                    │                     │
+└───────────────┴───────────────────┴────────────────────┴─────────────────────┴───────────────┘
+                                        ↓
+                              independent assessment
+                                        ↓
+                              complete-set selection
+                                        ↓
+                                independent review
+                                        ↓
+                                   fresh apply
 ```
 
-## One confirmation is not permanent generalization
-
-v1.17 answers:
-
-> Did this selected structure generalize to one protected provenance-fresh final confirmation batch?
-
-v1.18 asks:
-
-> Does the **same frozen confirmed structure** continue to generalize later, elsewhere, or both?
+## Persistent drift is not rollback authority
 
 ```text
-OneConfirmation != PermanentGeneralization
-Confirmed_t != Confirmed_t+1
+PersistentDriftSignal != RemediationDecision
+PersistentDrift != AutomaticRollback
 ```
 
-A replication target binds the exact historical baseline:
+Every remediation proposal binds the exact current:
 
 ```text
-v1.17 confirmed revision hash
-candidate hash
-confirmed graph hash + generation
-confirmation evaluation + review
-confirmation batch + source
-baseline confirmed-model Brier score
-baseline regularized structural improvement
+replication target
+persistent-drift snapshot
+latest replication evaluation
+confirmed revision
+current graph hash + generation
+pre-confirmation graph hash + generation
 ```
 
-The baseline is immutable.
+New replication evidence stales the old remediation snapshot.
 
-## Three replication modes
+## Five explicit recovery paths
+
+### HOLD
+
+Preserve the current model while recording a deliberate governed non-mutation.
+
+### COLLECT_MORE_DATA
+
+Keep the model unchanged and ask the replication plane for more evidence.
+
+### PARAMETER_REVISION
+
+Emit `DOWNSTREAM_GOVERNANCE_REQUIRED` and route to:
 
 ```text
-TEMPORAL
-EXTERNAL
-TEMPORAL_EXTERNAL
+ATMAN-REVISION/1.13
 ```
 
-### Temporal
+### STRUCTURAL_REVISION
 
-Temporal replication enforces:
+Emit `DOWNSTREAM_GOVERNANCE_REQUIRED` and route to:
 
 ```text
-collected_from - confirmation_evaluated_at >= min_temporal_gap
+ATMAN-GRAPH/1.14
 ```
 
-and later replication generations form a strict lineage with non-overlapping collection windows:
+### SAFE_ROLLBACK
+
+Available only after a separate rollback assessment. In the strict reference policy the latest replication comparison must show:
 
 ```text
-R0 -> R1 -> R2 -> ...
-```
-
-### External
-
-`EXTERNAL` and `TEMPORAL_EXTERNAL` require a `source_ref` different from the source used by the original v1.17 confirmation batch.
-
-That prevents an internal rerun from being labeled external.
-
-It does **not** prove that the sources are genuinely independent in every scientific or institutional sense:
-
-```text
-DifferentSourceRef != ProvenIndependence
-ExternalReplication != OntologicalIndependence
-```
-
-## Freshness remains provenance-based
-
-Replication evidence must be disjoint from:
-
-```text
-search / discovery history
-v1.17 confirmation batches
-prior replication batches
-```
-
-using exact:
-
-```text
-sample_hash
-resolution_hash
-left_evidence_hash
-right_evidence_hash
+regularized_improvement(current confirmed graph over pre-confirmation base) <= 0
 ```
 
 Therefore:
 
 ```text
-NewSampleHash != FreshProvenance
-NewDerivation != NewEvidenceSource
-ReusedResolution != Replication
+Drift != EvidenceForRollback
+PerformanceDrift != RollbackJustification
 ```
 
-## Replication does not retrain
+A model may have degraded relative to its old performance while still outperforming its base graph; that does not justify rollback.
 
-The selected structure is evaluated using the original frozen candidate selection/training samples.
+## Rollback moves forward
 
-Replication data is **score-only**.
+v1.19 does not rewind history:
 
 ```text
-Replication != Retraining
-ReplicationData != TrainingData
+Graph N-1
+   ↓ v1.17 confirmed revision
+Graph N
+   ↓ later persistent drift
+Graph N+1  ← topology(Graph N-1) + new remediation evidence
 ```
 
-This keeps drift observable instead of immediately fitting it away.
-
-## Drift has two dimensions
-
-### Structural drift
-
-The confirmed graph no longer beats its original base graph by more than the configured threshold.
-
-### Performance drift
-
-The confirmed model's Brier score degrades beyond the allowed amount relative to its original v1.17 confirmation baseline.
-
-`drift_kind` is explicit:
+`Graph N+1` is a new state, not a resurrection of `Graph N-1`.
 
 ```text
-NONE
-STRUCTURAL
-PERFORMANCE
-BOTH
+ForwardRollback != HistoryRewrite
+RecoveryChoice != ErasureOfFormerValidity
 ```
 
-and evaluation status is:
+The execution receipt preserves both the former confirmed graph and the rollback-source graph.
+
+## Competing recovery choices are preserved
+
+Multiple remediation proposals may coexist for one exact snapshot. Before selection, the runtime requires one independent assessment for every current proposal. The selection receipt binds the complete current proposal/assessment set.
+
+If another proposal appears after selection, or v1.18 receives another replication epoch, the old recovery choice becomes stale.
 
 ```text
-INSUFFICIENT_REPLICATION
-REPLICATED
-DRIFT_SIGNAL
+OldRecoveryChoice != CurrentRecoveryAuthority
 ```
 
-A drift signal is monitoring evidence only:
+One exact persistent-drift snapshot gets at most one remediation execution.
+
+## Existing governance cannot be bypassed
+
+Choosing parameter or structural revision does not directly rewrite a model.
 
 ```text
-DriftSignal != ModelFalsehood
-DriftSignal != DriftCause
-DriftSignal != RollbackAuthority
+RemediationApproval != ParameterRevisionApproval
+RemediationApproval != StructuralRevisionApproval
 ```
 
-No v1.18 role can mutate the dependency graph.
-
-## Persistent drift
-
-Acknowledged replication epochs can be summarized into `ReplicationSeriesSnapshot`.
-
-When:
-
-```text
-consecutive_drift_count >= persistent_drift_epochs
-```
-
-the snapshot emits:
-
-```text
-PERSISTENT_DRIFT_SIGNAL
-```
-
-This remains a governance input rather than an automatic rollback.
-
-## Current-model binding
-
-The runtime evaluates a replication target only while its `confirmed_graph_hash` still matches the current graph.
-
-After a newer governed graph revision, the old target remains historical evidence but no longer describes current model status.
-
-```text
-HistoricalReplicationTarget != CurrentModelStatus
-OldConfirmedGraph != CurrentReplicationAuthority
-```
+Those paths must still satisfy the existing v1.13 or v1.14 proposal/replay/review/apply contracts.
 
 ## Authority separation
 
-v1.18 adds:
+v1.19 adds:
 
 ```text
-REPLICATION_POLICY_KEEPER
-REPLICATION_TARGET_KEEPER
-REPLICATION_BATCH_KEEPER
-REPLICATION_EVALUATOR
-REPLICATION_REVIEWER
-REPLICATION_MONITOR_KEEPER
+REMEDIATION_POLICY_KEEPER
+REMEDIATION_PROPOSER
+REMEDIATION_ASSESSOR
+REMEDIATION_SELECTOR
+REMEDIATION_REVIEWER
+REMEDIATION_APPLIER
 ```
 
-Important separations include:
+Core separations:
 
 ```text
-replication batch keeper != candidate proposer
-replication batch keeper != original confirmation evaluator
-replication evaluator != batch keeper / candidate proposer / original confirmation evaluator
-replication reviewer != batch keeper / evaluator
-monitoring authority != mutation authority
+proposer != assessor
+latest replication evaluator != assessor
+selected proposer / assessor != selector
+proposer / assessor / selector != reviewer
+proposer / assessor / selector / reviewer != applier
 ```
 
 ## Runtime
@@ -339,39 +269,50 @@ monitoring authority != mutation authority
 Worker:
 
 ```bash
-python -m model.replication_worker
+python -m model.remediation_worker
 ```
 
 Protocol:
 
 ```text
-ATMAN-REPLICATE/1.18
+ATMAN-REMEDIATE/1.19
 ```
 
 Operations:
 
 ```text
-register_replication_policy
-register_replication_target
-seal_replication_batch
-evaluate_replication
-record_replication_review
-finalize_replication_snapshot
-get_replication_state
+register_remediation_policy
+register_remediation_proposal
+assess_remediation_proposal
+select_remediation
+record_remediation_review
+apply_remediation
+get_remediation_state
 ```
 
-Protocol document: [`docs/v1.18-temporal-external-replication.md`](docs/v1.18-temporal-external-replication.md)
+Protocol document: [`docs/v1.19-drift-governed-remediation.md`](docs/v1.19-drift-governed-remediation.md)
 
-Invariants: [`docs/v1.18-invariants.md`](docs/v1.18-invariants.md)
+Invariants: [`docs/v1.19-invariants.md`](docs/v1.19-invariants.md)
 
 Machine-readable contracts:
 
-- [`schemas/replication-policy.schema.json`](schemas/replication-policy.schema.json)
-- [`schemas/replication-target.schema.json`](schemas/replication-target.schema.json)
-- [`schemas/replication-batch.schema.json`](schemas/replication-batch.schema.json)
-- [`schemas/replication-evaluation.schema.json`](schemas/replication-evaluation.schema.json)
-- [`schemas/replication-review.schema.json`](schemas/replication-review.schema.json)
-- [`schemas/replication-series-snapshot.schema.json`](schemas/replication-series-snapshot.schema.json)
+- [`schemas/remediation-policy.schema.json`](schemas/remediation-policy.schema.json)
+- [`schemas/drift-remediation-proposal.schema.json`](schemas/drift-remediation-proposal.schema.json)
+- [`schemas/remediation-assessment.schema.json`](schemas/remediation-assessment.schema.json)
+- [`schemas/remediation-selection.schema.json`](schemas/remediation-selection.schema.json)
+- [`schemas/remediation-review.schema.json`](schemas/remediation-review.schema.json)
+- [`schemas/remediation-execution.schema.json`](schemas/remediation-execution.schema.json)
+
+## Epistemic boundary
+
+A v1.19 decision is an engineering/governance response to bound replication evidence. It does not discover the real-world cause of drift or prove causality.
+
+```text
+DriftKind != DriftCause
+Remediation != CausalityProof
+```
+
+A rolled-back graph must earn future confidence again through the appropriate verification, confirmation, and replication lifecycle.
 
 ## Process planes
 
@@ -390,20 +331,18 @@ ATMAN-STRUCTURE/1.15    held-out structural validation / regularization
 ATMAN-SEARCH/1.16       finite multiple-comparison search governance
 ATMAN-CONFIRM/1.17      protected one-shot fresh confirmation
 ATMAN-REPLICATE/1.18    temporal/external replication + drift monitoring
+ATMAN-REMEDIATE/1.19    persistent-drift recovery governance + forward rollback
 ```
 
 ## Backward compatibility
 
-v1.18 does not change the v1.17 wire contract. `ATMAN-CONFIRM/1.17` remains the strongest structural mutation path; `ATMAN-REPLICATE/1.18` is deliberately read/append-only with respect to graph state.
+v1.19 does not change the v1.18 wire contract. `ATMAN-REPLICATE/1.18` remains a monitoring plane with no graph-mutation authority. v1.19 consumes persisted v1.18 snapshots and adds a separate recovery protocol.
 
-A strict deployment profile should:
-
-1. route structural mutation through `ATMAN-CONFIRM/1.17`;
-2. create a new v1.18 target for each newly confirmed current graph;
-3. use replication signals as inputs to a separate future governance/remediation workflow rather than silently rolling back state.
+A strict deployment profile should keep legacy direct structural mutation endpoints restricted and require the appropriate downstream governance lane for any model revision.
 
 # Historical layers
 
+- **v1.18** — temporal/external replication and confirmation drift. [`protocol`](docs/v1.18-temporal-external-replication.md) · [`invariants`](docs/v1.18-invariants.md)
 - **v1.17** — protected one-shot provenance-fresh confirmation. [`protocol`](docs/v1.17-protected-fresh-holdout.md) · [`invariants`](docs/v1.17-invariants.md)
 - **v1.16** — finite held-out search budget and multiplicity-aware thresholding. [`protocol`](docs/v1.16-multiple-comparison-search-budget.md) · [`invariants`](docs/v1.16-invariants.md)
 - **v1.15** — held-out structural validation and graph-complexity regularization. [`protocol`](docs/v1.15-heldout-structural-validation.md) · [`invariants`](docs/v1.15-invariants.md)
@@ -446,12 +385,13 @@ python -m model.structure_worker
 python -m model.search_worker
 python -m model.confirm_worker
 python -m model.replication_worker
+python -m model.remediation_worker
 ```
 
 ## Status
 
-**v1.18.0 — Temporal / External Replication & Confirmation Drift research core.**
+**v1.19.0 — Drift-Governed Remediation / Safe Rollback research core.**
 
-The project now preserves a traceable chain from identity and authority through verification, Bayesian learning, calibration, structural search, protected confirmation, and post-confirmation temporal/external replication with explicit drift history.
+The project now preserves a traceable chain from identity and authority through verification, Bayesian learning, calibration, structural search, protected confirmation, temporal/external replication, persistent drift detection, competing remediation choices, and forward-only recovery with immutable evidence history.
 
-Production work still requires protected keys, authenticated transport, rollback-resistant storage, signed/external dataset provenance where externality claims matter, leakage detection, robust source-independence procedures, formal statistical testing where statistical error guarantees are claimed, causal-identification/transportability methodology where causal claims matter, and explicit operational governance for any remediation or rollback action.
+Production work still requires protected keys, authenticated transport, rollback-resistant storage, signed/external dataset provenance where externality claims matter, leakage detection, formal statistical testing where statistical error guarantees are claimed, causal-identification/transportability methods where causal claims matter, operational incident governance, rollback blast-radius controls, and deployment-specific safeguards around any real model or system mutation.
