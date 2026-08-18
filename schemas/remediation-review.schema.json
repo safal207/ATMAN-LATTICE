@@ -1,0 +1,9 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema","$id":"https://github.com/safal207/ATMAN-LATTICE/schemas/remediation-review.schema.json","title":"RemediationReviewReceipt","type":"object",
+  "required":["selection_hash","snapshot_hash","selected_proposal_hash","selected_assessment_hash","selected_action","decision","rationale_ref","proposer_ref","assessor_ref","selector_ref","reviewer_ref","reviewed_at","review_hash"],
+  "properties":{
+    "selection_hash":{"type":"string","pattern":"^[0-9a-f]{64}$"},"snapshot_hash":{"type":"string","pattern":"^[0-9a-f]{64}$"},"selected_proposal_hash":{"type":"string","pattern":"^[0-9a-f]{64}$"},"selected_assessment_hash":{"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "selected_action":{"enum":["HOLD","COLLECT_MORE_DATA","PARAMETER_REVISION","STRUCTURAL_REVISION","SAFE_ROLLBACK"]},"decision":{"enum":["APPROVE","HOLD","REJECT"]},"rationale_ref":{"type":"string","minLength":1},
+    "proposer_ref":{"type":"string","minLength":1},"assessor_ref":{"type":"string","minLength":1},"selector_ref":{"type":"string","minLength":1},"reviewer_ref":{"type":"string","minLength":1},"reviewed_at":{"type":"integer","minimum":0},"review_hash":{"type":"string","pattern":"^[0-9a-f]{64}$"}
+  },"additionalProperties":false
+}
