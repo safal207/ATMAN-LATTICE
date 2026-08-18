@@ -8,7 +8,7 @@
     "policy_ref": {"type":"string","minLength":1},
     "subject_identity_ref": {"type":"string","minLength":1},
     "allowed_actions": {"type":"array","minItems":1,"uniqueItems":true,"items":{"enum":["HOLD","COLLECT_MORE_DATA","PARAMETER_REVISION","STRUCTURAL_REVISION","SAFE_ROLLBACK"]}},
-    "rollback_requires_nonpositive_improvement": {"type":"boolean"},
+    "rollback_requires_nonpositive_improvement": {"const":true},
     "registered_at": {"type":"integer","minimum":0},
     "policy_hash": {"type":"string","pattern":"^[0-9a-f]{64}$"}
   },
