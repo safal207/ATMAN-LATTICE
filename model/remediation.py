@@ -84,6 +84,8 @@ class RemediationPolicy:
             raise ValueError("remediation allowed_actions must be unique and canonically sorted")
         if any(value not in ALL_REMEDIATION_ACTIONS for value in self.allowed_actions):
             raise ValueError("unsupported remediation action")
+        if not self.rollback_requires_nonpositive_improvement:
+            raise ValueError("v1.19 reference rollback policy requires non-positive current structural advantage")
         _require_digest("policy_hash", self.policy_hash)
         if self.policy_hash != _digest(self.material()):
             raise ValueError("policy_hash does not match remediation policy")
@@ -313,8 +315,6 @@ def assess_remediation_proposal(
         raise ValueError("remediation assessment requires complete drift metrics")
     if proposal.action == "SAFE_ROLLBACK":
         supported = latest_evaluation.regularized_improvement_ppm <= 0
-        if not policy.rollback_requires_nonpositive_improvement:
-            supported = True
         status: RemediationAssessmentStatus = "ROLLBACK_SUPPORTED" if supported else "ROLLBACK_UNSUPPORTED"
         margin = max(0, -latest_evaluation.regularized_improvement_ppm) if supported else 0
     elif proposal.action in {"PARAMETER_REVISION", "STRUCTURAL_REVISION"}:
@@ -422,9 +422,10 @@ def select_remediation(
     assessment = assessment_by_proposal[selected_proposal_hash]
     if assessment.status == "ROLLBACK_UNSUPPORTED":
         raise ValueError("cannot select unsupported rollback")
+    if selector_ref == assessment.latest_evaluator_ref:
+        raise ValueError("remediation selector must be independent from latest replication evaluator")
     proposal_hashes = tuple(sorted(proposal_by_hash))
-    ordered_assessments = tuple(assessment_by_proposal[value] for value in proposal_hashes)
-    assessment_hashes = tuple(item.assessment_hash for item in ordered_assessments)
+    assessment_hashes = tuple(sorted(item.assessment_hash for item in assessments))
     fields = {
         "selection_ref": selection_ref,
         "snapshot_hash": snapshot.snapshot_hash,
@@ -605,8 +606,8 @@ def execute_remediation(
         raise ValueError("remediation selected proposal/assessment mismatch")
     if review.selection_hash != selection.selection_hash or review.decision != "APPROVE":
         raise ValueError("remediation apply requires independent APPROVE review")
-    if applier_ref in {proposal.proposer_ref, assessment.assessor_ref, selection.selector_ref, review.reviewer_ref}:
-        raise ValueError("remediation applier must be independent from proposal, assessment, selection, and review")
+    if applier_ref in {proposal.proposer_ref, assessment.assessor_ref, assessment.latest_evaluator_ref, selection.selector_ref, review.reviewer_ref}:
+        raise ValueError("remediation applier must be independent from proposal, assessment, replication evaluation, selection, and review")
     if proposal.action == "SAFE_ROLLBACK" and assessment.status != "ROLLBACK_SUPPORTED":
         raise ValueError("safe rollback requires ROLLBACK_SUPPORTED assessment")
     if proposal.action == "SAFE_ROLLBACK":
