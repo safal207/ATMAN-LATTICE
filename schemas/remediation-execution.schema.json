@@ -1,0 +1,10 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema","$id":"https://github.com/safal207/ATMAN-LATTICE/schemas/remediation-execution.schema.json","title":"RemediationExecutionReceipt","type":"object",
+  "required":["selection_hash","review_hash","proposal_hash","assessment_hash","snapshot_hash","target_hash","confirmed_revision_hash","action","execution_kind","old_graph_hash","old_generation","new_graph_hash","new_generation","former_confirmed_graph_hash","rollback_source_graph_hash","applier_ref","applied_at","execution_hash"],
+  "properties":{
+    "selection_hash":{"type":"string","pattern":"^[0-9a-f]{64}$"},"review_hash":{"type":"string","pattern":"^[0-9a-f]{64}$"},"proposal_hash":{"type":"string","pattern":"^[0-9a-f]{64}$"},"assessment_hash":{"type":"string","pattern":"^[0-9a-f]{64}$"},"snapshot_hash":{"type":"string","pattern":"^[0-9a-f]{64}$"},"target_hash":{"type":"string","pattern":"^[0-9a-f]{64}$"},"confirmed_revision_hash":{"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "action":{"enum":["HOLD","COLLECT_MORE_DATA","PARAMETER_REVISION","STRUCTURAL_REVISION","SAFE_ROLLBACK"]},"execution_kind":{"enum":["NO_GRAPH_CHANGE","DOWNSTREAM_GOVERNANCE_REQUIRED","FORWARD_ROLLBACK"]},"downstream_protocol":{"type":["string","null"]},
+    "old_graph_hash":{"type":"string","pattern":"^[0-9a-f]{64}$"},"old_generation":{"type":"integer","minimum":0},"new_graph_hash":{"type":"string","pattern":"^[0-9a-f]{64}$"},"new_generation":{"type":"integer","minimum":0},"former_confirmed_graph_hash":{"type":"string","pattern":"^[0-9a-f]{64}$"},"rollback_source_graph_hash":{"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "applier_ref":{"type":"string","minLength":1},"applied_at":{"type":"integer","minimum":0},"execution_hash":{"type":"string","pattern":"^[0-9a-f]{64}$"}
+  },"additionalProperties":false
+}
