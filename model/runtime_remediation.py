@@ -157,7 +157,7 @@ def _connect(db_path: str) -> sqlite3.Connection:
     conn.execute("""CREATE TABLE IF NOT EXISTS remediation_policy (subject_identity_ref TEXT PRIMARY KEY, policy_ref TEXT NOT NULL UNIQUE, policy_json TEXT NOT NULL)""")
     conn.execute("""CREATE TABLE IF NOT EXISTS remediation_proposal (proposal_hash TEXT PRIMARY KEY, proposal_ref TEXT NOT NULL UNIQUE, snapshot_hash TEXT NOT NULL, target_hash TEXT NOT NULL, action TEXT NOT NULL, proposal_json TEXT NOT NULL)""")
     conn.execute("""CREATE TABLE IF NOT EXISTS remediation_assessment (assessment_hash TEXT PRIMARY KEY, proposal_hash TEXT NOT NULL UNIQUE, snapshot_hash TEXT NOT NULL, assessment_json TEXT NOT NULL)""")
-    conn.execute("""CREATE TABLE IF NOT EXISTS remediation_selection (selection_hash TEXT PRIMARY KEY, selection_ref TEXT NOT NULL UNIQUE, snapshot_hash TEXT NOT NULL UNIQUE, selection_json TEXT NOT NULL)""")
+    conn.execute("""CREATE TABLE IF NOT EXISTS remediation_selection (selection_hash TEXT PRIMARY KEY, selection_ref TEXT NOT NULL UNIQUE, snapshot_hash TEXT NOT NULL, selection_json TEXT NOT NULL)""")
     conn.execute("""CREATE TABLE IF NOT EXISTS remediation_review (review_hash TEXT PRIMARY KEY, selection_hash TEXT NOT NULL UNIQUE, review_json TEXT NOT NULL)""")
     conn.execute("""CREATE TABLE IF NOT EXISTS remediation_execution (execution_hash TEXT PRIMARY KEY, snapshot_hash TEXT NOT NULL UNIQUE, selection_hash TEXT NOT NULL UNIQUE, action TEXT NOT NULL, old_graph_hash TEXT NOT NULL, new_graph_hash TEXT NOT NULL, old_graph_json TEXT NOT NULL, new_graph_json TEXT NOT NULL, proposal_json TEXT NOT NULL, assessment_json TEXT NOT NULL, selection_json TEXT NOT NULL, review_json TEXT NOT NULL, execution_json TEXT NOT NULL)""")
     return conn
@@ -211,6 +211,8 @@ def _snapshot(conn: sqlite3.Connection, snapshot_hash: str) -> ReplicationSeries
 def _fresh_snapshot(conn: sqlite3.Connection, snapshot_hash: str) -> ReplicationSeriesSnapshot:
     snapshot = _snapshot(conn, snapshot_hash)
     target = _target(conn, snapshot.target_hash)
+    if _graph(conn, target.subject_identity_ref).graph_hash != target.confirmed_graph_hash:
+        raise ValueError("remediation target no longer represents current graph")
     policy = replication_policy(conn, target.subject_identity_ref)
     eval_rows = conn.execute("SELECT evaluation_json FROM replication_evaluation WHERE target_hash=?", (target.target_hash,)).fetchall()
     evaluations = tuple(replication_evaluation_from_dict(json.loads(row[0])) for row in eval_rows)
@@ -239,10 +241,7 @@ def _proposal_set(conn: sqlite3.Connection, snapshot_hash: str) -> tuple[DriftRe
 
 
 def _assessment_set(conn: sqlite3.Connection, proposals: tuple[DriftRemediationProposal, ...]) -> tuple[RemediationAssessmentReceipt, ...]:
-    result = []
-    for proposal in proposals:
-        result.append(_assessment(conn, proposal.proposal_hash))
-    return tuple(result)
+    return tuple(_assessment(conn, proposal.proposal_hash) for proposal in proposals)
 
 
 def _fresh_selection(conn: sqlite3.Connection, selection: RemediationSelectionReceipt) -> tuple[RemediationSelectionReceipt, ReplicationSeriesSnapshot]:
@@ -301,6 +300,8 @@ def _register_policy(conn, payload, *, grant, proof, enforcement):
 
 def _register_proposal(conn, payload, *, grant, proof, enforcement):
     snapshot = _fresh_snapshot(conn, str(payload["snapshot_hash"])); target = _target(conn, snapshot.target_hash); policy = _policy(conn, target.subject_identity_ref)
+    if conn.execute("SELECT 1 FROM remediation_execution WHERE snapshot_hash=?", (snapshot.snapshot_hash,)).fetchone() is not None:
+        raise ValueError("remediation snapshot already has an execution")
     base_graph, confirmed_graph, _, _, _, _, _ = _confirmed_bundle(conn, target.confirmed_revision_hash)
     current_graph = _graph(conn, target.subject_identity_ref)
     if current_graph.graph_hash != confirmed_graph.graph_hash:
@@ -345,11 +346,11 @@ def _select(conn, payload, *, grant, proof, enforcement):
         selected_proposal_hash=str(payload["selected_proposal_hash"]), selector_ref=grant.subject_ref, selected_at=enforcement.now,
     )
     _enforce(grant, proof, action=action_selection(value), required_role=ROLE_REMEDIATION_SELECTOR, required_scope=verification_scope(target.subject_identity_ref), enforcement=enforcement)
-    row = conn.execute("SELECT selection_json FROM remediation_selection WHERE snapshot_hash=?", (snapshot.snapshot_hash,)).fetchone()
+    row = conn.execute("SELECT selection_json FROM remediation_selection WHERE selection_ref=?", (value.selection_ref,)).fetchone()
     if row is not None:
         current = selection_from_dict(json.loads(row[0]))
         if current == value: return current
-        raise ValueError("remediation snapshot already has an immutable selection")
+        raise ValueError("remediation selection_ref is immutable")
     conn.execute("INSERT INTO remediation_selection(selection_hash,selection_ref,snapshot_hash,selection_json) VALUES(?,?,?,?)", (value.selection_hash,value.selection_ref,value.snapshot_hash,json.dumps(selection_to_dict(value),sort_keys=True,separators=(",",":"))))
     return value
 
