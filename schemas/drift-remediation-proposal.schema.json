@@ -1,0 +1,14 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"https://github.com/safal207/ATMAN-LATTICE/schemas/drift-remediation-proposal.schema.json",
+  "title":"DriftRemediationProposal",
+  "type":"object",
+  "required":["proposal_ref","subject_identity_ref","target_hash","snapshot_hash","latest_evaluation_hash","confirmed_revision_hash","current_graph_hash","current_generation","rollback_graph_hash","rollback_generation","action","drift_kind","reason_ref","proposer_ref","proposed_at","proposal_hash"],
+  "properties":{
+    "proposal_ref":{"type":"string","minLength":1},"subject_identity_ref":{"type":"string","minLength":1},
+    "target_hash":{"type":"string","pattern":"^[0-9a-f]{64}$"},"snapshot_hash":{"type":"string","pattern":"^[0-9a-f]{64}$"},"latest_evaluation_hash":{"type":"string","pattern":"^[0-9a-f]{64}$"},"confirmed_revision_hash":{"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "current_graph_hash":{"type":"string","pattern":"^[0-9a-f]{64}$"},"current_generation":{"type":"integer","minimum":1},"rollback_graph_hash":{"type":"string","pattern":"^[0-9a-f]{64}$"},"rollback_generation":{"type":"integer","minimum":0},
+    "action":{"enum":["HOLD","COLLECT_MORE_DATA","PARAMETER_REVISION","STRUCTURAL_REVISION","SAFE_ROLLBACK"]},"downstream_protocol":{"type":["string","null"]},"drift_kind":{"enum":["STRUCTURAL","PERFORMANCE","BOTH"]},
+    "reason_ref":{"type":"string","minLength":1},"proposer_ref":{"type":"string","minLength":1},"proposed_at":{"type":"integer","minimum":0},"proposal_hash":{"type":"string","pattern":"^[0-9a-f]{64}$"}
+  },"additionalProperties":false
+}
