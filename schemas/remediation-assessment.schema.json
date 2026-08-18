@@ -1,0 +1,10 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema","$id":"https://github.com/safal207/ATMAN-LATTICE/schemas/remediation-assessment.schema.json","title":"RemediationAssessmentReceipt","type":"object",
+  "required":["proposal_hash","snapshot_hash","latest_evaluation_hash","action","latest_regularized_improvement_ppm","latest_confirmed_mean_brier_ppm","baseline_confirmed_mean_brier_ppm","latest_drift_kind","status","proposer_ref","latest_evaluator_ref","assessor_ref","assessed_at","assessment_hash"],
+  "properties":{
+    "proposal_hash":{"type":"string","pattern":"^[0-9a-f]{64}$"},"snapshot_hash":{"type":"string","pattern":"^[0-9a-f]{64}$"},"latest_evaluation_hash":{"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "action":{"enum":["HOLD","COLLECT_MORE_DATA","PARAMETER_REVISION","STRUCTURAL_REVISION","SAFE_ROLLBACK"]},"latest_regularized_improvement_ppm":{"type":"integer"},"latest_confirmed_mean_brier_ppm":{"type":"integer","minimum":0},"baseline_confirmed_mean_brier_ppm":{"type":"integer","minimum":0},"latest_drift_kind":{"enum":["STRUCTURAL","PERFORMANCE","BOTH"]},
+    "status":{"enum":["NON_MUTATING_SAFE","DOWNSTREAM_GOVERNANCE_REQUIRED","ROLLBACK_SUPPORTED","ROLLBACK_UNSUPPORTED"]},"rollback_margin_ppm":{"type":["integer","null"],"minimum":0},
+    "proposer_ref":{"type":"string","minLength":1},"latest_evaluator_ref":{"type":"string","minLength":1},"assessor_ref":{"type":"string","minLength":1},"assessed_at":{"type":"integer","minimum":0},"assessment_hash":{"type":"string","pattern":"^[0-9a-f]{64}$"}
+  },"additionalProperties":false
+}
