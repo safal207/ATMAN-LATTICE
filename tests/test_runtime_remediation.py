@@ -52,7 +52,7 @@ def raw_public(key: Ed25519PrivateKey) -> bytes:
 def grant_for(root, actor, *, subject, role):
     return issue_authority_grant(
         grant_id=f"grant:remediation:{subject}", subject_ref=subject, subject_key_id=f"key:{subject}", subject_public_key=actor.public_key(),
-        roles=(role,), scopes=(verification_scope(IDENTITY),), policy_generation=19,
+        roles=(role,), scopes=(verification_scope(IDENTITY),), policy_generation=18,
         valid_from=100, valid_until=6000, issuer_ref="root", issuer_key_id="root-key", issuer_private_key=root,
     )
 
@@ -60,7 +60,7 @@ def grant_for(root, actor, *, subject, role):
 def invoke(request, *, root, db_path, now):
     env = os.environ.copy()
     env["ATMAN_TRUSTED_ISSUER_KEYS"] = json.dumps({"root-key": raw_public(root).hex()})
-    env["ATMAN_POLICY_GENERATION"] = "19"
+    env["ATMAN_POLICY_GENERATION"] = "18"
     env["ATMAN_RUNTIME_NOW"] = str(now)
     env["ATMAN_RUNTIME_DB"] = str(db_path)
     completed = subprocess.run([sys.executable, "-m", "model.remediation_worker"], input=json.dumps(request), text=True, capture_output=True, env=env, check=False)
