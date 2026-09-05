@@ -1,0 +1,17 @@
+{
+  "schema": "research-repository-status/1",
+  "repository": "safal207/ATMAN-LATTICE",
+  "observed_on": "2026-09-05",
+  "default_branch": "main",
+  "baseline_main_sha": "e62c279b9148a7ae9dd1a4654f6ddeea6add4a3f",
+  "publication_scope": "documentation only; no code promotion",
+  "production_ready": false,
+  "coverage": "selected protocol and integration entry points, not a complete branch audit",
+  "tracks": [
+    {"id":"v1.19-reference","source_sha":"e62c279b9148a7ae9dd1a4654f6ddeea6add4a3f","availability":"main research runtime","on_baseline_main":true,"rerun_during_organization":false},
+    {"id":"capu-authority-composition","repository":"safal207/CaPU","source_sha":"8a2f2a37023a50aeac52cb8c8aed84b2eeceec88","availability":"external draft PR 104","full_atman_runtime_integrated":false,"rerun_during_organization":false}
+  ],
+  "non_claims": ["production authorization system", "real-world causal identification", "metaphysical proof", "verified four-repository integration"],
+  "branch_deletions": [],
+  "review_of_linked_code": "unchanged by documentation publication"
+}
