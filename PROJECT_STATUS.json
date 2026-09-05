@@ -1,0 +1,18 @@
+{
+  "schema": "research-repository-status/1",
+  "repository": "safal207/ATMAN-LATTICE",
+  "observed_on": "2026-09-05",
+  "default_branch": "main",
+  "baseline_main_sha": "e62c279b9148a7ae9dd1a4654f6ddeea6add4a3f",
+  "publication_scope": "documentation only; no code promotion",
+  "production_ready": false,
+  "branch_inventory_scope": "selected tracks only; no complete branch audit claimed",
+  "tracks": [
+    {"id":"v1.19-reference","source_sha":"e62c279b9148a7ae9dd1a4654f6ddeea6add4a3f","availability":"runnable research reference","evidence":"existing model, schemas and tests; not rerun during organization","on_baseline_main":true,"rerun_during_organization":false},
+    {"id":"capu-atman-v1","repository":"safal207/CaPU","source_sha":"977864167c65f161e6db87b3d14257a11a67516f","availability":"draft PR 103","evidence":"historical local bounded composition record","on_baseline_main":false,"rerun_during_organization":false},
+    {"id":"capu-atman-http-v2","repository":"safal207/CaPU","source_sha":"8a2f2a37023a50aeac52cb8c8aed84b2eeceec88","availability":"draft PR 104","evidence":"historical local loopback HTTP record","on_baseline_main":false,"rerun_during_organization":false}
+  ],
+  "non_claims": ["production trust system", "physical causality proof", "full ATMAN integration in CaPU experiments", "verified four-repository composition"],
+  "branch_deletions": [],
+  "review_of_linked_code": "not changed by documentation publication"
+}
